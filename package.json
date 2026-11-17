@@ -10,7 +10,6 @@
     "pixelate": "node scripts/pixelate.mjs",
     "deploy": "bash infra/deploy.sh",
     "preview": "next build && serve out -l 3000",
-    "layout": "node --experimental-strip-types scripts/layout-preview.mjs",
     "shot": "node scripts/shot.mjs",
     "sprites": "node scripts/sprites.mjs",
     "test": "node --test --experimental-strip-types lib/*.test.ts",

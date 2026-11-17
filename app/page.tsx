@@ -1,6 +1,6 @@
 'use client'
 
-import { Scene } from '@/components/scene/Scene'
+import { IsoScene } from '@/components/scene/IsoScene'
 import { StaticFallback } from '@/components/StaticFallback'
 import { site } from '@/content/site'
 import { setMode } from '@/lib/capability'
@@ -10,10 +10,10 @@ import { setMode } from '@/lib/capability'
  * by the script in <head> before first paint — see lib/capability.ts. CSS
  * hides the other with `display: none`, which also takes it out of the
  * accessibility tree, so nothing is announced twice.
+ *
+ * One <main> for both: the document may only contain one that isn't hidden.
  */
 export default function Home() {
-  // One <main> for both versions: the document may only contain one that
-  // isn't hidden, and CSS hides whichever version isn't in play.
   return (
     <main>
       <div className="mode-static">
@@ -22,7 +22,7 @@ export default function Home() {
 
       <div className="mode-scene" style={{ padding: 'clamp(16px, 4vw, 40px) 20px' }}>
         <h1 className="sr-only">{`${site.name} — ${site.role.toLowerCase()}`}</h1>
-        <Scene onLeave={() => setMode('static')} />
+        <IsoScene onLeave={() => setMode('static')} />
       </div>
     </main>
   )

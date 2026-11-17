@@ -2,17 +2,18 @@ import Link from 'next/link'
 import { hotspots } from '@/content/site'
 
 /**
- * The 404 uses the room's own door sprite — a wrong door is the one joke
- * this site is already set up to make, and it costs 1KB.
+ * The 404 uses the room's own door — the same sprite that hangs on the west
+ * wall. A wrong door is the one joke this site is already set up to make,
+ * and it costs a kilobyte.
  */
 export default function NotFound() {
   return (
     <main className="page" style={{ textAlign: 'center' }}>
       <img
-        src="/art/room/door.png"
+        src="/art/iso/door.png"
         alt=""
-        width={128}
-        height={176}
+        width={108}
+        height={304}
         style={{ imageRendering: 'pixelated', margin: '0 auto 1.5rem', display: 'block' }}
       />
       <p className="eyebrow">Error 404</p>

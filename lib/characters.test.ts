@@ -16,6 +16,7 @@ import assert from 'node:assert/strict'
 import {
   DOOR,
   GAP,
+  facingFor,
   initialState,
   step,
   visits,
@@ -23,7 +24,7 @@ import {
   type Phase,
   type Visit,
 } from './characters.ts'
-import { SCENE_W } from '../components/scene/room.ts'
+import { ROOM } from '../components/scene/iso.ts'
 
 const TICK = 16 // ms, one animation frame
 const MAX_TICKS = 60 * 120 // two minutes of frames; a visit must end well inside this
@@ -33,7 +34,7 @@ function isStub(): boolean {
   const visit = visits[0]
   let state = { ...initialState(visit.id), phase: 'entering' as Phase }
   for (let i = 0; i < 120; i++) state = step(state, visit, TICK)
-  return state.x === DOOR.x && state.phase === 'entering'
+  return state.gx === DOOR.gx && state.phase === 'entering'
 }
 
 const stubbed = isStub()
@@ -55,9 +56,10 @@ for (const visit of visits) {
   spec(`${visit.id}: a visit starts and ends at the door`, () => {
     const states = trace(visit)
     assert.equal(states.at(-1)?.phase, 'away', 'the visit never finished')
+    const last = states.at(-1)!
     assert.ok(
-      Math.abs(states.at(-1)!.x - DOOR.x) <= 2,
-      `left from x=${states.at(-1)!.x}, expected to leave by the door at ${DOOR.x}`,
+      Math.hypot(last.gx - DOOR.gx, last.gy - DOOR.gy) <= 0.2,
+      `left from (${last.gx}, ${last.gy}), expected to leave by the door at (${DOOR.gx}, ${DOOR.gy})`,
     )
   })
 
@@ -76,8 +78,10 @@ for (const visit of visits) {
   spec(`${visit.id}: reaches its spot while settled`, () => {
     const settled = trace(visit).filter((s) => s.phase === 'settled')
     assert.ok(settled.length > 0, 'never settled')
-    const closest = Math.min(...settled.map((s) => Math.abs(s.x - visit.spot.x)))
-    assert.ok(closest <= 2, `settled ${closest}px from the spot, expected to arrive at it`)
+    const closest = Math.min(
+      ...settled.map((s) => Math.hypot(s.gx - visit.spot.gx, s.gy - visit.spot.gy)),
+    )
+    assert.ok(closest <= 0.2, `settled ${closest.toFixed(2)} tiles from the spot`)
   })
 
   spec(`${visit.id}: stays within its declared range`, () => {
@@ -88,10 +92,10 @@ for (const visit of visits) {
 
   spec(`${visit.id}: every position is a real number inside the room`, () => {
     for (const s of trace(visit)) {
-      assert.ok(Number.isFinite(s.x), `x was ${s.x}`)
-      assert.ok(Number.isFinite(s.depth), `depth was ${s.depth}`)
-      assert.ok(s.x >= 0 && s.x <= SCENE_W, `x=${s.x} outside 0..${SCENE_W}`)
-      assert.ok(s.depth >= 0 && s.depth <= 1, `depth=${s.depth} outside 0..1`)
+      assert.ok(Number.isFinite(s.gx), `gx was ${s.gx}`)
+      assert.ok(Number.isFinite(s.gy), `gy was ${s.gy}`)
+      assert.ok(s.gx >= 0 && s.gx <= ROOM, `gx=${s.gx} outside the room`)
+      assert.ok(s.gy >= 0 && s.gy <= ROOM, `gy=${s.gy} outside the room`)
       assert.ok(Number.isInteger(s.frame) && s.frame >= 0, `frame was ${s.frame}`)
     }
   })
@@ -104,22 +108,20 @@ for (const visit of visits) {
       // The tick that changes phase is exempt: arriving somewhere and turning
       // to face the room is correct, even though the position also moved.
       if (s.phase !== prev.phase) continue
-      const dx = s.x - prev.x
-      const dd = s.depth - prev.depth
-      if (Math.abs(dd) > Math.abs(dx) && Math.abs(dd) > 1e-6) {
-        assert.equal(s.facing, dd > 0 ? 'front' : 'back', 'moving in depth but not facing that way')
-      } else if (Math.abs(dx) > 1e-6) {
-        assert.equal(s.facing, dx > 0 ? 'right' : 'left', 'moving sideways but not facing that way')
+      const dgx = s.gx - prev.gx
+      const dgy = s.gy - prev.gy
+      if (Math.hypot(dgx, dgy) > 1e-6) {
+        assert.equal(s.facing, facingFor(dgx, dgy), 'moving one way and facing another')
       }
     }
   })
 
   spec(`${visit.id}: moves no faster than its declared speed`, () => {
     const states = trace(visit)
-    const limit = (visit.speed * TICK) / 1000 + 0.5 // half a pixel of slack for rounding
+    const limit = (visit.speed * TICK) / 1000 + 0.01 // a little slack for rounding
     for (let i = 1; i < states.length; i++) {
-      const dx = Math.abs(states[i].x - states[i - 1].x)
-      assert.ok(dx <= limit, `jumped ${dx.toFixed(2)}px in one tick, limit ${limit.toFixed(2)}`)
+      const d = Math.hypot(states[i].gx - states[i - 1].gx, states[i].gy - states[i - 1].gy)
+      assert.ok(d <= limit, `moved ${d.toFixed(3)} tiles in one tick, limit ${limit.toFixed(3)}`)
     }
   })
 }
@@ -128,9 +130,20 @@ for (const visit of visits) {
 
 test('every visit spot is inside the room', () => {
   for (const visit of visits) {
-    assert.ok(visit.spot.x >= 0 && visit.spot.x <= SCENE_W, `${visit.id} spot x=${visit.spot.x}`)
-    assert.ok(visit.spot.depth >= 0 && visit.spot.depth <= 1, `${visit.id} spot depth=${visit.spot.depth}`)
+    assert.ok(visit.spot.gx >= 0 && visit.spot.gx <= ROOM, `${visit.id} spot gx=${visit.spot.gx}`)
+    assert.ok(visit.spot.gy >= 0 && visit.spot.gy <= ROOM, `${visit.id} spot gy=${visit.spot.gy}`)
   }
+})
+
+test('the door is on the floor, by the west wall', () => {
+  assert.ok(DOOR.gx >= 0 && DOOR.gx <= ROOM && DOOR.gy >= 0 && DOOR.gy <= ROOM)
+})
+
+test('facing follows the direction of travel', () => {
+  assert.equal(facingFor(1, 0), 'down-right')
+  assert.equal(facingFor(-1, 0), 'up-left')
+  assert.equal(facingFor(0, 1), 'down-left')
+  assert.equal(facingFor(0, -1), 'up-right')
 })
 
 test('every visit has a sane duration range', () => {

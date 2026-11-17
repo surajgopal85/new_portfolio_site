@@ -321,10 +321,23 @@ half-converted.
    and a seam across its cushion, the credenza has three drawer fronts with
    handles.
 
-   Then: delete `room.ts`, the old sprites and `/iso/`.
-6. **Characters move on the tile grid.** `lib/characters.ts` spots become
-   tile coordinates; the visit machine interpolates in tile space. Update the
-   tests — they assert positions inside the room, which is now a diamond.
+   ~~Then: delete `room.ts`, the old sprites and `/iso/`.~~ **Done — the
+   isometric room is the landing page now.** `Scene.tsx`, `room.ts`,
+   `scene.module.css`, the `/iso/` preview route and the old layout script
+   are gone, along with every top-down sprite except the projects overworld,
+   which is still drawn flat. The 404 uses the room's actual door.
+6. ~~**Characters move on the tile grid.**~~ **Done.** Positions are tiles
+   now — the same coordinates every object uses, so a character and a chair
+   can't disagree about where the floor is. `facing` has four isometric
+   directions named for where they go on screen, and `facingFor` derives it.
+
+   The 31 tests moved with them: inside-the-room checks are tile bounds,
+   distances are tile distances, speed is tiles per second. 10 pass, 21 still
+   waiting on `step`.
+
+   Still placeholder: Suraj at the desk and the three visitors have no
+   sprites — those are Suraj's to draw, in isometric now, which changes the
+   frame list in `docs/characters.md`.
 7. **Re-run `npm run audit` and `npm run og`.**
 
 ### Also new
