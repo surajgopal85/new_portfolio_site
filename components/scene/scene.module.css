@@ -78,10 +78,38 @@
   border-radius: 6%;
   box-shadow: inset 0 0 0 4px var(--gold), inset 0 0 0 6px var(--bark-dark);
 }
+/* The fan, seen only as its shadow. Stepped rotation rather than smooth: a
+   strobing blade suits the art, and smooth rotation on a hard-edged shape
+   just looks like a spinning JPEG. */
+.ph_fan_shadow {
+  border: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(26, 20, 32, 0.2) 0 13deg, transparent 13deg 120deg,
+    rgba(26, 20, 32, 0.2) 120deg 133deg, transparent 133deg 240deg,
+    rgba(26, 20, 32, 0.2) 240deg 253deg, transparent 253deg 360deg
+  );
+  animation: fanTurn 2.4s steps(12, end) infinite;
+}
+@keyframes fanTurn { to { transform: rotate(360deg); } }
+
 .ph_shelf { background: var(--bark); border-top: 4px solid var(--clay); }
 .ph_desk_frame { background: transparent; border: 0; box-shadow: inset 4px 0 0 var(--slate), inset -4px 0 0 var(--slate); }
 .ph_desk_top { background: var(--tan-dark); border-bottom: 3px solid var(--bark); }
-.ph_monitor { background: var(--ink); border: 2px solid var(--slate); box-shadow: inset 0 0 0 4px var(--sky-dark); }
+.ph_monitor { background: var(--ink); border: 2px solid var(--slate); padding: 4px; }
+
+/* What's on screen. The monitor is the Projects link, so by default it shows
+   the overworld you'd land on — the nav explains itself without a label. */
+.screen { display: block; width: 100%; height: 100%; }
+.screen_map {
+  background: var(--leaf-dark);
+  box-shadow:
+    inset 6px 4px 0 var(--leaf), inset -8px -3px 0 var(--sky-dark),
+    inset 0 0 0 1px var(--ink);
+}
+.screen_code { background: var(--night); box-shadow: inset 0 4px 0 var(--leaf), inset 0 -6px 0 var(--slate); }
+.screen_cat { background: var(--ginger); box-shadow: inset 0 0 0 3px var(--cream), inset 0 6px 0 var(--bark); }
 .ph_laptop { background: var(--slate); border-bottom: 4px solid var(--ink); }
 .ph_chair { background: var(--shadow); border-radius: 30% 30% 10% 10%; }
 .ph_window_back,

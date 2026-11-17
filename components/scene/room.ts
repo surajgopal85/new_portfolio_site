@@ -121,6 +121,13 @@ export const things: readonly Thing[] = [
   /** The M-Audio controller, lying on the return. */
   { id: 'midi', x: 306, depth: 0.62, w: 46, h: 13, src: null, over: 'desk-return' },
 
+  /**
+   * The ceiling fan is above the camera in this projection, so what you see
+   * of it is its shadow turning on the floor. Drawn after the rug so it falls
+   * across it. If it reads as noise rather than life, delete this one line.
+   */
+  { id: 'fan-shadow', x: 128, depth: 0.5, w: 104, h: 44, src: null, flat: true, over: 'rug' },
+
   // --- floor, front-left: the piano --------------------------------------
   { id: 'piano', x: 44, depth: 0.82, w: 86, h: 30, src: null, hotspot: 'piano' },
   { id: 'amp', x: 60, depth: 0.95, w: 30, h: 24, src: null },

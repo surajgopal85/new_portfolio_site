@@ -9,10 +9,21 @@ import styles from './scene.module.css'
 
 const IDLE_HINT = 'Click something in the room.'
 
+/**
+ * What's on the monitor. It's the brightest thing in a night room, so it's
+ * where the eye lands first — and it's the Projects link, so the default is
+ * the overworld you'd land on: the navigation explains itself without a
+ * label. The other two are there because a screen that never changes reads as
+ * a painting of a screen.
+ */
+const SCREENS = ['map', 'code', 'cat'] as const
+type Screen = (typeof SCREENS)[number]
+
 export function Scene({ onLeave }: { onLeave: () => void }) {
   const [deskUp, setDeskUp] = useState(false)
   const [status, setStatus] = useState(IDLE_HINT)
   const [sound, setSound] = useState(false)
+  const [screen, setScreen] = useState<Screen>('map')
 
   // The desk changes height on its own, the way a real standing desk does over
   // a workday — just faster.
@@ -26,6 +37,17 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
     }
     schedule()
     return () => window.clearTimeout(timer)
+  }, [])
+
+  // The screen changes on its own, mostly sitting on the map.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setScreen((current) => {
+        if (current !== 'map') return 'map'
+        return SCREENS[1 + Math.floor(Math.random() * (SCREENS.length - 1))]
+      })
+    }, 9000)
+    return () => window.clearInterval(timer)
   }, [])
 
   useEffect(() => {
@@ -65,7 +87,7 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
                 style={style}
                 {...hint(spot.hint)}
               >
-                <Placeholder thing={thing} />
+                <Placeholder thing={thing} screen={screen} />
                 <span className={styles.hotspotLabel} aria-hidden="true">
                   {spot.label}
                 </span>
@@ -135,7 +157,15 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
  * face, a darker front face, a hard outline. Each branch dies when its thing
  * gets a real `src` in room.ts.
  */
-function Placeholder({ thing }: { thing: Thing }) {
+function Placeholder({ thing, screen }: { thing: Thing; screen?: Screen }) {
   if (thing.src) return <img src={thing.src} alt="" />
-  return <span className={`${styles.ph} ${styles[`ph_${thing.id.replace('-', '_')}`] ?? ''}`} />
+  const cls = `${styles.ph} ${styles[`ph_${thing.id.replaceAll('-', '_')}`] ?? ''}`
+  if (thing.id === 'monitor') {
+    return (
+      <span className={cls}>
+        <span className={`${styles.screen} ${styles[`screen_${screen ?? 'map'}`]}`} />
+      </span>
+    )
+  }
+  return <span className={cls} />
 }

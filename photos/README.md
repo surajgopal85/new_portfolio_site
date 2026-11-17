@@ -124,14 +124,11 @@ The border bands get the same treatment: one repeating unit, tiled.
 
 ## 3. Decisions that change what gets drawn
 
-- [ ] **Lock the time of day.** Night is recommended: it makes the monitor the
-      brightest thing in the room, which is right, since the monitor is the
-      Projects link.
-- [ ] **Ceiling fan** — it's above the camera in this projection. Omit it, or
-      draw it as a slow shadow turning on the floor?
+- [x] **Time of day: night.** Locked.
+- [x] **Ceiling fan** — in, as a turning shadow on the floor. On probation.
 - [x] **Is the cork board interactive?** Yes — it's where whatever you're
       studying goes, so it opens `/now/`. Four hotspots now.
-- [ ] **What's on the monitor?** It's the brightest pixel group in the scene,
-      so whatever is on it reads as the focal point.
+- [x] **The monitor** shows the overworld map, drifting occasionally to a
+      terminal or to Kibou.
 
 Then: `npm run pixelate -- photos/raw/office/IMG_0714.jpeg --width 384 --preview 2`

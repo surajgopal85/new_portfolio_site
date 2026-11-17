@@ -23,6 +23,13 @@ Settled before the build:
   the Projects link.
 - **Four hotspots, not three** — the cork board opens `/now/`, because that's
   where Suraj actually pins what he's studying.
+- **The ceiling fan stays, on probation.** It's above the camera, so what you
+  see is its shadow turning on the floor, stepped rather than smooth. One line
+  in `room.ts`; delete it if it reads as noise instead of life.
+- **The monitor shows the overworld** by default — it's the Projects link, so
+  the screen previews where it goes and the navigation explains itself without
+  a label. It drifts to a terminal or to Kibou occasionally, because a screen
+  that never changes reads as a painting of a screen.
 
 ## Open
 
