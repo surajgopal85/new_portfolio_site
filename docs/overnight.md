@@ -156,10 +156,16 @@ The list above is finished. These were added by Claude afterwards, on the
 same guardrails: verifiable without a human, no taste calls, nothing that
 belongs to Suraj.
 
-10. **The plain version deserves a design pass.** It's correct and completely
-    undesigned — it's what a crawler, a screen reader and a slow phone get,
-    and the quality bar says the site works on a phone.
-11. **`sitemap.xml` and `robots.txt`**, generated from the routes.
+10. ~~**The plain version deserves a design pass.**~~ **Done.** Still zero
+    images and zero scripts needed, so it paints the instant the HTML lands,
+    but it now belongs to the same world: pixel-font headings, navigation as
+    chunky blocks with hard shadows, projects numbered like levels, headings
+    with a rule running off to the right. Stacks to one column at 420px.
+11. ~~**`sitemap.xml` and `robots.txt`**~~ **Done.** Generated from the
+    routes and the project list, so a new project appears in the sitemap by
+    existing rather than by being remembered. Both land in `out/`.
+
+    They say `example.com` until `site.url` is the real domain.
 12. **The case-study page layout** — currently unstyled prose. The quality bar
     is problem / key decision / result / what I'd change; the page should
     make that structure visible.

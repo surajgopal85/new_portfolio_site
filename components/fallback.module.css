@@ -1,0 +1,105 @@
+/* The plain version.
+   Not a consolation prize: this is the exported HTML, what a crawler indexes,
+   what a screen reader reads, and what a slow phone on a train gets. It has
+   to stand on its own and still belong to the same world as the room — same
+   palette, same chunky borders, same hard shadows, and no images at all, so
+   it paints the instant the HTML lands. */
+
+.page {
+  max-width: 54rem;
+  margin: 0 auto;
+  padding-block: clamp(2rem, 6vw, 4rem);
+  padding-inline: 20px;
+}
+
+.hero { margin-bottom: clamp(2rem, 5vw, 3rem); }
+
+.name {
+  margin: 0.2em 0 0.3em;
+  font-size: clamp(2rem, 7vw, 3.25rem);
+  line-height: 1.05;
+}
+
+.lede {
+  margin: 0;
+  max-width: 46ch;
+  font-size: clamp(1rem, 2.2vw, 1.1875rem);
+  line-height: 1.55;
+}
+
+.enter { margin-top: 1.75rem; }
+
+.section { margin-top: clamp(2rem, 5vw, 2.75rem); }
+
+/* A heading with a rule running off to the right — cheap, and it breaks the
+   page into rooms without adding weight. */
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.heading::after {
+  content: '';
+  flex: 1;
+  height: 3px;
+  background: var(--rule);
+}
+
+/* Navigation as blocks, the way the room has objects. */
+.blocks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 12px;
+}
+
+.block {
+  display: grid;
+  gap: 4px;
+  height: 100%;
+  padding: 0.9rem 1rem;
+  text-decoration: none;
+  color: var(--fg);
+  background: var(--bg);
+  border: 3px solid var(--fg);
+  box-shadow: 4px 4px 0 var(--rule);
+}
+.block:hover,
+.block:focus-visible {
+  background: var(--gold);
+  color: var(--ink);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--rule);
+}
+.block:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .block, .block:hover, .block:focus-visible { transform: none; }
+}
+
+.blockLabel { font-family: var(--font-pixel); font-size: 1rem; }
+.blockHint { font-size: 0.8125rem; line-height: 1.4; opacity: 0.75; }
+
+/* Projects: numbered, like levels. */
+.projects { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+.project { display: grid; grid-template-columns: 2.5em 1fr; gap: 0.75rem; align-items: baseline; }
+.projectNum { font-family: var(--font-pixel); font-size: 0.8125rem; color: var(--accent); }
+.projectLink { font-family: var(--font-pixel); font-size: 1rem; }
+.projectPitch { margin: 0.2rem 0 0; font-size: 0.9375rem; line-height: 1.5; color: var(--muted); }
+
+.links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin: 0; padding: 0; list-style: none; }
+.links a { font-family: var(--font-pixel); font-size: 0.9375rem; }
+
+.foot {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  padding-top: 1rem;
+  border-top: 3px solid var(--rule);
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
