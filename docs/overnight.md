@@ -90,11 +90,17 @@ Each item is verifiable without a human and without art that doesn't exist.
    (a woven motif IS symmetrical, and the eye catches it instantly when it
    isn't), tiled in offset rows across a dark field, inside a banded border.
    Reads as a Bokhara at 144x56 where the quantized photo was mush.
-5. **A test suite for the character contract**, so the state machine has
-   something to run against the moment it's written: one visitor at a time,
-   never two; every visit reaches `away`; phases advance in order; no NaN
-   positions. The machine itself is Suraj's to write — write the tests, not
-   the implementation.
+5. ~~**A test suite for the character contract.**~~ **Done.** `npm test` —
+   25 tests. 4 check the visit data and hold now; 21 specify `step` and skip
+   themselves until it stops being a stub, then activate automatically.
+
+   Verified against a throwaway implementation (22/25, then 25/25 after one
+   spec fix) and reverted, so the suite is known satisfiable rather than
+   merely green-by-vacuum. The implementation is still yours.
+
+   Writing them exposed a hole in the contract: a pure `step` had nowhere to
+   store how long someone had been settled, making the stay-duration rule
+   impossible to satisfy. `CharacterState` now carries a `timer`.
 6. **The piano.** Web Audio, off by default, short plucked tones, no sampled
    piano.
 7. **The overworld map** at the same scale and drawing rules as the room.

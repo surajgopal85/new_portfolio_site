@@ -42,6 +42,12 @@ export type CharacterState = {
   facing: 'left' | 'right' | 'front' | 'back'
   /** Frame index within the current animation, for sprite-sheet offsetting. */
   frame: number
+  /**
+   * Milliseconds left in the current phase. `step` is pure, so the countdown
+   * has to live in the state rather than in a closure — otherwise there's no
+   * way to know how long someone has been settled.
+   */
+  timer: number
 }
 
 export type Visit = {
@@ -98,11 +104,17 @@ export const GAP: readonly [number, number] = [12_000, 34_000]
  * can never disagree about where the floor is.
  */
 export function initialState(id: CharacterId): CharacterState {
-  return { id, phase: 'away', x: DOOR.x, depth: DOOR.depth, facing: 'front', frame: 0 }
+  return { id, phase: 'away', x: DOOR.x, depth: DOOR.depth, facing: 'front', frame: 0, timer: 0 }
 }
 
 /**
  * TODO(suraj): the scheduler and the per-visit machine.
+ *
+ * `npm test` is the specification — 25 tests in characters.test.ts. They skip
+ * themselves while this is the stub and activate the moment it moves anyone.
+ * The suite has been checked against a throwaway implementation, so it is
+ * known to be satisfiable: if it fails, the implementation is wrong, not the
+ * tests.
  *
  * Suggested order of attack:
  *   1. Make the visit machine a pure function first:
