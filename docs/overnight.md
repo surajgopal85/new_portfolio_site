@@ -239,6 +239,58 @@ server if a change doesn't appear.
 - Anything that needs a taste call that hasn't been made. Write it down in
   this file under "Questions" instead and move on.
 
+---
+
+# Phase two: the isometric overhaul
+
+**The perspective changes.** The straight-on top-down goes; the room is
+rebuilt on the diagonal, seen from the doorway looking down across it —
+windows ahead, desk right, piano corner left. `photos/raw/office/IMG_0730`
+is that exact view and is the reference for the whole phase.
+
+Stardew's density and texture still apply (`art-direction.md`); only the
+camera changes. 2:1 dimetric, not true 30-degree isometric — 2:1 keeps every
+edge on whole pixels, and true iso puts diagonals on irrational slopes where
+they come out furry.
+
+`components/scene/iso.ts` holds the projection and the tile layout.
+`npm run iso -- out.png` renders the geometry as flat shapes and reports
+anything outside the frame.
+
+**Keep the current scene working the whole way.** Build the iso scene
+alongside it and swap only when the new one is better; never leave the site
+half-converted.
+
+### The order
+
+1. ~~**The projection.**~~ **Done.** 32x16 tiles, a 10x10 floor, 64px walls,
+   384x240. Painter's order is `gx + gy`. Flat things (the rug) are diamonds
+   measured in tiles, not rectangles.
+2. **Tune the layout against IMG_0730** with `npm run iso`. Currently the rug
+   is too small and sits off-centre, the desk cluster crowds the east corner,
+   and the piano overlaps the door. Match the photo's proportions: the rug
+   dominates the floor, there's walking room between the desk and the rug.
+3. **Redraw the sprites in 2:1.** This is the bulk of it. Every prop needs
+   two visible faces and a 2:1 top — a desk is no longer a rectangle. Start
+   with the floor tile and the two wall panels, then the rug (diamond, with
+   the gul motif re-laid on the diagonal), then the furniture by size.
+4. **Wall-mounted things are sheared to their wall's plane.** A poster on the
+   west wall leans one way, on the north wall the other. Draw them pre-sheared
+   rather than transforming at runtime, which would resample them.
+5. **The new renderer.** `Scene` reads `iso.ts`, sorts by `gx + gy`, keeps
+   the hotspots, the night lighting layer, the desk animation and the piano
+   keys. Then delete `room.ts` and the old sprites.
+6. **Characters move on the tile grid.** `lib/characters.ts` spots become
+   tile coordinates; the visit machine interpolates in tile space. Update the
+   tests — they assert positions inside the room, which is now a diamond.
+7. **Re-run `npm run audit` and `npm run og`.**
+
+### Also new
+
+More photos landed: `photos/raw/office/IMG_0728-0730` (including the doorway
+view) and five more of Kibou in `photos/raw/kibou/`. The Kibou ones are for
+Suraj's sprite work, not for this phase.
+
 ## Questions for the morning
 
 (Claude appends here rather than guessing.)

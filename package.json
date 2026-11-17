@@ -15,7 +15,8 @@
     "sprites": "node scripts/sprites.mjs",
     "test": "node --test --experimental-strip-types lib/*.test.ts",
     "audit": "node scripts/audit.mjs",
-    "og": "node scripts/og.mjs"
+    "og": "node scripts/og.mjs",
+    "iso": "node --experimental-strip-types scripts/iso-preview.mjs"
   },
   "keywords": [],
   "author": "",
