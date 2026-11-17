@@ -71,9 +71,16 @@ export type Thing = {
 
 export const things: readonly Thing[] = [
   // --- hung on the back wall ----------------------------------------------
-  { id: 'print', x: 236, y: 14, depth: 0, w: 20, h: 26, src: null, wall: true },
-  { id: 'score-frame', x: 92, y: 10, depth: 0, w: 34, h: 26, src: null, wall: true },
-  { id: 'portrait', x: 288, y: 12, depth: 0, w: 24, h: 34, src: null, wall: true },
+  // Real fixtures, at their real proportions. Sizes are provisional until the
+  // room's actual dimensions set the art-px-per-inch scale.
+  /** Ligeti, Artikulation — Wehinger's listening score. Colored dashes on white. */
+  { id: 'ligeti', x: 30, y: 16, depth: 0, w: 36, h: 27, src: null, wall: true },
+  /** Schiele, Self-Portrait with Peacock Waistcoat. Dark panel, pale face. */
+  { id: 'schiele', x: 86, y: 12, depth: 0, w: 17, h: 38, src: null, wall: true },
+  /** The small red-and-white print above the desk. */
+  { id: 'print', x: 262, y: 14, depth: 0, w: 18, h: 24, src: null, wall: true },
+  /** Cork board, aluminium frame — almost empty, one pinned card. */
+  { id: 'corkboard', x: 300, y: 10, depth: 0, w: 52, h: 38, src: null, wall: true },
 
   // --- against the back wall ---------------------------------------------
   { id: 'rug', x: 112, depth: 0.6, w: 176, h: 74, src: null, flat: true },

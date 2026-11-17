@@ -15,7 +15,8 @@ export const site = {
   // the social preview image.
   url: 'https://example.com',
   socials: [
-    { label: 'GitHub', href: 'https://github.com/' },
+    { label: 'GitHub', href: 'https://github.com/surajgopal85' },
+    // TODO(suraj): your LinkedIn URL — I don't know it.
     { label: 'LinkedIn', href: 'https://www.linkedin.com/' },
   ],
 } as const

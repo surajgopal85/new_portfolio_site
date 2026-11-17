@@ -40,4 +40,95 @@ a cropped paw.
       shot front-on.
 - [x] Caitlin's okay on being drawn in — yes.
 
-Then: `npm run pixelate -- photos/raw/office.jpg --width 384 --dither --preview 4`
+---
+
+# Fleshing out the room
+
+Every object in `components/scene/room.ts` is a blank box until it has a
+sprite. Each needs **one straight-on photo, flat to the wall or front, the
+object filling the frame, even light**. These get traced individually, so a
+clean single-object shot beats a good photo of the whole room every time.
+
+## 1. Facts first — these set the scale for everything else
+
+- [ ] **A hand sketch of the floor plan.** Rough rectangle, mark which wall has
+      the desk, the windows, the door, the piano, the credenza, and where the
+      cork board and each poster hang. Photograph the napkin. This is the
+      single most useful thing on this list.
+- [ ] **Room dimensions**, roughly — width and depth in feet. Everything in
+      room.ts is currently sized by eye; real numbers turn art px per inch into
+      a fixed ratio and make every object's size follow automatically.
+- [ ] **Desk travel** — height lowered and raised, so the animation moves the
+      right distance instead of a guessed 11%.
+- [ ] **Which doorway do Kibou, Peanut and Caitlin actually come through?**
+      That's where the state machine spawns them.
+
+## 2. Props already boxed out in room.ts, each needing a photo
+
+The desk group:
+- [ ] Standing desk, straight on, **lowered**
+- [ ] Standing desk, straight on, **raised** — same camera position, so the two
+      can be diffed
+- [ ] The desktop from above: keyboard, mouse, water bottle, whatever lives there
+- [ ] Monitor, screen **off** (so the bezel reads) and screen **on** (for the
+      glow color)
+- [ ] Laptop, open
+- [ ] Office chair, front and side
+- [ ] The cube shelf under the desk
+
+The music corner:
+- [ ] Roland keyboard, straight on, whole instrument
+- [ ] The X-stand on its own
+- [ ] The amp, straight on
+- [ ] The credenza, and the MIDI keyboard sitting on it
+
+The rest of the room:
+- [x] **The rug** — `IMG_0721`. Shot from above, which is already the right
+      projection. Built by tiling, not pixelating: see below.
+- [ ] Blue futon / floor chair, front
+- [ ] The door, closed, straight on; and the door trim
+- [ ] The windows at night, straight on, curtains as they normally hang
+- [ ] **The view out the window** — driveway, trees, street, streetlight. This
+      becomes its own layer behind the glass.
+- [ ] Ceiling fan from below
+- [ ] Any lamp that's actually on at night
+
+Small things that make a room look lived in (one photo each, any angle):
+- [ ] The burger-cat plush
+- [ ] Peanut's bone
+- [ ] The little gold frame on the desk
+- [ ] Mug, water bottle, headphones, cables — whatever is genuinely always there
+
+Already done:
+- [x] Ligeti *Artikulation* score — `IMG_0717`
+- [x] Schiele self-portrait — `IMG_0718`
+- [x] Cork board — `IMG_0720`
+
+## The rug, and anything else with a repeating pattern
+
+Running the whole rug through `pixelate` gives mush — eleven güls across 176
+art px is roughly 16 px each, and the photo's keystone makes the rows drift.
+The answer is to do what the weaver did: draw **one** motif cleanly and repeat
+it.
+
+`photos/pixel-refs/rug-gul-20.png` is a single gül pulled out of the photo at
+20 px, and `rug-tiled-draft.png` is that motif tiled across the rug's actual
+footprint with alternating row offsets. The rhythm is right; the motif is
+still a noisy photo crop. Redraw it by hand — symmetrical, three colors plus
+the outline, 20×14 or so — and the whole rug follows.
+
+The border bands get the same treatment: one repeating unit, tiled.
+
+## 3. Decisions that change what gets drawn
+
+- [ ] **Lock the time of day.** Night is recommended: it makes the monitor the
+      brightest thing in the room, which is right, since the monitor is the
+      Projects link.
+- [ ] **Ceiling fan** — it's above the camera in this projection. Omit it, or
+      draw it as a slow shadow turning on the floor?
+- [ ] **Is the cork board interactive?** The nav map has three objects. A
+      fourth is possible — a "now" board, pinned notes — but it needs a reason.
+- [ ] **What's on the monitor?** It's the brightest pixel group in the scene,
+      so whatever is on it reads as the focal point.
+
+Then: `npm run pixelate -- photos/raw/office/IMG_0714.jpeg --width 384 --preview 2`
