@@ -283,9 +283,14 @@ half-converted.
    on all of them. Done too: the room shell, floor diamond with board grain,
    both walls, baseboards.
 
-   Still to draw: the rug (diamond, gul motif re-laid on the diagonal), the
-   piano, the chair, the monitor, the windows, the door, the posters, the
-   cork board. The ones that aren't boxes need real drawing.
+   Done too: a **stage** — a sprite canvas that knows its own footprint, so
+   composite props are built from several boxes in tile coordinates. A desk
+   is a slab on four legs, not a solid block. Drawn with it: desk, side
+   table, chair, monitor, piano (keys on an X-stand), and the rug with its
+   gul medallions re-laid on the diagonal.
+
+   Still to draw: the windows, the door, the two posters and the cork board —
+   all wall-mounted, so all need step 4's shear.
 4. **Wall-mounted things are sheared to their wall's plane.** A poster on the
    west wall leans one way, on the north wall the other. Draw them pre-sheared
    rather than transforming at runtime, which would resample them.

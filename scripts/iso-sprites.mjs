@@ -98,61 +98,73 @@ function canvas(w, h) {
 }
 
 /**
- * A box standing on the floor, drawn into a sprite canvas whose size came
- * from the footprint. `w` and `d` are in tiles, `height` in pixels.
+ * A stage: a sprite canvas that knows the footprint it represents, so
+ * anything drawn into it can be placed in tile coordinates rather than
+ * pixels. `u` runs away to the right, `v` away to the left, `z` is height.
+ *
+ * Composite props are built from several boxes on one stage — a desk is a
+ * slab plus legs, not a solid block.
  */
-function isoBox(c, { w, d, height, color, k = 1, outline = P.ink }) {
-  const [top, right, left] = shade(color, k)
-  const X = (u, v) => (u - v + d) * (TILE_W / 2)
-  const Y = (u, v, z = 0) => (u + v) * (TILE_H / 2) + height - z
+function stage(t) {
+  const { w: SW, h: SH } = spriteSize(t)
+  const c = canvas(SW, SH)
+  const D = t.tiles.d
+  const H = t.flat ? 0 : t.height
 
-  // top face
-  c.poly(
-    [
-      [X(0, 0), Y(0, 0, height)],
-      [X(w, 0), Y(w, 0, height)],
-      [X(w, d), Y(w, d, height)],
-      [X(0, d), Y(0, d, height)],
-    ],
-    top,
-  )
-  // face toward the camera's right
-  c.poly(
-    [
-      [X(w, 0), Y(w, 0, height)],
-      [X(w, d), Y(w, d, height)],
-      [X(w, d), Y(w, d)],
-      [X(w, 0), Y(w, 0)],
-    ],
-    right,
-  )
-  // face toward the camera's left
-  c.poly(
-    [
-      [X(0, d), Y(0, d, height)],
-      [X(w, d), Y(w, d, height)],
-      [X(w, d), Y(w, d)],
-      [X(0, d), Y(0, d)],
-    ],
-    left,
-  )
-  // the three silhouette edges that read as an outline at this size
-  const edge = (a, b) => {
+  const X = (u, v) => (u - v + D) * (TILE_W / 2)
+  const Y = (u, v, z = 0) => (u + v) * (TILE_H / 2) + H - z
+
+  const edge = (a, b, col) => {
     const steps = Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1]))
     for (let i = 0; i <= steps; i++) {
-      c.px(a[0] + ((b[0] - a[0]) * i) / steps, a[1] + ((b[1] - a[1]) * i) / steps, outline)
+      c.px(a[0] + ((b[0] - a[0]) * i) / steps, a[1] + ((b[1] - a[1]) * i) / steps, col)
     }
   }
-  edge([X(0, 0), Y(0, 0, height)], [X(w, 0), Y(w, 0, height)])
-  edge([X(w, 0), Y(w, 0, height)], [X(w, d), Y(w, d, height)])
-  edge([X(w, d), Y(w, d, height)], [X(0, d), Y(0, d, height)])
-  edge([X(0, d), Y(0, d, height)], [X(0, 0), Y(0, 0, height)])
-  edge([X(w, 0), Y(w, 0, height)], [X(w, 0), Y(w, 0)])
-  edge([X(w, d), Y(w, d, height)], [X(w, d), Y(w, d)])
-  edge([X(0, d), Y(0, d, height)], [X(0, d), Y(0, d)])
-  edge([X(w, 0), Y(w, 0)], [X(w, d), Y(w, d)])
-  edge([X(w, d), Y(w, d)], [X(0, d), Y(0, d)])
-  return { X, Y }
+
+  /** One box, in tile coordinates, with three shaded faces and an outline. */
+  function box({ u = 0, v = 0, z = 0, w, d, h, color, k = 1, outline = P.ink, faces = true }) {
+    const [top, right, left] = shade(color, k)
+    const u1 = u + w
+    const v1 = v + d
+    const T = (uu, vv) => [X(uu, vv), Y(uu, vv, z + h)]
+    const B = (uu, vv) => [X(uu, vv), Y(uu, vv, z)]
+
+    c.poly([T(u, v), T(u1, v), T(u1, v1), T(u, v1)], top)
+    if (faces) {
+      c.poly([T(u1, v), T(u1, v1), B(u1, v1), B(u1, v)], right)
+      c.poly([T(u, v1), T(u1, v1), B(u1, v1), B(u, v1)], left)
+    }
+    if (outline) {
+      edge(T(u, v), T(u1, v), outline)
+      edge(T(u1, v), T(u1, v1), outline)
+      edge(T(u1, v1), T(u, v1), outline)
+      edge(T(u, v1), T(u, v), outline)
+      if (faces) {
+        edge(T(u1, v), B(u1, v), outline)
+        edge(T(u1, v1), B(u1, v1), outline)
+        edge(T(u, v1), B(u, v1), outline)
+        edge(B(u1, v), B(u1, v1), outline)
+        edge(B(u1, v1), B(u, v1), outline)
+      }
+    }
+    return { T, B }
+  }
+
+  /** A flat diamond on the floor — a rug, a mat, a pool of light. */
+  function diamond({ u = 0, v = 0, w, d, color, z = 0, a = 255 }) {
+    c.poly(
+      [
+        [X(u, v), Y(u, v, z)],
+        [X(u + w, v), Y(u + w, v, z)],
+        [X(u + w, v + d), Y(u + w, v + d, z)],
+        [X(u, v + d), Y(u, v + d, z)],
+      ],
+      color,
+      a,
+    )
+  }
+
+  return { c, X, Y, box, diamond, edge, w: SW, h: SH, D, H }
 }
 
 /**
@@ -168,9 +180,8 @@ async function roomBackground() {
   }
   const up = ([x, y]) => [x, y - WALL_H]
 
-  // Walls first: the floor is drawn over their bottom edge.
-  c.poly([S(0, 0), S(ROOM, 0), up(S(ROOM, 0)), up(S(0, 0))], P.sand)       // north
-  c.poly([S(0, 0), S(0, ROOM), up(S(0, ROOM)), up(S(0, 0))], shade(P.sand, 1)[1]) // west, turned away
+  c.poly([S(0, 0), S(ROOM, 0), up(S(ROOM, 0)), up(S(0, 0))], P.sand)
+  c.poly([S(0, 0), S(0, ROOM), up(S(0, ROOM)), up(S(0, 0))], shade(P.sand, 1)[1])
 
   // Wall texture: a faint vertical every half tile keeps a big flat area
   // from reading as a void, the way Stardew's walls do.
@@ -183,7 +194,6 @@ async function roomBackground() {
     }
   }
 
-  // Floor
   c.poly([S(0, 0), S(ROOM, 0), S(ROOM, ROOM), S(0, ROOM)], P.clay)
 
   // Floorboards run along one axis, as real boards do.
@@ -191,11 +201,8 @@ async function roomBackground() {
     const a = S(0, v)
     const b = S(ROOM, v)
     const steps = Math.round(b[0] - a[0])
-    for (let i = 0; i <= steps; i++) {
-      c.px(a[0] + i, a[1] + i / 2, P.barkDark, v % 1 === 0 ? 70 : 38)
-    }
+    for (let i = 0; i <= steps; i++) c.px(a[0] + i, a[1] + i / 2, P.barkDark, v % 1 === 0 ? 70 : 38)
   }
-  // Board ends, so the floor doesn't read as endless strips.
   for (let u = 1; u < ROOM; u += 1) {
     for (let v = (u % 2) * 0.5; v < ROOM; v += 2) {
       const a = S(u, v)
@@ -205,17 +212,13 @@ async function roomBackground() {
 
   // Baseboards where wall meets floor.
   for (let i = 0; i <= ROOM * (TILE_W / 2); i++) {
-    const nx = S(0, 0)[0] + i
-    const ny = S(0, 0)[1] + i / 2
-    const wx = S(0, 0)[0] - i
-    const wy = S(0, 0)[1] + i / 2
+    const n = S(0, 0)
     for (let k = 0; k < 4; k++) {
-      c.px(nx, ny - k, P.cream)
-      c.px(wx, wy - k, shade(P.cream, 1)[1])
+      c.px(n[0] + i, n[1] + i / 2 - k, P.cream)
+      c.px(n[0] - i, n[1] + i / 2 - k, shade(P.cream, 1)[1])
     }
   }
 
-  // The outer silhouette: the two wall tops and the two near floor edges.
   const edge = (a, b, col) => {
     const steps = Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1]))
     for (let i = 0; i <= steps; i++) {
@@ -235,18 +238,9 @@ async function roomBackground() {
 }
 
 const thingById = Object.fromEntries(isoThings.map((t) => [t.id, t]))
-const sized = (id) => {
-  const t = thingById[id]
-  if (!t) throw new Error(`no thing "${id}" in iso.ts`)
-  const { w, h } = spriteSize(t)
-  return { t, c: canvas(w, h) }
-}
-
 /** Props that are honestly just a box, with their material. */
 const BOXES = {
-  desk: { color: P.tanDark, k: 0 },
   credenza: { color: P.bark, k: 1 },
-  'side-table': { color: P.bark, k: 1 },
   futon: { color: P.night, k: 0 },
   amp: { color: P.ink, k: 0 },
   shelf: { color: P.bark, k: 1 },
@@ -258,14 +252,94 @@ await mkdir('public/art/iso', { recursive: true })
 await roomBackground()
 const written = []
 
-for (const [id, opts] of Object.entries(BOXES)) {
-  const { t, c } = sized(id)
-  isoBox(c, { w: t.tiles.w, d: t.tiles.d, height: t.height, ...opts })
+async function write(id, draw) {
+  const t = thingById[id]
+  if (!t) throw new Error(`no thing "${id}" in iso.ts`)
+  const st = stage(t)
+  draw(st, t)
   const out = `public/art/iso/${id}.png`
-  await c.toPng().toFile(out)
-  written.push({ id, out, w: c.w, h: c.h })
-  console.log(`${out}  ${c.w}x${c.h}`)
+  await st.c.toPng().toFile(out)
+  written.push({ id, out, w: st.w, h: st.h })
+  console.log(`${out}  ${st.w}x${st.h}`)
 }
+
+for (const [id, opts] of Object.entries(BOXES)) {
+  await write(id, (st, t) => st.box({ w: t.tiles.w, d: t.tiles.d, h: t.height, ...opts }))
+}
+
+// --- the props that aren't a single box -----------------------------------
+
+/** A standing desk: a slab on two legs, not a solid block. */
+await write('desk', (st, t) => {
+  const { w, d } = t.tiles
+  const legH = t.height - 4
+  for (const [u, v] of [[0.1, 0.15], [0.1, d - 0.35], [w - 0.3, 0.15], [w - 0.3, d - 0.35]]) {
+    st.box({ u, v, w: 0.2, d: 0.2, h: legH, color: P.slate, k: 2 })
+  }
+  st.box({ u: 0, v: 0, w, d, z: legH, h: 4, color: P.tanDark, k: 0 })
+})
+
+/** The side table: a slab, two legs, and an open shelf under it. */
+await write('side-table', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ u: 0.05, v: 0.05, w: w - 0.1, d: d - 0.1, h: t.height - 5, color: P.barkDark, k: 2 })
+  st.box({ u: 0, v: 0, w, d, z: t.height - 5, h: 5, color: P.bark, k: 0 })
+})
+
+/** The office chair: a seat, a back, a post and a star base. */
+await write('chair', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ u: w / 2 - 0.18, v: d / 2 - 0.18, w: 0.36, d: 0.36, h: 14, color: P.slate, k: 2 })
+  st.box({ u: 0.1, v: 0.1, w: w - 0.2, d: d - 0.2, z: 14, h: 5, color: P.shadow, k: 0 })
+  // the back, standing at the far edge
+  st.box({ u: 0.1, v: 0.1, w: 0.25, d: d - 0.2, z: 19, h: t.height - 19, color: P.shadow, k: 1 })
+})
+
+/** The monitor: a panel on a foot, with the screen left for the renderer. */
+await write('monitor', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ u: w / 2 - 0.1, v: d / 2 - 0.2, w: 0.2, d: 0.4, h: 6, color: P.slate, k: 2 })
+  st.box({ u: 0, v: 0, w, d, z: 6, h: t.height - 6, color: P.ink, k: 0 })
+})
+
+/** The piano: keys on an X-stand, seen along its length. */
+await write('piano', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ u: 0.1, v: 0.2, w: 0.1, d: 0.1, h: t.height - 6, color: P.ink, k: 2 })
+  st.box({ u: 0.1, v: d - 0.3, w: 0.1, d: 0.1, h: t.height - 6, color: P.ink, k: 2 })
+  const body = st.box({ u: 0, v: 0, w, d, z: t.height - 6, h: 6, color: P.slate, k: 0 })
+  // white keys along the length, black keys on top of them
+  for (let v = 0.12; v < d - 0.1; v += 0.11) {
+    st.box({ u: 0.25, v, w: w - 0.35, d: 0.08, z: t.height, h: 1, color: P.cream, k: 0, outline: null })
+  }
+  for (let v = 0.16; v < d - 0.2; v += 0.22) {
+    st.box({ u: 0.3, v, w: (w - 0.35) * 0.55, d: 0.05, z: t.height + 1, h: 1, color: P.ink, k: 0, outline: null })
+  }
+  return body
+})
+
+/** The rug: the gul motif, re-laid on the diagonal. */
+await write('rug', (st, t) => {
+  const { w, d } = t.tiles
+  st.diamond({ w, d, color: [18, 13, 20] })
+  // Motifs on the grid. In this projection a medallion is a small diamond,
+  // so the weave follows the floor rather than fighting it.
+  for (let u = 0.75; u < w - 0.5; u += 0.95) {
+    for (let v = 0.75; v < d - 0.5; v += 0.95) {
+      st.diamond({ u: u - 0.3, v: v - 0.3, w: 0.6, d: 0.6, color: P.brick })
+      st.diamond({ u: u - 0.2, v: v - 0.2, w: 0.4, d: 0.4, color: P.cream })
+      st.diamond({ u: u - 0.1, v: v - 0.1, w: 0.2, d: 0.2, color: P.gold })
+    }
+  }
+  // Border bands along all four edges.
+  for (const band of [0, 0.18]) {
+    const col = band === 0 ? P.barkDark : P.gold
+    st.diamond({ u: band, v: band, w: w - band * 2, d: 0.14, color: col })
+    st.diamond({ u: band, v: d - band - 0.14, w: w - band * 2, d: 0.14, color: col })
+    st.diamond({ u: band, v: band, w: 0.14, d: d - band * 2, color: col })
+    st.diamond({ u: w - band - 0.14, v: band, w: 0.14, d: d - band * 2, color: col })
+  }
+})
 
 if (process.argv.includes('--sheet')) {
   const path = process.argv[process.argv.indexOf('--sheet') + 1]
