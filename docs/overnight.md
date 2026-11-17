@@ -143,7 +143,29 @@ Each item is verifiable without a human and without art that doesn't exist.
 
    Built weight: 20K HTML, 688K JS, 20K CSS, 100K of sprites across 24 files
    (largest is the 8K overworld). Audit now reports clean.
-9. **The social preview image**, 1200×630, rendered from the scene.
+9. ~~**The social preview image.**~~ **Done.** `npm run og` screenshots the
+   live scene and composites a name plate, so the card can never show a room
+   that no longer exists. 1200x630, palette PNG — the scene is flat art plus
+   a gradient, so 128 colours is indistinguishable and a third of the bytes.
+
+---
+
+# Extra credit
+
+The list above is finished. These were added by Claude afterwards, on the
+same guardrails: verifiable without a human, no taste calls, nothing that
+belongs to Suraj.
+
+10. **The plain version deserves a design pass.** It's correct and completely
+    undesigned — it's what a crawler, a screen reader and a slow phone get,
+    and the quality bar says the site works on a phone.
+11. **`sitemap.xml` and `robots.txt`**, generated from the routes.
+12. **The case-study page layout** — currently unstyled prose. The quality bar
+    is problem / key decision / result / what I'd change; the page should
+    make that structure visible.
+13. **A 404 that belongs to this site**, not a generic one.
+14. **Check the exported build end to end** with `npm run preview`, then run
+    `npm run audit` against it rather than against dev.
 
 ## What NOT to do
 
