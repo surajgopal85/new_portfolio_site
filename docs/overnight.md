@@ -64,8 +64,13 @@ your call, not Claude's.)
 
 Each item is verifiable without a human and without art that doesn't exist.
 
-1. **Tune the night lighting** against screenshots. The wall currently goes
-   grey under the wash; the warm pool should land on the desk, not above it.
+1. ~~**Tune the night lighting** against screenshots.~~ **Done.** The grey was
+   a blue wash over a cream wall. Fixed by warming the wash and dropping the
+   wall's base from `--cream` to `--sand`: a lamplit wall at night is a mid
+   warm tone, and fighting a near-white base with a dark overlay only ever
+   produces mauve. Lamp pool now centred on the desk, upper wall falls off,
+   corners pulled down. The remaining bright spots are placeholder fills —
+   the piano's cream slab, the Ligeti white — which item 3 replaces.
 2. **Density pass.** Stardew rooms have almost no dead floor. The left-middle
    and right-middle are bare. Add the small things that are really there —
    cables from the desk to the power strip, the shelf's contents, a bin, the
