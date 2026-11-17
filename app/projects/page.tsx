@@ -6,8 +6,8 @@ import styles from './overworld.module.css'
 export const metadata: Metadata = { title: 'Projects' }
 
 /**
- * The overworld. Each project is a node on a grid; the dotted path is drawn
- * between consecutive nodes in list order, so reordering `projects` reorders
+ * The overworld. Each project is a level tile on a grid; the dotted path runs
+ * between consecutive tiles in list order, so reordering `projects` reorders
  * the route through the map.
  */
 const COLS = 5
@@ -21,7 +21,7 @@ export default function Projects() {
   }))
 
   return (
-    <main className="page" style={{ maxWidth: '72rem' }}>
+    <main className="page" style={{ maxWidth: '68rem' }}>
       <Link href="/" className="backlink">
         ← Back to the office
       </Link>
@@ -31,14 +31,7 @@ export default function Projects() {
       <div className={styles.map}>
         <svg className={styles.paths} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {nodes.slice(1).map((node, i) => (
-            <line
-              key={node.slug}
-              x1={nodes[i].cx}
-              y1={nodes[i].cy}
-              x2={node.cx}
-              y2={node.cy}
-              className={styles.path}
-            />
+            <line key={node.slug} x1={nodes[i].cx} y1={nodes[i].cy} x2={node.cx} y2={node.cy} className={styles.path} />
           ))}
         </svg>
 
@@ -49,14 +42,30 @@ export default function Projects() {
             className={styles.node}
             style={{ left: `${node.cx}%`, top: `${node.cy}%` }}
           >
-            <span className={styles.nodeNumber} aria-hidden="true">
+            <span className={styles.tile} aria-hidden="true">
               {i + 1}
             </span>
-            <span className={styles.nodeTitle}>{node.title}</span>
-            <span className={styles.nodePitch}>{node.pitch}</span>
+            <span className={styles.label}>{node.title}</span>
           </Link>
         ))}
       </div>
+
+      {/* The pitches live under the map. Prose on grass is unreadable, and a
+          screen reader shouldn't have to walk a map to find out what these
+          projects are. */}
+      <ol className={styles.legend}>
+        {nodes.map((node, i) => (
+          <li key={node.slug} className={styles.legendItem}>
+            <span className={styles.legendNum}>{String(i + 1).padStart(2, '0')}</span>
+            <span>
+              <Link href={`/projects/${node.slug}/`} className={styles.legendTitle}>
+                {node.title}
+              </Link>
+              <p className={styles.legendPitch}>{node.pitch}</p>
+            </span>
+          </li>
+        ))}
+      </ol>
     </main>
   )
 }

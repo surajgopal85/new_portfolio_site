@@ -114,7 +114,21 @@ Each item is verifiable without a human and without art that doesn't exist.
 
    **I cannot hear it.** The note maths is unit-tested and the graph builds
    without errors, but nobody has listened to the timbre.
-7. **The overworld map** at the same scale and drawing rules as the room.
+7. ~~**The overworld map**~~ **Done.** Terrain is one 384x216 sprite — grass
+   with a deterministic scatter, a lake with a shoreline that isn't a
+   rectangle, trees, hills on the horizon. The path and the numbered level
+   tiles are drawn over it from the project list, so adding a project never
+   means redrawing the map.
+
+   Pitches sit in a numbered list *under* the map rather than on it: prose on
+   grass is unreadable, and a screen reader shouldn't have to walk a map to
+   find out what the projects are.
+
+   The map is daylight while the room is night, deliberately — it's a
+   different place, and SMB3 overworlds are daylight.
+
+   Placeholder project coordinates put level 1 on the lake. That fixes itself
+   when the real project list lands.
 8. **Performance and accessibility**: keyboard path through every hotspot,
    focus visibility, the static version at 420px wide, Lighthouse-ish checks
    on the exported build.

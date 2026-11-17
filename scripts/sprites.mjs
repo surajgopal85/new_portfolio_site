@@ -244,6 +244,65 @@ const sprites = {
     }
     c.frame(0, 0, 144, 56, P.ink)
   }],
+  // The projects overworld: terrain only. The path and the level nodes are
+  // drawn over this from the project list, so adding a project doesn't mean
+  // redrawing the map.
+  'overworld': [384, 216, (c) => {
+    // A deterministic scatter. Deterministic because a map that reshuffles
+    // every build is a map nobody can review; scattered because a modulo
+    // stride lays everything out on a diagonal.
+    let seed = 20261117
+    const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff)
+
+    /** A blob: rows whose inset follows a half-ellipse, so it has no corners. */
+    const blob = (cx, cy, rx, ry, fill, line) => {
+      for (let y = -ry; y <= ry; y++) {
+        const w = Math.round(rx * Math.sqrt(Math.max(0, 1 - (y / ry) ** 2)))
+        if (w <= 0) continue
+        c.rect(cx - w, cy + y, w * 2, 1, fill)
+        if (line) { c.px(cx - w - 1, cy + y, line); c.px(cx + w, cy + y, line) }
+      }
+      if (line) {
+        for (let x = -rx; x <= rx; x++) {
+          const h = Math.round(ry * Math.sqrt(Math.max(0, 1 - (x / rx) ** 2)))
+          if (h <= 0) continue
+          c.px(cx + x, cy - h - 1, line); c.px(cx + x, cy + h, line)
+        }
+      }
+    }
+
+    c.rect(0, 0, 384, 216, P.leafDark)
+    for (let y = 0; y < 216; y += 4) {
+      for (let x = (((y / 4) % 8) * 4); x < 384; x += 16) c.rect(x, y, 2, 1, P.leaf)
+    }
+    for (let i = 0; i < 30; i++) {
+      blob(Math.round(rnd() * 370) + 7, Math.round(rnd() * 200) + 8, 5 + Math.round(rnd() * 4), 2 + Math.round(rnd() * 2), [41, 92, 46])
+    }
+
+    // Hills along the horizon, drawn as humps sitting on the top edge.
+    for (const [hx, hr] of [[70, 34], [150, 26], [228, 38], [310, 22]]) {
+      for (let x = -hr; x <= hr; x++) {
+        const h = Math.round(16 * Math.sqrt(Math.max(0, 1 - (x / hr) ** 2)))
+        if (h <= 0) continue
+        c.rect(hx + x, 0, 1, h, [41, 92, 46])
+        c.px(hx + x, h, P.ink)
+        if (h > 5) c.rect(hx + x, Math.max(0, h - 4), 1, 2, P.leaf)
+      }
+    }
+
+    // The lake, with a shoreline that isn't a rectangle.
+    blob(70, 172, 46, 24, P.skyDark, P.ink)
+    blob(70, 172, 42, 20, P.sky)
+    c.rect(44, 162, 16, 2, P.cream)
+    c.rect(66, 180, 11, 2, P.cream)
+
+    // Trees, kept off the lake and the horizon.
+    for (const [tx, ty] of [[34, 40], [62, 54], [300, 36], [336, 62], [354, 120], [108, 36], [276, 152], [330, 180], [18, 92], [160, 196]]) {
+      c.rect(tx + 3, ty + 10, 3, 6, P.barkDark)
+      blob(tx + 4, ty + 5, 6, 6, [41, 92, 46], P.ink)
+      c.rect(tx + 1, ty + 2, 6, 3, P.leaf)
+    }
+  }],
   'credenza': [48, 86, (c) => {
     c.box(0, 0, 48, 86, P.bark)                     // the desk return, running toward you
     c.rect(1, 1, 46, 4, P.clay)                     // lit top edge
