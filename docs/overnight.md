@@ -266,14 +266,26 @@ half-converted.
 1. ~~**The projection.**~~ **Done.** 32x16 tiles, a 10x10 floor, 64px walls,
    384x240. Painter's order is `gx + gy`. Flat things (the rug) are diamonds
    measured in tiles, not rectangles.
-2. **Tune the layout against IMG_0730** with `npm run iso`. Currently the rug
-   is too small and sits off-centre, the desk cluster crowds the east corner,
-   and the piano overlaps the door. Match the photo's proportions: the rug
-   dominates the floor, there's walking room between the desk and the rug.
-3. **Redraw the sprites in 2:1.** This is the bulk of it. Every prop needs
-   two visible faces and a 2:1 top — a desk is no longer a rectangle. Start
-   with the floor tile and the two wall panels, then the rug (diamond, with
-   the gul motif re-laid on the diagonal), then the furniture by size.
+2. ~~**Tune the layout against IMG_0730.**~~ **Done.** The rug now owns the
+   middle of the floor with walking room all round it, the desk runs along
+   the east side, the piano corner and the door are on the west wall, the
+   futon sits under the windows.
+
+   Things now declare a **footprint in tiles and a height in pixels**, and
+   the sprite size is derived from that. A thing describes the space it
+   occupies, not the size of its picture, so art and grid can't drift apart.
+3. **Redraw the sprites in 2:1.** *In progress.* `npm run iso-sprites`.
+
+   Done: the `isoBox` primitive — in this projection almost every prop is a
+   box with a lit top, a mid face toward the camera's right and a dark face
+   toward its left, so one primitive draws the desk, credenza, side table,
+   futon, amp, shelf, controller and laptop, and the light falls the same way
+   on all of them. Done too: the room shell, floor diamond with board grain,
+   both walls, baseboards.
+
+   Still to draw: the rug (diamond, gul motif re-laid on the diagonal), the
+   piano, the chair, the monitor, the windows, the door, the posters, the
+   cork board. The ones that aren't boxes need real drawing.
 4. **Wall-mounted things are sheared to their wall's plane.** A poster on the
    west wall leans one way, on the north wall the other. Draw them pre-sheared
    rather than transforming at runtime, which would resample them.

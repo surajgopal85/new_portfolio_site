@@ -9,7 +9,7 @@
  */
 import sharp from 'sharp'
 const M = await import('../components/scene/iso.ts')
-const { TILE_W, TILE_H, ROOM, WALL_H, SCENE_W, SCENE_H, toScreen, depthOf, isoThings, CORNERS } = M
+const { TILE_W, TILE_H, ROOM, WALL_H, SCENE_W, SCENE_H, toScreen, isoThings, CORNERS, placeThing, sortKey } = M
 
 const p = (c) => `${c.x},${c.y}`
 const parts = []
@@ -37,30 +37,22 @@ const fill = {
 }
 
 const problems = []
-for (const t of [...isoThings].sort((a, b) => depthOf(a) - depthOf(b))) {
-  if (t.tiles) {
-    // A flat thing is a diamond on the grid, not a rectangle.
+for (const t of [...isoThings].sort((a, b) => sortKey(a) - sortKey(b))) {
+  if (t.flat) {
     const a = toScreen({ gx: t.gx, gy: t.gy })
     const b = toScreen({ gx: t.gx + t.tiles.w, gy: t.gy })
-    const c = toScreen({ gx: t.gx + t.tiles.w, gy: t.gy + t.tiles.h })
-    const d = toScreen({ gx: t.gx, gy: t.gy + t.tiles.h })
+    const c = toScreen({ gx: t.gx + t.tiles.w, gy: t.gy + t.tiles.d })
+    const d = toScreen({ gx: t.gx, gy: t.gy + t.tiles.d })
     parts.push(`<polygon points="${p(a)} ${p(b)} ${p(c)} ${p(d)}" fill="${fill[t.id] ?? '#6d7a8c'}" stroke="#1a1420"/>`)
-    for (const corner of [a, b, c, d]) {
-      if (corner.x < 0 || corner.x > SCENE_W || corner.y < 0 || corner.y > SCENE_H) {
-        problems.push(`${t.id}: corner ${Math.round(corner.x)},${Math.round(corner.y)} outside the frame`)
-      }
-    }
     continue
   }
-  const base = toScreen({ gx: t.gx, gy: t.gy, z: t.z ?? 0 })
-  const x = base.x - t.w / 2
-  const y = base.y - t.h
-  if (x < 0 || x + t.w > SCENE_W) problems.push(`${t.id}: x ${Math.round(x)}..${Math.round(x + t.w)} outside 0..${SCENE_W}`)
-  if (y < 0) problems.push(`${t.id}: top ${Math.round(y)} above the frame`)
-  if (base.y > SCENE_H) problems.push(`${t.id}: base ${Math.round(base.y)} below the frame`)
-  parts.push(`<rect x="${x}" y="${y}" width="${t.w}" height="${t.h}" fill="${fill[t.id] ?? '#6d7a8c'}" fill-opacity=".92" stroke="#1a1420"/>`)
-  parts.push(`<text x="${base.x}" y="${y - 2}" font-family="monospace" font-size="7" fill="#1a1420" text-anchor="middle">${t.id}</text>`)
-  if (t.hotspot) parts.push(`<rect x="${x}" y="${y}" width="${t.w}" height="${t.h}" fill="none" stroke="#f2c14e" stroke-width="2"/>`)
+  const box = placeThing(t)
+  if (box.left < 0 || box.left + box.w > SCENE_W) problems.push(`${t.id}: x ${box.left}..${box.left + box.w} outside 0..${SCENE_W}`)
+  if (box.top < 0) problems.push(`${t.id}: top ${box.top} above the frame`)
+  if (box.top + box.h > SCENE_H) problems.push(`${t.id}: bottom ${box.top + box.h} below the frame`)
+  parts.push(`<rect x="${box.left}" y="${box.top}" width="${box.w}" height="${box.h}" fill="${fill[t.id] ?? '#6d7a8c'}" fill-opacity=".9" stroke="#1a1420"/>`)
+  parts.push(`<text x="${box.left + box.w / 2}" y="${box.top - 2}" font-family="monospace" font-size="7" fill="#1a1420" text-anchor="middle">${t.id}</text>`)
+  if (t.hotspot) parts.push(`<rect x="${box.left}" y="${box.top}" width="${box.w}" height="${box.h}" fill="none" stroke="#f2c14e" stroke-width="2"/>`)
 }
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${SCENE_W}" height="${SCENE_H}">${parts.join('')}</svg>`
