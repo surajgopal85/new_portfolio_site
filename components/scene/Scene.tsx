@@ -1,16 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { hotspots, site } from '@/content/site'
-import { hotspotBoxes, layers, type Layer } from './layers'
+import { drawOrder, place, type Thing } from './room'
 import { teardown, unlock } from '@/lib/piano'
 import styles from './scene.module.css'
 
 const IDLE_HINT = 'Click something in the room.'
 
 export function Scene({ onLeave }: { onLeave: () => void }) {
-  const frameRef = useRef<HTMLDivElement>(null)
   const [deskUp, setDeskUp] = useState(false)
   const [status, setStatus] = useState(IDLE_HINT)
   const [sound, setSound] = useState(false)
@@ -35,82 +34,72 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
     return () => teardown()
   }, [sound])
 
-  // Parallax is written straight to a CSS variable so pointer movement never
-  // triggers a React render.
-  const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    const el = frameRef.current
-    if (!el) return
-    const box = el.getBoundingClientRect()
-    const mx = (e.clientX - box.left) / box.width - 0.5
-    const my = (e.clientY - box.top) / box.height - 0.5
-    el.style.setProperty('--mx', mx.toFixed(3))
-    el.style.setProperty('--my', my.toFixed(3))
-  }, [])
+  const hint = (text: string) => ({
+    onMouseEnter: () => setStatus(text),
+    onMouseLeave: () => setStatus(IDLE_HINT),
+    onFocus: () => setStatus(text),
+    onBlur: () => setStatus(IDLE_HINT),
+  })
 
   return (
     <>
-      <div
-        ref={frameRef}
-        className={`${styles.frame} ${deskUp ? styles.deskUp : styles.deskDown}`}
-        onPointerMove={onPointerMove}
-        onPointerLeave={() => {
-          frameRef.current?.style.setProperty('--mx', '0')
-          frameRef.current?.style.setProperty('--my', '0')
-        }}
-      >
-        {layers.map((layer) => (
-          <div
-            key={layer.id}
-            className={`${styles.layer} ${layer.rises ? styles.rises : ''}`}
-            style={{
-              zIndex: layer.z,
-              transform: layer.parallax
-                ? `translate3d(calc(var(--mx, 0) * ${layer.parallax * 24}px), calc(var(--my, 0) * ${layer.parallax * 12}px), 0)`
-                : undefined,
-            }}
-          >
-            {layer.src ? <img src={layer.src} alt="" /> : <Placeholder layer={layer} />}
-          </div>
-        ))}
+      <div className={`${styles.frame} ${deskUp ? styles.deskUp : styles.deskDown}`}>
+        <div className={styles.backWall} />
+        <div className={styles.floor} />
+        <div className={`${styles.sideWall} ${styles.sideLeft}`} />
+        <div className={`${styles.sideWall} ${styles.sideRight}`} />
 
-        {/* Nav. One button per object in the room, sitting above every layer. */}
-        <div className={styles.layer} style={{ zIndex: 20, pointerEvents: 'auto' }}>
-          {hotspots.map((spot) => {
-            const box = hotspotBoxes[spot.id]
+        {/* Back to front. A thing's base sits on the floor, so draw order and
+            vertical position agree, and characters can walk behind the desk. */}
+        {drawOrder.map((thing, i) => {
+          const spot = thing.hotspot ? hotspots.find((h) => h.id === thing.hotspot) : undefined
+          const style = { ...place(thing), zIndex: 10 + i }
+          const className = `${styles.thing} ${thing.rises ? styles.rises : ''}`
+
+          if (spot) {
             return (
               <Link
-                key={spot.id}
+                key={thing.id}
                 href={spot.href}
-                className={styles.hotspot}
-                style={{ left: `${box.left}%`, top: `${box.top}%`, width: `${box.width}%`, height: `${box.height}%` }}
-                onMouseEnter={() => setStatus(spot.hint)}
-                onMouseLeave={() => setStatus(IDLE_HINT)}
-                onFocus={() => setStatus(spot.hint)}
-                onBlur={() => setStatus(IDLE_HINT)}
+                className={`${className} ${styles.hotspot}`}
+                style={style}
+                {...hint(spot.hint)}
               >
+                <Placeholder thing={thing} />
                 <span className={styles.hotspotLabel} aria-hidden="true">
                   {spot.label}
                 </span>
                 <span className="sr-only">{`${spot.label} — ${spot.object}`}</span>
               </Link>
             )
-          })}
+          }
 
-          {/* The desk itself isn't navigation; it's a toy. */}
-          <button
-            type="button"
-            className={styles.hotspot}
-            style={{ left: '34%', top: '50%', width: '34%', height: '6%' }}
-            aria-pressed={deskUp}
-            onClick={() => setDeskUp((up) => !up)}
-            onMouseEnter={() => setStatus(deskUp ? 'Sit back down?' : 'Raise the desk.')}
-            onMouseLeave={() => setStatus(IDLE_HINT)}
-            onFocus={() => setStatus(deskUp ? 'Sit back down?' : 'Raise the desk.')}
-            onBlur={() => setStatus(IDLE_HINT)}
-          >
-            <span className="sr-only">{deskUp ? 'Lower the standing desk' : 'Raise the standing desk'}</span>
-          </button>
-        </div>
+          if (thing.id === 'desk-top') {
+            // The desk isn't navigation; it's a toy.
+            return (
+              <button
+                key={thing.id}
+                type="button"
+                className={`${className} ${styles.hotspot}`}
+                style={style}
+                aria-pressed={deskUp}
+                onClick={() => setDeskUp((up) => !up)}
+                {...hint(deskUp ? 'Sit back down?' : 'Raise the desk.')}
+              >
+                <Placeholder thing={thing} />
+                <span className="sr-only">
+                  {deskUp ? 'Lower the standing desk' : 'Raise the standing desk'}
+                </span>
+              </button>
+            )
+          }
+
+          return (
+            <div key={thing.id} className={className} style={style}>
+              <Placeholder thing={thing} />
+            </div>
+          )
+        })}
       </div>
 
       <div className={styles.statusRow}>
@@ -142,85 +131,11 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
 }
 
 /**
- * Stand-in art. Every branch here dies the moment the matching layer in
- * layers.ts gets a real `src`.
+ * Stand-in art, in the same projection the real sprites will use: a lit top
+ * face, a darker front face, a hard outline. Each branch dies when its thing
+ * gets a real `src` in room.ts.
  */
-function Placeholder({ layer }: { layer: Layer }) {
-  switch (layer.id) {
-    case 'wall':
-      return (
-        <>
-          <div className={`${styles.ph} ${styles.phWall}`} />
-          <div className={`${styles.ph} ${styles.phWallLower}`} />
-        </>
-      )
-    case 'window':
-      return (
-        <div className={`${styles.ph} ${styles.phWindow}`}>
-          <div className={styles.phHill} />
-          <div className={styles.phWindowBar} />
-        </div>
-      )
-    case 'shelf':
-      return (
-        <div className={`${styles.ph} ${styles.phShelf}`}>
-          {[
-            { left: '6%', background: 'var(--brick)' },
-            { left: '16%', background: 'var(--leaf-dark)' },
-            { left: '26%', background: 'var(--gold)' },
-            { left: '36%', background: 'var(--plum)' },
-          ].map((book) => (
-            <div key={book.left} className={styles.phBook} style={book} />
-          ))}
-        </div>
-      )
-    case 'door':
-      return (
-        <div className={`${styles.ph} ${styles.phDoor}`}>
-          <div className={styles.phKnob} />
-        </div>
-      )
-    case 'floor':
-      return (
-        <>
-          <div className={`${styles.ph} ${styles.phFloor}`} />
-          <div className={`${styles.ph} ${styles.phRug}`} />
-        </>
-      )
-    case 'piano':
-      return (
-        <div className={`${styles.ph} ${styles.phPiano}`}>
-          <div className={styles.phKeys}>
-            {Array.from({ length: 11 }, (_, i) => (
-              <div key={i} className={styles.phKeyLine} style={{ left: `${((i + 1) / 12) * 100}%` }} />
-            ))}
-          </div>
-        </div>
-      )
-    case 'desk-frame':
-      return (
-        <>
-          <div className={`${styles.ph} ${styles.phDeskLeg}`} style={{ left: '36%' }} />
-          <div className={`${styles.ph} ${styles.phDeskLeg}`} style={{ left: '63%' }} />
-        </>
-      )
-    case 'desk-top':
-      return (
-        <>
-          <div className={`${styles.ph} ${styles.phDeskTop}`} />
-          <div className={`${styles.ph} ${styles.phMug}`} />
-        </>
-      )
-    case 'monitor':
-      return (
-        <div className={`${styles.ph} ${styles.phMonitor}`}>
-          <div className={styles.phScreen} />
-          <div className={styles.phStand} />
-        </div>
-      )
-    case 'keyboard':
-      return <div className={`${styles.ph} ${styles.phKbd}`} />
-    default:
-      return null
-  }
+function Placeholder({ thing }: { thing: Thing }) {
+  if (thing.src) return <img src={thing.src} alt="" />
+  return <span className={`${styles.ph} ${styles[`ph_${thing.id.replace('-', '_')}`] ?? ''}`} />
 }

@@ -1,71 +1,41 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 export type Mode = 'static' | 'scene'
 
-const OVERRIDE_KEY = 'office:mode'
+export const OVERRIDE_KEY = 'office:mode'
 
 /**
- * Which landing experience to render.
+ * Runs as a blocking script in <head>, before anything paints.
  *
- * The server always renders `static`, so the exported HTML holds real,
- * crawlable, screen-reader-friendly content and the first paint is instant.
- * After mount we upgrade to the animated scene only if the device looks like it
- * can carry it. A visitor can force either mode, and that choice sticks.
+ * Both versions of the landing page are in the exported HTML — the plain one
+ * so that crawlers, screen readers and no-JS visitors get real content, and
+ * the scene for everyone else. This picks which one is visible by stamping
+ * `data-mode` on <html>; globals.css does the rest.
  *
- * Borrowed straight from felixrieseberg.com: an ambitious site stops feeling
- * fragile the moment the weak-device path is a deliberate design, not a bug.
+ * Deciding it here rather than in a React effect is the whole point: an effect
+ * runs after first paint, so the visitor sees the plain page appear and then
+ * get replaced. With no JavaScript at all, no attribute is set and the plain
+ * version is what shows — which is the correct default, not a failure.
  */
-export function useMode(): [Mode, (m: Mode) => void] {
-  const [mode, setMode] = useState<Mode>('static')
-
-  useEffect(() => {
-    const stored = safeGet(OVERRIDE_KEY)
-    if (stored === 'static' || stored === 'scene') {
-      setMode(stored)
-      return
-    }
-    if (canRunScene()) setMode('scene')
-  }, [])
-
-  const choose = (m: Mode) => {
-    setMode(m)
-    safeSet(OVERRIDE_KEY, m)
-  }
-
-  return [mode, choose]
+export const MODE_SCRIPT = `(function(){try{
+var m=localStorage.getItem('${OVERRIDE_KEY}');
+if(m!=='scene'&&m!=='static'){
+var n=navigator,
+ reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,
+ save=n.connection&&n.connection.saveData,
+ mem=typeof n.deviceMemory==='number'&&n.deviceMemory<4,
+ cpu=typeof n.hardwareConcurrency==='number'&&n.hardwareConcurrency<4;
+m=(reduce||save||mem||cpu)?'static':'scene';
 }
+document.documentElement.dataset.mode=m;
+}catch(e){document.documentElement.dataset.mode='static';}})();`
 
-function canRunScene(): boolean {
-  if (typeof window === 'undefined') return false
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
-
-  // Coarse but honest signals. Both are optional in the platform, so a missing
-  // value counts as "fine" rather than "bail out".
-  const nav = navigator as Navigator & {
-    deviceMemory?: number
-    connection?: { saveData?: boolean }
-  }
-  if (nav.connection?.saveData) return false
-  if (typeof nav.deviceMemory === 'number' && nav.deviceMemory < 4) return false
-  if (typeof nav.hardwareConcurrency === 'number' && nav.hardwareConcurrency < 4) return false
-
-  return true
-}
-
-function safeGet(key: string): string | null {
+/** Flip the visible version and remember the choice. */
+export function setMode(mode: Mode): void {
+  document.documentElement.dataset.mode = mode
   try {
-    return window.localStorage.getItem(key)
+    window.localStorage.setItem(OVERRIDE_KEY, mode)
   } catch {
-    return null
-  }
-}
-
-function safeSet(key: string, value: string): void {
-  try {
-    window.localStorage.setItem(key, value)
-  } catch {
-    /* private window, blocked storage — the mode just won't persist */
+    /* private window, blocked storage — the choice just won't persist */
   }
 }

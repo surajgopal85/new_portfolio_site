@@ -32,6 +32,10 @@
   --sand: #cdb08a;
   --clay: #a67c55;
 
+  /* The room is drawn at night. Both original darks are plum-tinted, which
+     turned the navy futon and the dark windows purple. */
+  --night: #27304a;
+
   --bg: var(--cream);
   --fg: var(--ink);
   --muted: var(--slate);
@@ -148,3 +152,12 @@ h1, h2, h3 { font-family: var(--font-pixel); line-height: 1.2; letter-spacing: -
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Which landing version is visible. Both are in the HTML; the blocking script
+   in <head> stamps data-mode on <html> before first paint. With no JavaScript
+   no attribute is set, and the plain version is what shows.
+   --------------------------------------------------------------------------- */
+.mode-scene { display: none; }
+[data-mode='scene'] .mode-scene { display: block; }
+[data-mode='scene'] .mode-static { display: none; }

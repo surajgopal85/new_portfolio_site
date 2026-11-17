@@ -1,5 +1,5 @@
 {
-  "name": "office-21",
+  "name": "office-22",
   "note": "Keep in sync with the custom properties at the top of app/globals.css.",
   "colors": [
     "#1a1420",
@@ -22,7 +22,8 @@
     "#7a4e2e",
     "#cf8a4e",
     "#cdb08a",
-    "#a67c55"
+    "#a67c55",
+    "#27304a"
   ],
   "groups": {
     "room": [
@@ -64,6 +65,21 @@
       "#cdb08a",
       "#e8c48a",
       "#f6ecd8"
+    ],
+    "room-night": [
+      "#1a1420",
+      "#27304a",
+      "#4a2f1d",
+      "#7a4e2e",
+      "#a67c55",
+      "#6d7a8c",
+      "#cdb08a",
+      "#e8c48a",
+      "#c2924f",
+      "#f6ecd8",
+      "#fffdf6",
+      "#f2c14e",
+      "#b5452f"
     ]
   }
 }

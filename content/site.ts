@@ -3,7 +3,7 @@
  * the components.
  */
 export const site = {
-  name: 'Suraj Gopalakrishnan',
+  name: 'Suraj Gopal',
   role: 'Software engineer',
   // TODO(suraj): Prep item 1 — "what a visitor should feel in the first 5
   // seconds, and what they should do in the first 30", in three sentences.

@@ -87,13 +87,18 @@ highlight `#f6ecd8`.
 
 Matching the phases in `lib/characters.ts`:
 
-| phase | frames | view |
-|---|---|---|
-| `walking-in` / `walking-out` | 4-frame cycle, mirrored for the other direction | side-on |
-| `paused` | 2 frames (breathing, tail flick, ear twitch) | side-on or ¾ |
+The room is drawn from a shallow top-down three-quarter angle (see
+`components/scene/room.ts`), so characters cross the floor in depth as well as
+left-to-right. That means three views, not one:
 
-Six frames per character. Export as one horizontal strip per character into
-`public/art/characters/<name>.png`, frames evenly spaced, transparent
+| view | used for | frames |
+|---|---|---|
+| front (¾, facing you) | walking toward the camera, and the `paused` idle | 4 walk + 2 idle |
+| back | walking away, toward the desk or the door | 4 walk |
+| side | crossing the room; mirror it for the other direction | 4 walk |
+
+Fourteen frames per character. Export as one horizontal strip per view into
+`public/art/characters/<name>-<view>.png`, frames evenly spaced, transparent
 background.
 
 ## Reference photos: what worked
@@ -114,12 +119,14 @@ quantization either.
 
 ## Still needed
 
-- [ ] Kibou, standing, **side-on**, against the white wall.
-- [ ] Peanut, standing, **side-on**, against the white wall.
-- [ ] Both sitting, side-on — the `paused` pose.
-- [ ] Caitlin standing, side-on and ¾, in the doorway she usually comes through.
-      (She's in — asked and said yes.)
-- [ ] Suraj at the desk, side-on, seated and standing.
+Three angles of each character — front, back, side. The earlier version of
+this list asked for a profile only; that was written for a flat side-on scene,
+and the top-down camera replaced it.
 
-Side-on matters because the whole state machine is walk in / pause / walk out
-across the room. None of the current photos is a profile.
+- [ ] Kibou: front, back, side. Standing, plus one sitting for the idle.
+- [ ] Peanut: front, back, side. Standing, plus one sitting.
+- [ ] Caitlin: front and side, standing. (She's in — asked and said yes.)
+- [ ] Suraj: front and side, standing, plus seated at the desk.
+
+Same camera height each time, so the three views of one character agree with
+each other.

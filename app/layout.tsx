@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { site } from '@/content/site'
+import { MODE_SCRIPT } from '@/lib/capability'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -19,6 +20,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* Must block: it decides which landing version paints. */}
+        <script dangerouslySetInnerHTML={{ __html: MODE_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   )

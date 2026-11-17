@@ -32,14 +32,31 @@ have one — it's a static export. `npm run preview` is the equivalent.
 The map lives in one place: `hotspots` in `content/site.ts`. The scene and the
 static fallback both render from it, so the two can't drift apart.
 
+## The camera
+
+The room is drawn from a shallow top-down three-quarter angle — the Cult of
+the Lamb camera. You look down at the floor; everything on it stands upright,
+facing you. The projection is orthographic: no vanishing point, no scaling
+with depth, because perspective scaling puts sprites on fractional pixels.
+
+This is the camera SMB3's own overworld map uses, so the landing scene and the
+projects map speak one visual language. The drawing style stays SMB3
+throughout: flat fills, one shadow step, a hard dark outline, no gradients.
+
+It also solves a problem the first version had: the desk, the piano and the
+door are on three different walls of the real office, and no single eye-level
+photo contains all three. Seen from above, they all fit in one frame.
+
 ## Two landing experiences, on purpose
 
-The server always renders the **static** version (`components/StaticFallback.tsx`).
-That's what's in the exported HTML, what a crawler indexes, what a screen reader
-reads, and what a slow phone gets. After mount, `lib/capability.ts` upgrades to
-the animated scene only if the device looks capable and the visitor hasn't asked
-for reduced motion. Either version can be forced with a visible button, and the
-choice sticks in `localStorage`.
+Both versions are in the exported HTML. A blocking script in `<head>`
+(`MODE_SCRIPT` in `lib/capability.ts`) picks one **before first paint** by
+checking reduced-motion, save-data, device memory and core count, plus any
+stored override; CSS hides the other. With JavaScript off, no attribute is set
+and the plain version is what shows — the correct default, not a failure.
+
+Deciding this in a React effect instead would make every visitor watch the
+plain page paint and then get replaced. It has to happen before paint.
 
 This is the lesson from felixrieseberg.com: the weak-device path has to be a
 deliberate design, not a fallback that looks broken.
@@ -51,8 +68,9 @@ app/                     routes (static export, trailing slashes)
   page.tsx               landing: scene or static fallback
   projects/              overworld map + [slug] case studies
 components/scene/        the room
-  layers.ts              layer manifest — swap `src: null` for real art
-  Scene.tsx              layer stack, parallax, desk animation, hotspots
+  room.ts                the floor plan: projection, and every thing in the
+                         room with its position and depth
+  Scene.tsx              depth-sorted renderer, desk animation, hotspots
 content/site.ts          all non-project copy + the nav map
 content/projects.ts      the project list and case-study text
 lib/capability.ts        which experience to render
@@ -83,8 +101,8 @@ public/art/              exported pixel art
    reads as a quantized photo until the silhouettes are redrawn — that part is
    not automatable.
 4. Export one transparent PNG per layer at 384×216 into `public/art/office/`.
-5. Set its `src` in `components/scene/layers.ts`. The CSS placeholder for that
-   layer disappears on its own.
+5. Set its `src` in `components/scene/room.ts`. The CSS placeholder for that
+   thing disappears on its own.
 
 The scene is 384×216 art pixels. Every color must come from
 `scripts/palette.json` — 21 colors in four groups (`room`, `outside`, `fur`,
