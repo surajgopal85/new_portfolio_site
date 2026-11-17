@@ -13,9 +13,13 @@ every pixel here is drawn from scratch. No Nintendo sprites, no Nintendo music.
 |---|---|
 | `npm run dev` | local dev at http://localhost:3000 |
 | `npm run build` | static export to `out/` |
+| `npm run preview` | build, then serve `out/` — the actual static files CloudFront will serve |
 | `npm run lint` | typecheck |
-| `npm run pixelate -- <photo> --width 384 --dither --preview 4` | photo → pixel-art base layer |
+| `npm run pixelate -- <photo> [options]` | photo → pixel-art base |
 | `npm run deploy` | build, upload to S3, invalidate CloudFront |
+
+There is no `npm start`. `next start` runs a Next server, and this site doesn't
+have one — it's a static export. `npm run preview` is the equivalent.
 
 ## Navigation map
 
@@ -64,7 +68,17 @@ public/art/              exported pixel art
 ## Art pipeline
 
 1. Shoot the photo (see `photos/README.md` for the shot list).
-2. `npm run pixelate -- photos/raw/office.jpg --width 384 --dither --preview 4`
+2. ```bash
+   # a room, against the full palette
+   npm run pixelate -- photos/raw/office.jpg --width 384 --dither --preview 4
+   # one character, cropped out of a photo, fur tones only
+   npm run pixelate -- photos/raw/peanut/IMG_0165.jpeg \
+     --crop 0.04,0.28,0.99,0.82 --width 64 --group fur --preview 8
+   ```
+   `--crop` takes fractions of the photo (left,top,right,bottom) so a sprite
+   doesn't spend most of its pixels on the room behind the subject.
+   `--group` restricts quantization to one slice of the palette — a cat matched
+   against all 21 colors picks up sky blue in its shadows.
 3. Open the result in Aseprite or Piskel and fix it by hand. A quantized photo
    reads as a quantized photo until the silhouettes are redrawn — that part is
    not automatable.
@@ -73,7 +87,13 @@ public/art/              exported pixel art
    layer disappears on its own.
 
 The scene is 384×216 art pixels. Every color must come from
-`scripts/palette.json`.
+`scripts/palette.json` — 21 colors in four groups (`room`, `outside`, `fur`,
+`skin`). `docs/characters.md` maps each character's markings onto that ramp.
+
+The pipeline is a color and proportion study, not a sprite generator. It only
+produces something traceable when the subject's outline is already high
+contrast against its background in the photo; otherwise subject and background
+quantize to the same colors and the silhouette dissolves.
 
 ## Deploy
 

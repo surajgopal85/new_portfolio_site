@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
     "lint": "tsc --noEmit",
     "pixelate": "node scripts/pixelate.mjs",
-    "deploy": "bash infra/deploy.sh"
+    "deploy": "bash infra/deploy.sh",
+    "preview": "next build && serve out -l 3000"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +24,7 @@
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "serve": "^14.2.8",
     "sharp": "^0.35.5",
     "typescript": "^7.0.2"
   }

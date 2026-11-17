@@ -1,16 +1,69 @@
 {
-  "name": "office-20",
+  "name": "office-21",
   "note": "Keep in sync with the custom properties at the top of app/globals.css.",
   "colors": [
-    "#1a1420", "#3b2b40", "#b5452f", "#e0714a",
-    "#e8c48a", "#c2924f", "#6fa8e8", "#3c6fb0",
-    "#4f9e4a", "#2f6b35", "#f6ecd8", "#fffdf6",
-    "#f2c14e", "#6b4a7a", "#d98ca0", "#6d7a8c",
-    "#4a2f1d", "#7a4e2e", "#cf8a4e", "#cdb08a"
+    "#1a1420",
+    "#3b2b40",
+    "#b5452f",
+    "#e0714a",
+    "#e8c48a",
+    "#c2924f",
+    "#6fa8e8",
+    "#3c6fb0",
+    "#4f9e4a",
+    "#2f6b35",
+    "#f6ecd8",
+    "#fffdf6",
+    "#f2c14e",
+    "#6b4a7a",
+    "#d98ca0",
+    "#6d7a8c",
+    "#4a2f1d",
+    "#7a4e2e",
+    "#cf8a4e",
+    "#cdb08a",
+    "#a67c55"
   ],
   "groups": {
-    "room": ["#1a1420", "#3b2b40", "#b5452f", "#e0714a", "#e8c48a", "#c2924f", "#f6ecd8", "#fffdf6", "#f2c14e", "#6b4a7a", "#d98ca0", "#6d7a8c"],
-    "outside": ["#6fa8e8", "#3c6fb0", "#4f9e4a", "#2f6b35"],
-    "fur": ["#4a2f1d", "#7a4e2e", "#cf8a4e", "#cdb08a", "#e8c48a", "#f6ecd8", "#fffdf6", "#1a1420"]
+    "room": [
+      "#1a1420",
+      "#3b2b40",
+      "#b5452f",
+      "#e0714a",
+      "#e8c48a",
+      "#c2924f",
+      "#f6ecd8",
+      "#fffdf6",
+      "#f2c14e",
+      "#6b4a7a",
+      "#d98ca0",
+      "#6d7a8c"
+    ],
+    "outside": [
+      "#6fa8e8",
+      "#3c6fb0",
+      "#4f9e4a",
+      "#2f6b35"
+    ],
+    "fur": [
+      "#1a1420",
+      "#4a2f1d",
+      "#7a4e2e",
+      "#a67c55",
+      "#cf8a4e",
+      "#cdb08a",
+      "#e8c48a",
+      "#f6ecd8",
+      "#fffdf6"
+    ],
+    "skin": [
+      "#1a1420",
+      "#4a2f1d",
+      "#7a4e2e",
+      "#a67c55",
+      "#cdb08a",
+      "#e8c48a",
+      "#f6ecd8"
+    ]
   }
 }

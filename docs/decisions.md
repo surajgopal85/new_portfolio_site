@@ -22,7 +22,7 @@ Settled before the build:
 - [ ] The project list: 3–5, each with a one-line pitch and a visibility call.
       Anything built for an employer or client needs a clearance check first.
 - [ ] First-5-seconds / first-30-seconds copy, in three sentences.
-- [ ] Caitlin's okay on being drawn in.
+- [x] Caitlin's okay on being drawn in — yes, asked and confirmed.
 
 ## What to look at first
 
