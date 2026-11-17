@@ -240,8 +240,6 @@ async function roomBackground() {
 const thingById = Object.fromEntries(isoThings.map((t) => [t.id, t]))
 /** Props that are honestly just a box, with their material. */
 const BOXES = {
-  credenza: { color: P.bark, k: 1 },
-  futon: { color: P.night, k: 0 },
   amp: { color: P.ink, k: 0 },
   shelf: { color: P.bark, k: 1 },
   midi: { color: P.ink, k: 0 },
@@ -409,6 +407,28 @@ await write('rug', (st, t) => {
     st.diamond({ u: band, v: d - band - 0.14, w: w - band * 2, d: 0.14, color: col })
     st.diamond({ u: band, v: band, w: 0.14, d: d - band * 2, color: col })
     st.diamond({ u: w - band - 0.14, v: band, w: 0.14, d: d - band * 2, color: col })
+  }
+})
+
+/** The folding floor chair: a seat with a back folded up behind it. */
+await write('futon', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ u: 0, v: 0, w, d: d * 0.62, h: t.height, color: P.night, k: 1 })      // the back
+  st.box({ u: 0.06, v: d * 0.58, w: w - 0.12, d: d * 0.42, h: t.height * 0.5, color: P.night, k: 0 }) // the seat
+  // a seam across the seat, so it reads as a cushion rather than a block
+  st.box({ u: 0.06, v: d * 0.78, w: w - 0.12, d: 0.04, h: t.height * 0.5 + 1, color: P.skyDark, k: 0, outline: null })
+})
+
+/** The desk return: drawers with handles, running toward the camera. */
+await write('credenza', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ u: 0, v: 0, w, d, h: t.height, color: P.bark, k: 1 })
+  // drawer fronts on the face turned toward the room
+  for (let i = 0; i < 3; i++) {
+    const v0 = 0.1 + (i * (d - 0.2)) / 3
+    const v1 = v0 + (d - 0.2) / 3 - 0.08
+    st.box({ u: 0.02, v: v0, w: w - 0.04, d: v1 - v0, z: 3, h: t.height - 8, color: P.barkDark, k: 1, outline: null, faces: false })
+    st.box({ u: 0.02, v: (v0 + v1) / 2 - 0.06, w: w - 0.04, d: 0.12, z: t.height - 12, h: 2, color: P.slate, k: 0, outline: null, faces: false })
   }
 })
 

@@ -141,17 +141,17 @@ export const isoThings: readonly IsoThing[] = [
   { id: 'rug', gx: 1.3, gy: 1.3, tiles: { w: 6.5, d: 6.5 }, height: 0, src: '/art/iso/rug.png', flat: true },
 
   // --- the floor, far side -----------------------------------------------
-  { id: 'futon', gx: 3.3, gy: 0.5, tiles: { w: 2.2, d: 1.4 }, height: 20, src: '/art/iso/futon.png' },
+  { id: 'futon', gx: 2.4, gy: 0.35, tiles: { w: 1.6, d: 1.3 }, height: 18, src: '/art/iso/futon.png' },
   { id: 'piano', gx: 0.5, gy: 3.4, tiles: { w: 0.8, d: 3.2 }, height: 26, src: '/art/iso/piano.png', hotspot: 'piano' },
   { id: 'amp', gx: 0.6, gy: 4.9, tiles: { w: 0.9, d: 0.9 }, height: 18, src: '/art/iso/amp.png' },
   { id: 'side-table', gx: 0.5, gy: 6.3, tiles: { w: 0.9, d: 1.8 }, height: 20, src: '/art/iso/side-table.png' },
 
   // --- the desk, along the east side, with walking room beside the rug ---
-  { id: 'shelf', gx: 8.4, gy: 0.9, tiles: { w: 1, d: 1 }, height: 24, src: '/art/iso/shelf.png' },
-  { id: 'desk', gx: 8.3, gy: 2.1, tiles: { w: 1.2, d: 2.6 }, height: 26, src: '/art/iso/desk.png' },
-  { id: 'monitor', gx: 8.6, gy: 2.3, z: 26, tiles: { w: 0.5, d: 1.4 }, height: 24, src: '/art/iso/monitor.png', hotspot: 'monitor' },
-  { id: 'laptop', gx: 8.6, gy: 3.4, z: 26, tiles: { w: 0.5, d: 0.9 }, height: 10, src: '/art/iso/laptop.png' },
-  { id: 'chair', gx: 7.1, gy: 2.7, tiles: { w: 1.1, d: 1.1 }, height: 34, src: '/art/iso/chair.png' },
-  { id: 'credenza', gx: 8.3, gy: 5.2, tiles: { w: 1.2, d: 2.4 }, height: 28, src: '/art/iso/credenza.png' },
-  { id: 'midi', gx: 8.4, gy: 5.4, z: 28, tiles: { w: 0.7, d: 1.9 }, height: 8, src: '/art/iso/midi.png' },
+  { id: 'shelf', gx: 8.1, gy: 0.7, tiles: { w: 0.9, d: 0.9 }, height: 22, src: '/art/iso/shelf.png' },
+  { id: 'desk', gx: 8.1, gy: 1.9, tiles: { w: 1.1, d: 2.4 }, height: 26, src: '/art/iso/desk.png' },
+  { id: 'monitor', gx: 8.35, gy: 2.2, z: 26, tiles: { w: 0.45, d: 1.3 }, height: 24, src: '/art/iso/monitor.png', hotspot: 'monitor' },
+  { id: 'laptop', gx: 8.35, gy: 3.3, z: 26, tiles: { w: 0.45, d: 0.8 }, height: 10, src: '/art/iso/laptop.png' },
+  { id: 'chair', gx: 6.9, gy: 2.6, tiles: { w: 1, d: 1 }, height: 32, src: '/art/iso/chair.png' },
+  { id: 'credenza', gx: 8.1, gy: 5.0, tiles: { w: 1.1, d: 2.1 }, height: 28, src: '/art/iso/credenza.png' },
+  { id: 'midi', gx: 8.2, gy: 5.2, z: 28, tiles: { w: 0.6, d: 1.7 }, height: 8, src: '/art/iso/midi.png' },
 ]

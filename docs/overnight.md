@@ -306,13 +306,20 @@ half-converted.
 
    What the first assembled look showed, in priority order:
 
-   a. **The walls are mirrored against IMG_0730.** The windows render on the
-      right and the piano wall on the left; in the photo the windows are
-      ahead-left. Swap which axis holds what.
-   b. **The desk corner is a pile-up** — desk, chair, credenza and shelf all
-      overlap. Needs the same spacing pass the rug got.
-   c. **Too murky.** The warm pool sits over the desk but the room reads
-      underlit; the lighting wants more lift and less vignette.
+   a. ~~The walls are mirrored against IMG_0730.~~ **Wrong call — no change
+      made.** Looking again, the windows render on the upper-right wall,
+      which *is* "ahead" from the doorway, with the desk below-right and the
+      piano wall left. That matches the photo. Mirroring would have broken it.
+   b. ~~The desk corner is a pile-up.~~ **Fixed.** The desk run pulled in off
+      the room's edge, everything in it trimmed, the oversized futon moved
+      back under the windows.
+   c. ~~Too murky.~~ **Fixed.** Warmer lamp over the desk, cooler spill at
+      the windows, a general lift so the far corners aren't holes, and less
+      vignette.
+
+   Also detailed the two plainest sprites: the futon now has a folded back
+   and a seam across its cushion, the credenza has three drawer fronts with
+   handles.
 
    Then: delete `room.ts`, the old sprites and `/iso/`.
 6. **Characters move on the tile grid.** `lib/characters.ts` spots become

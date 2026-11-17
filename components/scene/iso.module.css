@@ -66,10 +66,14 @@
   z-index: 900;
   pointer-events: none;
   background:
-    radial-gradient(26% 30% at 76% 42%, rgba(255, 206, 128, 0.42), transparent 72%),
-    radial-gradient(30% 34% at 44% 22%, rgba(130, 178, 240, 0.24), transparent 74%),
-    radial-gradient(130% 120% at 56% 42%, rgba(21, 17, 27, 0) 20%, rgba(21, 17, 27, 0.7) 100%),
-    linear-gradient(rgba(32, 22, 30, 0.54), rgba(32, 22, 30, 0.54));
+    /* the lamp over the desk */
+    radial-gradient(34% 38% at 74% 46%, rgba(255, 206, 128, 0.46), transparent 74%),
+    /* the streetlight through the windows */
+    radial-gradient(34% 38% at 56% 24%, rgba(130, 178, 240, 0.26), transparent 76%),
+    /* a general lift, so the far corners aren't holes */
+    radial-gradient(90% 85% at 48% 46%, rgba(255, 214, 160, 0.14), transparent 80%),
+    radial-gradient(135% 125% at 54% 44%, rgba(21, 17, 27, 0) 26%, rgba(21, 17, 27, 0.56) 100%),
+    linear-gradient(rgba(32, 22, 30, 0.4), rgba(32, 22, 30, 0.4));
 }
 
 .statusRow {
