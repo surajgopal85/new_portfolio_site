@@ -13,7 +13,8 @@
     "layout": "node --experimental-strip-types scripts/layout-preview.mjs",
     "shot": "node scripts/shot.mjs",
     "sprites": "node scripts/sprites.mjs",
-    "test": "node --test --experimental-strip-types lib/*.test.ts"
+    "test": "node --test --experimental-strip-types lib/*.test.ts",
+    "audit": "node scripts/audit.mjs"
   },
   "keywords": [],
   "author": "",

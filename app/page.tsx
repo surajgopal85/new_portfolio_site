@@ -12,16 +12,18 @@ import { setMode } from '@/lib/capability'
  * accessibility tree, so nothing is announced twice.
  */
 export default function Home() {
+  // One <main> for both versions: the document may only contain one that
+  // isn't hidden, and CSS hides whichever version isn't in play.
   return (
-    <>
+    <main>
       <div className="mode-static">
         <StaticFallback onEnter={() => setMode('scene')} />
       </div>
 
-      <main className="mode-scene" style={{ padding: 'clamp(16px, 4vw, 40px) 20px' }}>
+      <div className="mode-scene" style={{ padding: 'clamp(16px, 4vw, 40px) 20px' }}>
         <h1 className="sr-only">{`${site.name} — ${site.role.toLowerCase()}`}</h1>
         <Scene onLeave={() => setMode('static')} />
-      </main>
-    </>
+      </div>
+    </main>
   )
 }

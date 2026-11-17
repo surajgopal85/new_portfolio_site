@@ -9,7 +9,7 @@ import { publicProjects } from '@/content/projects'
  */
 export function StaticFallback({ onEnter }: { onEnter?: () => void }) {
   return (
-    <main className="page">
+    <div className="page">
       <p className="eyebrow">{site.role}</p>
       <h1>{site.name}</h1>
       <p className="lede">{site.pitch}</p>
@@ -51,6 +51,6 @@ export function StaticFallback({ onEnter }: { onEnter?: () => void }) {
           </li>
         ))}
       </ul>
-    </main>
+    </div>
   )
 }

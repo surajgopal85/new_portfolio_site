@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { hotspots, site } from '@/content/site'
+import { hotspots } from '@/content/site'
 import { drawOrder, place, type Thing } from './room'
 import { SURAJ } from '@/lib/characters'
 import { KEYS, playNote, teardown, unlock } from '@/lib/piano'
@@ -64,85 +64,96 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
     onBlur: () => setStatus(IDLE_HINT),
   })
 
+  /** A prop: painted, never focusable. */
+  const prop = (thing: Thing, i: number) => (
+    <div
+      key={thing.id}
+      className={`${styles.thing} ${thing.rises ? styles.rises : ''}`}
+      style={{ ...place(thing), zIndex: zOf(thing, i) }}
+    >
+      <Placeholder thing={thing} screen={screen} />
+    </div>
+  )
+
   return (
     <>
       <div className={`${styles.frame} ${deskUp ? styles.deskUp : styles.deskDown}`}>
         <div className={styles.backWall} />
         <div className={styles.floor} />
 
-        {/* Back to front. A thing's base sits on the floor, so draw order and
-            vertical position agree, and characters can walk behind the desk. */}
-        {drawOrder.map((thing, i) => {
-          const spot = thing.hotspot ? hotspots.find((h) => h.id === thing.hotspot) : undefined
-          // The monitor glows, so it sits above the night wash.
-          const style = { ...place(thing), zIndex: thing.id === 'monitor' ? 70 : 10 + i }
-          const className = `${styles.thing} ${thing.rises ? styles.rises : ''}`
+        {/* Back to front: a thing's base sits on the floor, so paint order
+            and vertical position agree and a visitor can walk behind the
+            desk.
 
-          if (spot) {
-            return (
-              <Link
-                key={thing.id}
-                href={spot.href}
-                className={`${className} ${styles.hotspot}`}
-                style={style}
-                {...hint(spot.hint)}
-              >
-                <Placeholder thing={thing} screen={screen} />
+            Paint order and DOM order are deliberately separate. z-index is
+            explicit, which lets the interactive things mount afterwards in
+            navigation order — otherwise Tab walks the room by depth, which
+            means nothing to someone who can't see it. */}
+        {drawOrder.map((thing, i) =>
+          thing.hotspot || thing.id === 'desk-top' ? null : prop(thing, i),
+        )}
 
-                {/* The piano plays when a pointer sweeps across it, which is
-                    why the notes are pentatonic — there's no wrong order.
-                    Clicking still opens the page; the keys only make sound,
-                    so the two never fight over the same gesture. */}
-                {thing.id === 'piano' &&
-                  sound &&
-                  KEYS.map((semitone, i) => (
-                    <span
-                      key={semitone}
-                      className={styles.key}
-                      aria-hidden="true"
-                      style={{ left: `${(i / KEYS.length) * 100}%`, width: `${100 / KEYS.length}%` }}
-                      onPointerEnter={() => playNote(semitone)}
-                    />
-                  ))}
-
-                <span className={styles.hotspotLabel} aria-hidden="true">
-                  {spot.label}
-                </span>
-                <span className="sr-only">{`${spot.label} — ${spot.object}`}</span>
-              </Link>
-            )
-          }
-
-          if (thing.id === 'desk-top') {
-            // The desk isn't navigation; it's a toy.
-            return (
-              <button
-                key={thing.id}
-                type="button"
-                className={`${className} ${styles.hotspot}`}
-                style={style}
-                aria-pressed={deskUp}
-                onClick={() => setDeskUp((up) => !up)}
-                {...hint(deskUp ? 'Sit back down?' : 'Raise the desk.')}
-              >
-                <Placeholder thing={thing} />
-                <span className="sr-only">
-                  {deskUp ? 'Lower the standing desk' : 'Raise the standing desk'}
-                </span>
-              </button>
-            )
-          }
-
+        {/* The navigation, in the order the nav lists it. */}
+        {hotspots.map((spot) => {
+          const thing = drawOrder.find((t) => t.hotspot === spot.id)
+          if (!thing) return null
           return (
-            <div key={thing.id} className={className} style={style}>
-              <Placeholder thing={thing} />
-            </div>
+            <Link
+              key={thing.id}
+              href={spot.href}
+              className={`${styles.thing} ${thing.rises ? styles.rises : ''} ${styles.hotspot}`}
+              style={{ ...place(thing), zIndex: zOf(thing, drawOrder.indexOf(thing)) }}
+              {...hint(spot.hint)}
+            >
+              <Placeholder thing={thing} screen={screen} />
+
+              {/* The piano plays when a pointer sweeps across it, which is
+                  why the notes are pentatonic — there's no wrong order.
+                  Clicking still opens the page; the keys only make sound, so
+                  the two never fight over one gesture. */}
+              {thing.id === 'piano' &&
+                sound &&
+                KEYS.map((semitone, i) => (
+                  <span
+                    key={semitone}
+                    className={styles.key}
+                    aria-hidden="true"
+                    style={{ left: `${(i / KEYS.length) * 100}%`, width: `${100 / KEYS.length}%` }}
+                    onPointerEnter={() => playNote(semitone)}
+                  />
+                ))}
+
+              <span className={styles.hotspotLabel} aria-hidden="true">
+                {spot.label}
+              </span>
+              <span className="sr-only">{`${spot.label} — ${spot.object}`}</span>
+            </Link>
           )
         })}
 
-        {/* Suraj, at the desk, always. Drawn after the chair he's sitting in
-            and before anything nearer the camera, so a visitor crossing the
-            rug passes in front of him. */}
+        {/* The desk comes last. It isn't navigation, it's a toy. */}
+        {(() => {
+          const desk = drawOrder.find((t) => t.id === 'desk-top')
+          if (!desk) return null
+          return (
+            <button
+              type="button"
+              className={`${styles.thing} ${styles.rises} ${styles.hotspot}`}
+              style={{ ...place(desk), zIndex: zOf(desk, drawOrder.indexOf(desk)) }}
+              aria-pressed={deskUp}
+              onClick={() => setDeskUp((up) => !up)}
+              {...hint(deskUp ? 'Sit back down?' : 'Raise the desk.')}
+            >
+              <Placeholder thing={desk} />
+              <span className="sr-only">
+                {deskUp ? 'Lower the standing desk' : 'Raise the standing desk'}
+              </span>
+            </button>
+          )
+        })()}
+
+        {/* Suraj, at the desk, always. Drawn with the chair he's sitting in,
+            so a visitor crossing the rug passes in front of him. */}
         <div
           className={`${styles.thing} ${styles.typing}`}
           style={{ ...place(SURAJ), zIndex: 10 + drawOrder.findIndex((t) => t.id === 'chair') }}
@@ -172,25 +183,17 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
         </div>
       </div>
 
-      {/* The room is decoration for a screen reader; the real list of links
-          lives in the fallback, which is what the exported HTML ships. */}
-      <nav aria-label="Pages" className="sr-only">
-        {hotspots.map((spot) => (
-          <Link key={spot.id} href={spot.href}>
-            {spot.label}
-          </Link>
-        ))}
-        <a href={`mailto:${site.email}`}>Email</a>
-      </nav>
+      {/* No duplicate sr-only nav: the hotspots above are real links, mounted
+          in navigation order, each carrying its own accessible name. */}
     </>
   )
 }
 
-/**
- * Stand-in art, in the same projection the real sprites will use: a lit top
- * face, a darker front face, a hard outline. Each branch dies when its thing
- * gets a real `src` in room.ts.
- */
+/** The monitor glows, so it sits above the night wash. */
+function zOf(thing: Thing, i: number): number {
+  return thing.id === 'monitor' ? 70 : 10 + i
+}
+
 function Placeholder({ thing, screen }: { thing: Thing; screen?: Screen }) {
   // The monitor's bezel is a sprite with a transparent screen; what's on
   // screen renders behind it, so the art and the live content stay separate.

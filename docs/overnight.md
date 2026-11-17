@@ -129,9 +129,20 @@ Each item is verifiable without a human and without art that doesn't exist.
 
    Placeholder project coordinates put level 1 on the lake. That fixes itself
    when the real project list lands.
-8. **Performance and accessibility**: keyboard path through every hotspot,
-   focus visibility, the static version at 420px wide, Lighthouse-ish checks
-   on the exported build.
+8. ~~**Performance and accessibility.**~~ **Done.** `npm run audit` walks
+   the keyboard path, checks focus rings, emulates reduced motion, measures
+   overflow at 420px, and counts headings/landmarks/alt text on every route.
+   Reports rather than gates — it's a thing to read.
+
+   Found and fixed: no focus ring on any of the five scene hotspots (the ring
+   was attached to `.ph`, which stopped existing when the props became
+   `<img>` sprites); two `<main>` elements on the landing page, one per
+   version; and Tab walking the room in paint order, so the interactive
+   things now mount in navigation order while z-index keeps the paint order
+   — which also let the duplicate sr-only nav go.
+
+   Built weight: 20K HTML, 688K JS, 20K CSS, 100K of sprites across 24 files
+   (largest is the 8K overworld). Audit now reports clean.
 9. **The social preview image**, 1200×630, rendered from the scene.
 
 ## What NOT to do
