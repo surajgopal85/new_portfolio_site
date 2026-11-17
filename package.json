@@ -11,7 +11,8 @@
     "deploy": "bash infra/deploy.sh",
     "preview": "next build && serve out -l 3000",
     "layout": "node --experimental-strip-types scripts/layout-preview.mjs",
-    "shot": "node scripts/shot.mjs"
+    "shot": "node scripts/shot.mjs",
+    "sprites": "node scripts/sprites.mjs"
   },
   "keywords": [],
   "author": "",

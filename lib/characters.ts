@@ -17,7 +17,7 @@
 
 
 /** Suraj's spot at the desk. He doesn't move, so he isn't part of the queue. */
-export const SURAJ = { x: 146, depth: 0.24, w: 12, h: 26 } as const
+export const SURAJ = { x: 146, depth: 0.21, w: 12, h: 26 } as const
 
 export type CharacterId = 'kibou' | 'peanut' | 'caitlin'
 

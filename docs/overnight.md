@@ -79,10 +79,12 @@ Each item is verifiable without a human and without art that doesn't exist.
 
    One thing NOT to fill: the centre of the floor. See the note in
    `art-direction.md` — that's the stage.
-3. **Real sprites for the simple props**, generated in code and iterated
-   against screenshots: desk, shelf, door, windows, amp, credenza, power
-   strip, mug, bottle. Flat fills, one shadow step, hard outline. Replace the
-   CSS placeholder only when the PNG is better than it.
+3. **Real sprites for the simple props.** *First pass done:* piano, amp,
+   door, windows, futon, side table, shelf, desk top, desk legs, credenza —
+   all drawn in code by `npm run sprites`, all now live in the scene.
+   Still placeholders: monitor (its screen cycles, so the frame needs to be a
+   PNG with the screen as a child), chair, the small desk props, plush,
+   books, papers, power strip.
 4. **The rug.** Hand-code a symmetrical gul motif — not a photo crop — and
    tile it with the alternating offset, plus a border band. See
    `photos/pixel-refs/` for the draft.
