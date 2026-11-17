@@ -267,6 +267,65 @@ for (const [id, opts] of Object.entries(BOXES)) {
   await write(id, (st, t) => st.box({ w: t.tiles.w, d: t.tiles.d, h: t.height, ...opts }))
 }
 
+/**
+ * Anything hanging on a wall is a parallelogram, not a rectangle: the north
+ * wall shears down-right, the west wall down-left. Drawn pre-sheared here
+ * rather than transformed at runtime, because a CSS transform would resample
+ * the pixels and turn a crisp 2:1 edge into mush.
+ *
+ * Inside `draw`, `s` runs along the wall in tiles and `t` runs up it in
+ * pixels, so a poster can be laid out as if the wall were flat.
+ */
+function wallStage(t) {
+  const { w: SW, h: SH } = spriteSize(t)
+  const c = canvas(SW, SH)
+  const along = t.wall === 'north' ? t.tiles.w : t.tiles.d
+  const H = t.height
+
+  const X = (s) => (t.wall === 'north' ? s * (TILE_W / 2) : (along - s) * (TILE_W / 2))
+  const Y = (s, up) => s * (TILE_H / 2) + (H - up)
+
+  /** A filled quad spanning s0..s1 along the wall and up0..up1 up it. */
+  const panel = (s0, s1, up0, up1, color, a) =>
+    c.poly(
+      [
+        [X(s0), Y(s0, up1)],
+        [X(s1), Y(s1, up1)],
+        [X(s1), Y(s1, up0)],
+        [X(s0), Y(s0, up0)],
+      ],
+      color,
+      a,
+    )
+
+  /** The sheared outline of a region — the edge that keeps art crisp. */
+  const outline = (s0, s1, up0, up1, color = P.ink) => {
+    const steps = Math.round((s1 - s0) * (TILE_W / 2))
+    for (let i = 0; i <= steps; i++) {
+      const s = s0 + ((s1 - s0) * i) / steps
+      c.px(X(s), Y(s, up1), color)
+      c.px(X(s), Y(s, up0), color)
+    }
+    for (let up = up0; up <= up1; up++) {
+      c.px(X(s0), Y(s0, up), color)
+      c.px(X(s1), Y(s1, up), color)
+    }
+  }
+
+  return { c, X, Y, panel, outline, along, H, w: SW, h: SH }
+}
+
+async function writeWall(id, draw) {
+  const t = thingById[id]
+  if (!t) throw new Error(`no thing "${id}" in iso.ts`)
+  const st = wallStage(t)
+  draw(st, t)
+  const out = `public/art/iso/${id}.png`
+  await st.c.toPng().toFile(out)
+  written.push({ id, out, w: st.w, h: st.h })
+  console.log(`${out}  ${st.w}x${st.h}`)
+}
+
 // --- the props that aren't a single box -----------------------------------
 
 /** A standing desk: a slab on two legs, not a solid block. */
@@ -339,6 +398,68 @@ await write('rug', (st, t) => {
     st.diamond({ u: band, v: band, w: 0.14, d: d - band * 2, color: col })
     st.diamond({ u: w - band - 0.14, v: band, w: 0.14, d: d - band * 2, color: col })
   }
+})
+
+// --- things on the walls --------------------------------------------------
+
+for (const id of ['window-left', 'window-right']) {
+  await writeWall(id, (st) => {
+    const a = st.along
+    st.panel(0, a, 0, st.H, P.paper)                       // frame
+    st.panel(0.08, a - 0.08, 4, st.H - 4, P.night)         // glass, after dark
+    // what's outside: a streetlight and the tree in the driveway
+    st.panel(a * 0.6, a * 0.72, st.H - 16, st.H - 8, P.gold)
+    st.panel(0.18, a * 0.45, 6, 18, P.leafDark)
+    // mullions
+    st.panel(a / 2 - 0.03, a / 2 + 0.03, 4, st.H - 4, P.paper)
+    st.panel(0.08, a - 0.08, st.H / 2 - 2, st.H / 2 + 2, P.paper)
+    st.outline(0, a, 0, st.H)
+  })
+}
+
+await writeWall('door', (st) => {
+  const a = st.along
+  st.panel(0, a, 0, st.H, P.tanDark)
+  st.panel(0.08, a - 0.08, 2, st.H - 3, P.cream)
+  st.panel(0.2, a - 0.2, st.H * 0.56, st.H - 10, P.tanDark)   // upper panel
+  st.panel(0.26, a - 0.26, st.H * 0.59, st.H - 13, P.cream)
+  st.panel(0.2, a - 0.2, 8, st.H * 0.48, P.tanDark)           // lower panel
+  st.panel(0.26, a - 0.26, 11, st.H * 0.45, P.cream)
+  st.panel(a - 0.3, a - 0.18, st.H * 0.5 - 2, st.H * 0.5 + 2, P.gold)  // handle
+  st.outline(0, a, 0, st.H)
+})
+
+await writeWall('ligeti', (st) => {
+  const a = st.along
+  st.panel(0, a, 0, st.H, P.ink)                            // frame
+  st.panel(0.06, a - 0.06, 3, st.H - 3, P.paper)
+  // Wehinger's score: rows of coloured marks on white
+  const cols = [P.brick, P.leafDark, P.gold, P.plum, P.skyDark]
+  for (let r = 0; r < 5; r++) {
+    for (let i = 0; i < 7; i++) {
+      const s0 = 0.1 + (i * (a - 0.2)) / 7
+      st.panel(s0, s0 + 0.05 + (i % 3) * 0.02, 6 + r * 5, 9 + r * 5, cols[(r + i) % cols.length])
+    }
+  }
+  st.outline(0, a, 0, st.H)
+})
+
+await writeWall('schiele', (st) => {
+  const a = st.along
+  st.panel(0, a, 0, st.H, P.ink)
+  st.panel(0.05, a - 0.05, 2, st.H - 2, P.barkDark)         // the dark ground
+  st.panel(a * 0.3, a * 0.72, st.H - 16, st.H - 5, P.cream) // the pale collar
+  st.panel(a * 0.38, a * 0.62, st.H - 14, st.H - 8, P.clay) // the face
+  st.panel(a * 0.36, a * 0.64, 4, st.H - 16, P.shadow)      // the waistcoat
+  st.outline(0, a, 0, st.H)
+})
+
+await writeWall('corkboard', (st) => {
+  const a = st.along
+  st.panel(0, a, 0, st.H, P.slate)                          // aluminium frame
+  st.panel(0.08, a - 0.08, 3, st.H - 3, P.tanDark)          // cork
+  st.panel(a * 0.55, a * 0.8, st.H * 0.45, st.H * 0.8, P.paper)  // the one pinned card
+  st.outline(0, a, 0, st.H)
 })
 
 if (process.argv.includes('--sheet')) {

@@ -289,11 +289,16 @@ half-converted.
    table, chair, monitor, piano (keys on an X-stand), and the rug with its
    gul medallions re-laid on the diagonal.
 
-   Still to draw: the windows, the door, the two posters and the cork board —
-   all wall-mounted, so all need step 4's shear.
-4. **Wall-mounted things are sheared to their wall's plane.** A poster on the
-   west wall leans one way, on the north wall the other. Draw them pre-sheared
-   rather than transforming at runtime, which would resample them.
+   **Done.** Eighteen sprites. The wall-mounted ones came with step 4.
+4. ~~**Wall-mounted things are sheared to their wall's plane.**~~ **Done.**
+   `wallStage` draws into the wall's plane directly: inside it, `s` runs along
+   the wall in tiles and `t` runs up it in pixels, so a poster is laid out as
+   if the wall were flat and comes out sheared. North shears down-right, west
+   down-left. Pre-sheared rather than CSS-transformed, because a transform
+   resamples and turns a crisp 2:1 edge to mush.
+
+   Drawn: both windows (night glass, streetlight, the tree outside), the
+   panelled door, the Ligeti score, the Schiele, the cork board.
 5. **The new renderer.** `Scene` reads `iso.ts`, sorts by `gx + gy`, keeps
    the hotspots, the night lighting layer, the desk animation and the piano
    keys. Then delete `room.ts` and the old sprites.
