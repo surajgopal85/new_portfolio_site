@@ -1,0 +1,51 @@
+.board {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: clamp(16px, 3vw, 28px);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: clamp(16px, 3vw, 28px);
+  background: var(--tan-dark);
+  border: 3px solid var(--slate);
+  box-shadow: 6px 6px 0 var(--shadow);
+}
+
+/* Index cards, pinned slightly crooked — straightened on hover, and never
+   tilted at all for anyone who asked for less motion. */
+.card {
+  position: relative;
+  padding: 1.5rem 1rem 1rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--shadow);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 150ms steps(3, end);
+}
+.card:hover, .card:focus-within { transform: rotate(0deg); }
+@media (prefers-reduced-motion: reduce) {
+  .card { transform: none; transition: none; }
+}
+
+.pin {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  translate: -50% 0;
+  width: 10px;
+  height: 10px;
+  background: var(--brick);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+
+.cardTitle { margin: 0 0 0.4rem; font-size: 0.9375rem; }
+.note { margin: 0 0 0.6rem; font-size: 0.875rem; }
+.since {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bark);
+}

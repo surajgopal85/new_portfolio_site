@@ -92,7 +92,13 @@
 }
 .ph_futon { background: var(--night); border-top: 4px solid var(--sky-dark); }
 .ph_door { background: var(--brick); box-shadow: inset -6px 0 0 var(--gold); }
-.ph_credenza { background: var(--bark); border-top: 5px solid var(--bark-dark); }
+.ph_desk_return { background: var(--bark); border-left: 4px solid var(--bark-dark); border-top: 4px solid var(--clay); }
+.ph_midi { background: var(--ink); border-top: 4px solid var(--cream); }
+.ph_bottle { background: var(--sky-dark); border: 2px solid var(--ink); }
+.ph_keyboard_white { background: var(--paper); border: 2px solid var(--ink); box-shadow: inset 0 0 0 1px var(--brick); }
+.ph_notebook { background: var(--paper); border: 2px solid var(--slate); }
+.ph_mug { background: var(--sky); border: 2px solid var(--ink); }
+.ph_gold_frame { background: var(--gold); border: 2px solid var(--ink); box-shadow: inset 0 0 0 2px var(--bark); }
 .ph_piano { background: var(--cream); border-bottom: 6px solid var(--ink); }
 .ph_amp { background: var(--ink); box-shadow: inset 0 0 0 4px var(--shadow); }
 

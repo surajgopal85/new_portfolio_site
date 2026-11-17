@@ -66,6 +66,9 @@ clean single-object shot beats a good photo of the whole room every time.
 ## 2. Props already boxed out in room.ts, each needing a photo
 
 The desk group:
+- [x] Standing desk — `IMG_0722`. Shows the L: the standing desk along the
+      back wall, a wooden return along the right wall with the M-Audio
+      controller on it, cork board hung above that.
 - [ ] Standing desk, straight on, **lowered**
 - [ ] Standing desk, straight on, **raised** — same camera position, so the two
       can be diffed
@@ -126,8 +129,8 @@ The border bands get the same treatment: one repeating unit, tiled.
       Projects link.
 - [ ] **Ceiling fan** — it's above the camera in this projection. Omit it, or
       draw it as a slow shadow turning on the floor?
-- [ ] **Is the cork board interactive?** The nav map has three objects. A
-      fourth is possible — a "now" board, pinned notes — but it needs a reason.
+- [x] **Is the cork board interactive?** Yes — it's where whatever you're
+      studying goes, so it opens `/now/`. Four hotspots now.
 - [ ] **What's on the monitor?** It's the brightest pixel group in the scene,
       so whatever is on it reads as the focal point.
 

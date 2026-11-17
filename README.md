@@ -27,6 +27,7 @@ have one — it's a static export. `npm run preview` is the equivalent.
 |---|---|
 | Monitor | `/projects/` — the overworld |
 | Piano | `/about/` — fun / about corner |
+| Cork board | `/now/` — what I'm studying |
 | Door | `/contact/` |
 
 The map lives in one place: `hotspots` in `content/site.ts`. The scene and the
@@ -67,12 +68,14 @@ deliberate design, not a fallback that looks broken.
 app/                     routes (static export, trailing slashes)
   page.tsx               landing: scene or static fallback
   projects/              overworld map + [slug] case studies
+  now/                   the cork board — what I'm studying
 components/scene/        the room
   room.ts                the floor plan: projection, and every thing in the
                          room with its position and depth
   Scene.tsx              depth-sorted renderer, desk animation, hotspots
 content/site.ts          all non-project copy + the nav map
 content/projects.ts      the project list and case-study text
+content/studying.ts      what's pinned to the cork board
 lib/capability.ts        which experience to render
 lib/characters.ts        character state machine — MINE to write
 lib/piano.ts             Web Audio, off by default

@@ -14,6 +14,16 @@ Settled before the build:
 - **Fallback** — a clean static page for reduced motion, slow devices and screen
   readers. It's the server-rendered default, not an afterthought.
 
+- **Camera** — a shallow top-down three-quarter angle, the Cult of the Lamb
+  camera, drawn in SMB3 style. It's the only way the desk, piano and door —
+  which are on three different walls — fit in one frame. SMB3's own overworld
+  uses this camera, so the landing scene and the projects map agree.
+- **Time of day** — night. The room photographs as a night room, and it makes
+  the monitor the brightest thing in the scene, which is right: the monitor is
+  the Projects link.
+- **Four hotspots, not three** — the cork board opens `/now/`, because that's
+  where Suraj actually pins what he's studying.
+
 ## Open
 
 - [ ] Launch date — set deliberately, not guessed. Work, freelance and tutoring

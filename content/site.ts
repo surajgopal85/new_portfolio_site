@@ -15,9 +15,8 @@ export const site = {
   // the social preview image.
   url: 'https://example.com',
   socials: [
-    { label: 'GitHub', href: 'https://github.com/surajgopal85' },
-    // TODO(suraj): your LinkedIn URL — I don't know it.
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/' },
+    { label: 'GitHub', href: 'https://github.com/surajgopal85/' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/suraj-s-gopal/' },
   ],
 } as const
 
@@ -27,7 +26,7 @@ export const site = {
  * list as a plain menu, so the two can never drift apart.
  */
 export type Hotspot = {
-  id: 'monitor' | 'piano' | 'door'
+  id: 'monitor' | 'piano' | 'door' | 'corkboard'
   /** The thing in the room. */
   object: string
   /** Where it goes. */
@@ -52,6 +51,13 @@ export const hotspots: readonly Hotspot[] = [
     href: '/about/',
     label: 'Fun & about',
     hint: 'Play it, or read the non-work half.',
+  },
+  {
+    id: 'corkboard',
+    object: 'Cork board',
+    href: '/now/',
+    label: 'Studying',
+    hint: "Whatever I'm learning right now, pinned.",
   },
   {
     id: 'door',
