@@ -63,6 +63,10 @@ export const things: readonly Thing[] = [
   { id: 'corkboard', x: 262, y: 8, depth: 0, w: 40, h: 28, src: null, wall: true, hotspot: 'corkboard' },
   /** Reaches the floor line — this is where everyone comes in. */
   { id: 'door', x: 320, y: 4, depth: 0, w: 32, h: 44, src: null, wall: true, hotspot: 'door' },
+  /** White curtains, hanging either side of the windows. */
+  { id: 'curtain-left', x: 8, y: 4, depth: 0, w: 8, h: 40, src: null, wall: true },
+  { id: 'curtain-mid', x: 48, y: 4, depth: 0, w: 8, h: 40, src: null, wall: true },
+  { id: 'curtain-right', x: 88, y: 4, depth: 0, w: 8, h: 40, src: null, wall: true },
 
   // --- the desk, against the back wall ------------------------------------
   { id: 'shelf', x: 104, depth: 0.05, w: 16, h: 20, src: null },
@@ -79,12 +83,21 @@ export const things: readonly Thing[] = [
 
   // --- the rest of the room -----------------------------------------------
   { id: 'futon', x: 16, depth: 0.3, w: 36, h: 18, src: null },
+  /** Books and binders on the cube shelf. */
+  { id: 'books', x: 106, depth: 0.05, w: 12, h: 9, src: null, over: 'shelf' },
+  /** The cable run from the desk down to the power strip on the floor. */
+  { id: 'cable-desk', x: 172, depth: 0.17, w: 2, h: 13, src: null },
   { id: 'powerstrip', x: 196, depth: 0.3, w: 14, h: 4, src: null },
+  { id: 'cable-strip', x: 174, depth: 0.3, w: 23, h: 2, src: null, over: 'powerstrip' },
   { id: 'rug', x: 96, depth: 0.62, w: 144, h: 56, src: null, flat: true },
   /** The fan is above the camera; its shadow turns across the rug. */
   { id: 'fan-shadow', x: 128, depth: 0.54, w: 72, h: 30, src: null, flat: true, over: 'rug' },
   { id: 'bone', x: 150, depth: 0.72, w: 9, h: 4, src: null, over: 'rug' },
-  { id: 'plush', x: 92, depth: 0.88, w: 10, h: 9, src: null },
+  /** The side table by the piano, with the burger-cat plush and a stack of
+      sheet music on it. */
+  { id: 'side-table', x: 110, depth: 0.94, w: 30, h: 22, src: null },
+  { id: 'plush', x: 116, depth: 0.92, w: 10, h: 9, src: null, over: 'side-table' },
+  { id: 'papers', x: 128, depth: 0.92, w: 11, h: 4, src: null, over: 'side-table' },
 
   /** The desk is an L: this is the return, running along the right wall. */
   { id: 'desk-return', x: 304, depth: 0.75, w: 48, h: 86, src: null },
@@ -93,6 +106,7 @@ export const things: readonly Thing[] = [
   // --- the music corner, front left ---------------------------------------
   { id: 'piano', x: 24, depth: 0.82, w: 72, h: 22, src: null, hotspot: 'piano' },
   { id: 'amp', x: 36, depth: 0.95, w: 24, h: 18, src: null },
+  { id: 'amp-cable', x: 30, depth: 0.88, w: 2, h: 12, src: null },
 ]
 
 /** Where a thing's sprite sits on screen, as percentages of the scene. */

@@ -71,10 +71,14 @@ Each item is verifiable without a human and without art that doesn't exist.
    produces mauve. Lamp pool now centred on the desk, upper wall falls off,
    corners pulled down. The remaining bright spots are placeholder fills —
    the piano's cream slab, the Ligeti white — which item 3 replaces.
-2. **Density pass.** Stardew rooms have almost no dead floor. The left-middle
-   and right-middle are bare. Add the small things that are really there —
-   cables from the desk to the power strip, the shelf's contents, a bin, the
-   curtain edges.
+2. ~~**Density pass.**~~ **Done.** Added only things that are actually in the
+   photos: curtains flanking both windows, books on the cube shelf, the cable
+   run from the desk down to the power strip, the side table by the piano
+   with the burger-cat plush and sheet music on it, the amp's cable. 37
+   things now.
+
+   One thing NOT to fill: the centre of the floor. See the note in
+   `art-direction.md` — that's the stage.
 3. **Real sprites for the simple props**, generated in code and iterated
    against screenshots: desk, shelf, door, windows, amp, credenza, power
    strip, mug, bottle. Flat fills, one shadow step, hard outline. Replace the
