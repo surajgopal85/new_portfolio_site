@@ -1,5 +1,41 @@
 # Overnight run
 
+**Finished 03:30, 17 Nov 2026. Fourteen items, twelve commits, all on
+`scene/overnight`, nothing pushed.**
+
+Read the night back with `git log --oneline main..scene/overnight`, or look at
+it with `npm run dev` and `npm run shot`.
+
+## What changed
+
+The scene went from coloured CSS boxes to a drawn room: 23 sprites generated
+in code, a rug woven from one hand-made motif, night lighting as a separate
+layer over daylight-painted art, and 37 objects placed on a 16px grid at
+Stardew proportions. The projects overworld, the cork board page, the case
+study layout, the 404 and the plain version all got designed. The piano
+plays. The state machine has a 25-test specification waiting for it.
+
+Four tools exist that didn't: `npm run sprites`, `npm run layout`,
+`npm run shot`, `npm run audit`, plus `npm run og` and `npm test`.
+
+## What's still yours
+
+- **The character sprites.** Kibou, Peanut, Caitlin, Suraj. Every slot is
+  waiting; see `docs/characters.md` for sizes, ramps and the frames needed.
+- **The state machine.** `npm test` is the spec; 21 tests activate the moment
+  `step` moves someone.
+- **The copy.** Case studies, the about page, the three-sentence intent, and
+  what's actually pinned to the cork board.
+- **The project list**, which also fixes level 1 sitting on the lake.
+- **`site.url`**, which the sitemap and the social card both need.
+
+## What I could not verify
+
+- **The piano's timbre.** No ears here. The maths is tested; the sound isn't.
+- **Anything about taste.** See the questions at the bottom.
+
+## How this was run
+
 How to let Claude work unattended on the scene, and what it should and
 shouldn't touch.
 
@@ -176,8 +212,16 @@ belongs to Suraj.
     the layout can be seen. It's prompts, not prose — replace all four.
 13. ~~**A 404 that belongs to this site.**~~ **Done.** Wrong door, using the
     room's own door sprite, with every real room listed below it.
-14. **Check the exported build end to end** with `npm run preview`, then run
-    `npm run audit` against it rather than against dev.
+14. ~~**Check the exported build end to end.**~~ **Done.** Built, served
+    `out/` on :3001, and audited that instead of the dev server. Every route
+    200s — pages, both case studies, `sitemap.xml`, `robots.txt`, `og.png`,
+    the sprites. Audit reports no problems. Landing page in scene mode is
+    538 KB across 48 requests.
+
+    Also tested the claim the whole fallback rests on, which had never
+    actually been checked: **with JavaScript disabled**, no `data-mode` is
+    set, the scene stays hidden, and the plain version renders with all nine
+    links and 105 words of copy. It works.
 
 ## Gotcha
 
