@@ -23,6 +23,14 @@
   --rose: #d98ca0;
   --slate: #6d7a8c;
 
+  /* Fur. Kibou and Peanut are both brown animals and the first sixteen colors
+     had no brown at all — sampled off the reference photos, their coats were
+     landing on plum and slate. */
+  --bark-dark: #4a2f1d;
+  --bark: #7a4e2e;
+  --ginger: #cf8a4e;
+  --sand: #cdb08a;
+
   --bg: var(--cream);
   --fg: var(--ink);
   --muted: var(--slate);

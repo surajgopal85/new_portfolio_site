@@ -10,6 +10,14 @@
  *
  * Options
  *   --width <n>     target width in art pixels (default 384, the scene width)
+ *   --crop a,b,c,d  crop before downscaling, as fractions of the photo:
+ *                   left,top,right,bottom. Use it to cut one character out of
+ *                   a photo — a sprite quantized from a full frame wastes most
+ *                   of its pixels on the room behind it.
+ *   --group <name>  quantize against one group from the palette file ("fur",
+ *                   "room", "outside") instead of all 20 colors. A cat matched
+ *                   against the whole palette picks up sky blue in its
+ *                   shadows.
  *   --out <path>    output PNG (default public/art/<name>.png)
  *   --palette <p>   palette JSON (default scripts/palette.json)
  *   --dither        Floyd-Steinberg error diffusion; better for photos with
@@ -40,13 +48,35 @@ const dither = has('dither')
 const preview = Number(flag('preview', 0))
 const out = flag('out', join('public/art', `${basename(input, extname(input))}.png`))
 
-const palette = quantize
-  ? JSON.parse(await readFile(flag('palette', 'scripts/palette.json'), 'utf8')).colors.map(hexToRgb)
-  : []
+const paletteFile = JSON.parse(await readFile(flag('palette', 'scripts/palette.json'), 'utf8'))
+const group = flag('group', null)
+if (group && !paletteFile.groups?.[group]) {
+  console.error(`unknown palette group "${group}" — try ${Object.keys(paletteFile.groups ?? {}).join(', ')}`)
+  process.exit(1)
+}
+const palette = quantize ? (group ? paletteFile.groups[group] : paletteFile.colors).map(hexToRgb) : []
+
+// Apply the EXIF orientation first and bake it in. Phone photos are almost
+// always stored sideways with an orientation flag, and every later step here
+// works on raw pixels, where that flag no longer exists.
+const upright = await sharp(input).rotate().toBuffer()
+const source = sharp(upright)
+
+const crop = flag('crop', null)
+if (crop) {
+  const [x0, y0, x1, y1] = crop.split(',').map(Number)
+  const meta = await sharp(upright).metadata()
+  source.extract({
+    left: Math.round(x0 * meta.width),
+    top: Math.round(y0 * meta.height),
+    width: Math.round((x1 - x0) * meta.width),
+    height: Math.round((y1 - y0) * meta.height),
+  })
+}
 
 // Nearest neighbour on the way down: anything smoother invents colors that
 // aren't in the palette and blurs the edges you're about to hand-clean.
-const { data, info } = await sharp(input)
+const { data, info } = await source
   .resize({ width, kernel: 'nearest' })
   .ensureAlpha()
   .raw()
@@ -63,7 +93,10 @@ const png = sharp(data, { raw: { width: info.width, height: info.height, channel
   palette: true,
 })
 await png.toFile(out)
-console.log(`${out}  ${info.width}x${info.height}${quantize ? `  ${palette.length} colors${dither ? ' (dithered)' : ''}` : '  full color'}`)
+console.log(
+  `${out}  ${info.width}x${info.height}` +
+    (quantize ? `  ${palette.length} colors${group ? ` (${group})` : ''}${dither ? ' dithered' : ''}` : '  full color'),
+)
 
 if (preview > 1) {
   const previewPath = out.replace(/\.png$/, `.preview.png`)
