@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { hotspots, site } from '@/content/site'
 import { drawOrder, place, type Thing } from './room'
 import { SURAJ } from '@/lib/characters'
-import { teardown, unlock } from '@/lib/piano'
+import { KEYS, playNote, teardown, unlock } from '@/lib/piano'
 import styles from './scene.module.css'
 
 const IDLE_HINT = 'Click something in the room.'
@@ -88,6 +88,23 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
                 {...hint(spot.hint)}
               >
                 <Placeholder thing={thing} screen={screen} />
+
+                {/* The piano plays when a pointer sweeps across it, which is
+                    why the notes are pentatonic — there's no wrong order.
+                    Clicking still opens the page; the keys only make sound,
+                    so the two never fight over the same gesture. */}
+                {thing.id === 'piano' &&
+                  sound &&
+                  KEYS.map((semitone, i) => (
+                    <span
+                      key={semitone}
+                      className={styles.key}
+                      aria-hidden="true"
+                      style={{ left: `${(i / KEYS.length) * 100}%`, width: `${100 / KEYS.length}%` }}
+                      onPointerEnter={() => playNote(semitone)}
+                    />
+                  ))}
+
                 <span className={styles.hotspotLabel} aria-hidden="true">
                   {spot.label}
                 </span>

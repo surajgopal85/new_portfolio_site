@@ -205,6 +205,15 @@
 .hotspot:focus-visible .ph { outline: 3px solid var(--gold); outline-offset: 2px; }
 .hotspot:focus-visible { outline: none; }
 
+/* One strip per note, only mounted while sound is on. */
+.key {
+  position: absolute;
+  top: 18%;
+  bottom: 8%;
+  background: transparent;
+}
+.key:hover { background: rgba(242, 193, 78, 0.35); }
+
 .hotspotLabel {
   position: absolute;
   left: 50%;
@@ -221,7 +230,16 @@
   transition: opacity 120ms steps(2, end);
 }
 .hotspot:hover .hotspotLabel,
-.hotspot:focus-visible .hotspotLabel { opacity: 1; }
+.hotspot:focus-visible /* One strip per note, only mounted while sound is on. */
+.key {
+  position: absolute;
+  top: 18%;
+  bottom: 8%;
+  background: transparent;
+}
+.key:hover { background: rgba(242, 193, 78, 0.35); }
+
+.hotspotLabel { opacity: 1; }
 
 /* --- status bar ----------------------------------------------------------- */
 .statusRow {

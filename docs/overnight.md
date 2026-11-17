@@ -101,8 +101,19 @@ Each item is verifiable without a human and without art that doesn't exist.
    Writing them exposed a hole in the contract: a pure `step` had nowhere to
    store how long someone had been settled, making the stay-duration rule
    impossible to satisfy. `CharacterState` now carries a `timer`.
-6. **The piano.** Web Audio, off by default, short plucked tones, no sampled
-   piano.
+6. ~~**The piano.**~~ **Done.** Web Audio, off until the toggle, no
+   AudioContext created before that click. Each note is a triangle for the
+   body plus a quiet detuned square for the attack, through a decaying
+   envelope and a lowpass that closes as the note dies — which is what makes
+   a pluck sound plucked rather than like a beep ending.
+
+   Notes are C major pentatonic over two octaves, because the piano is played
+   by sweeping a pointer across it: there is no wrong order, so nothing a
+   visitor does can sound like a mistake. Key strips only mount while sound
+   is on (verified: 0 before the toggle, 11 after).
+
+   **I cannot hear it.** The note maths is unit-tested and the graph builds
+   without errors, but nobody has listened to the timbre.
 7. **The overworld map** at the same scale and drawing rules as the room.
 8. **Performance and accessibility**: keyboard path through every hotspot,
    focus visibility, the static version at 420px wide, Lighthouse-ish checks
@@ -121,3 +132,16 @@ Each item is verifiable without a human and without art that doesn't exist.
 ## Questions for the morning
 
 (Claude appends here rather than guessing.)
+
+**1. Should clicking the piano play a note or open the page?** Right now the
+keys make sound on pointer *hover* and a click still opens `/about/`, so the
+two gestures never fight. The alternative is clicking keys to play and moving
+"Fun & about" onto something else — but the nav map says piano, so I left it.
+
+**2. The piano is mouse-only.** A pointer sweep plays it; keyboard users get
+the link and no notes. Making each key focusable would put eleven tab stops
+in the middle of the scene, which seems worse. Worth a decision.
+
+**3. Does the timbre actually sound good?** Unverifiable from here. If it's
+wrong, the knobs are in `playNote`: `dur`, the lowpass sweep, and the square
+oscillator's `edgeGain` (currently 0.2).
