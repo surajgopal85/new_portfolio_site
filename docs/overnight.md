@@ -338,7 +338,32 @@ half-converted.
    Still placeholder: Suraj at the desk and the three visitors have no
    sprites — those are Suraj's to draw, in isometric now, which changes the
    frame list in `docs/characters.md`.
-7. **Re-run `npm run audit` and `npm run og`.**
+7. ~~**Re-run `npm run audit` and `npm run og`.**~~ **Done.** Audit reports
+   no problems; the social card is regenerated from the isometric room.
+
+---
+
+## Phase two is done
+
+The perspective is rebuilt and live on `/`. What exists now:
+
+- `components/scene/iso.ts` — the projection and the room's contents, every
+  thing declaring a footprint in tiles and a height in pixels.
+- `scripts/iso-sprites.mjs` — 18 sprites drawn in code, from one box
+  primitive plus a wall-shearing stage.
+- `components/scene/IsoScene.tsx` — painter-ordered renderer with the
+  hotspots, night lighting, desk animation and piano.
+- `npm run iso` — geometry check that needs no browser.
+
+The old top-down scene is deleted. Only the projects overworld is still drawn
+flat, which is correct: it's a map, not a room.
+
+**Nobody is in the room.** The old scene had a placeholder box for Suraj at
+the desk; this one has nothing, deliberately — a grey box in an otherwise
+finished room reads worse than an empty chair, and the character art is
+Suraj's. `lib/characters.ts` has everyone's tile positions and beats ready,
+and `npm test` has the 21 tests that will activate the moment `step` moves
+anyone.
 
 ### Also new
 
