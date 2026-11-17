@@ -129,11 +129,20 @@
 .ph_shelf { background: var(--bark); border-top: 4px solid var(--clay); }
 .ph_desk_frame { background: transparent; border: 0; box-shadow: inset 4px 0 0 var(--slate), inset -4px 0 0 var(--slate); }
 .ph_desk_top { background: var(--tan-dark); border-bottom: 3px solid var(--bark); }
-.ph_monitor { background: var(--ink); border: 2px solid var(--slate); padding: 4px; }
+/* The bezel sits on top; the screen shows through its transparent middle.
+   Percentages are the screen hole in monitor.png: x 2-18 of 20, y 2-11 of 16. */
+.monitor { position: relative; display: block; width: 100%; height: 100%; }
+.monitor img { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* What's on screen. The monitor is the Projects link, so by default it shows
    the overworld you'd land on — the nav explains itself without a label. */
-.screen { display: block; width: 100%; height: 100%; }
+.screen {
+  position: absolute;
+  left: 10%;
+  top: 12.5%;
+  width: 80%;
+  height: 56.25%;
+}
 .screen_map {
   background: var(--leaf-dark);
   box-shadow:

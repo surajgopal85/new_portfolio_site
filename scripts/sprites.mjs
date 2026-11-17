@@ -61,6 +61,31 @@ function canvas(w, h) {
 }
 
 /**
+ * One gul — the octagonal medallion the rug repeats. Drawn symmetrically by
+ * construction rather than traced, because a woven motif IS symmetrical and
+ * the eye catches it immediately when it isn't. 18x11, which is one motif of
+ * the real rug squashed into the floor plane.
+ */
+function gul(c, ox, oy) {
+  // Half-width inset per row: an octagon, widest in the middle.
+  const inset = [6, 4, 2, 1, 0, 0, 0, 1, 2, 4, 6]
+  for (let y = 0; y < inset.length; y++) {
+    const i = inset[y]
+    const w = 18 - i * 2
+    c.rect(ox + i, oy + y, w, 1, P.brick)
+    c.px(ox + i, oy + y, P.cream)
+    c.px(ox + i + w - 1, oy + y, P.cream)
+  }
+  c.rect(ox + 5, oy, 8, 1, P.cream)                 // top and bottom edges
+  c.rect(ox + 5, oy + 10, 8, 1, P.cream)
+  c.rect(ox + 7, oy + 4, 4, 3, P.gold)              // the centre
+  c.px(ox + 8, oy + 5, P.brick)
+  c.px(ox + 9, oy + 5, P.brick)
+  c.rect(ox + 2, oy + 5, 2, 1, P.cream)             // the hooks either side
+  c.rect(ox + 14, oy + 5, 2, 1, P.cream)
+}
+
+/**
  * One entry per prop. Sizes mirror room.ts — if you change one, change both,
  * and `npm run layout` will show the mismatch.
  */
@@ -135,6 +160,89 @@ const sprites = {
     c.rect(8, 1, 32, 3, P.shadow)                   // crossbar under the top
     c.rect(3, 16, 5, 2, P.ink)                      // feet
     c.rect(40, 16, 5, 2, P.ink)
+  }],
+  // The monitor's screen is a hole in the sprite — the scene renders what's
+  // on it behind this, so the bezel can be art while the screen stays live.
+  'monitor': [20, 16, (c) => {
+    c.box(0, 0, 20, 13, P.ink)
+    c.frame(1, 1, 18, 11, P.slate)
+    c.rect(2, 2, 16, 9, [0, 0, 0], 0)               // transparent screen
+    c.rect(8, 13, 4, 2, P.slate)                    // stand
+    c.rect(6, 15, 8, 1, P.ink)                      // foot
+  }],
+  'chair': [14, 16, (c) => {
+    c.box(2, 0, 10, 9, P.shadow)                    // back
+    c.rect(3, 1, 8, 3, P.slate)
+    c.box(0, 8, 14, 4, P.ink)                       // seat
+    c.rect(6, 12, 2, 2, P.slate)                    // post
+    c.rect(2, 14, 10, 1, P.ink)                     // the star base, from above
+    c.rect(1, 15, 3, 1, P.ink); c.rect(10, 15, 3, 1, P.ink)
+  }],
+  'plush': [10, 9, (c) => {
+    c.box(0, 2, 10, 7, P.gold)                      // the burger-cat
+    c.rect(1, 1, 8, 2, P.ginger)
+    c.rect(1, 4, 8, 1, P.leaf)                      // lettuce
+    c.rect(1, 6, 8, 1, P.brick)
+    c.px(2, 3, P.ink); c.px(7, 3, P.ink)            // eyes
+  }],
+  'books': [12, 9, (c) => {
+    c.rect(0, 1, 3, 8, P.brick); c.frame(0, 1, 3, 8, P.ink)
+    c.rect(3, 0, 3, 9, P.leafDark); c.frame(3, 0, 3, 9, P.ink)
+    c.rect(6, 2, 3, 7, P.plum); c.frame(6, 2, 3, 7, P.ink)
+    c.rect(9, 1, 3, 8, P.gold); c.frame(9, 1, 3, 8, P.ink)
+  }],
+  'papers': [11, 4, (c) => {
+    c.box(0, 0, 11, 4, P.paper)
+    c.rect(2, 1, 7, 1, P.slate)
+  }],
+  'powerstrip': [14, 4, (c) => {
+    c.box(0, 0, 14, 4, P.paper)
+    for (let x = 2; x < 13; x += 3) c.rect(x, 1, 2, 2, P.slate)
+  }],
+  'laptop': [12, 8, (c) => {
+    c.box(1, 0, 10, 6, P.slate)                     // lid
+    c.rect(2, 1, 8, 4, P.night)                     // screen
+    c.box(0, 5, 12, 3, P.sand)                      // keyboard half
+  }],
+  'keyboard-white': [14, 3, (c) => {
+    c.box(0, 0, 14, 3, P.paper)
+    for (let x = 2; x < 13; x += 2) c.px(x, 1, P.slate)
+    c.px(12, 1, P.brick)                            // the red accent keys
+    c.px(1, 1, P.brick)
+  }],
+  'notebook': [10, 3, (c) => {
+    c.box(0, 0, 10, 3, P.paper)
+    c.rect(5, 0, 1, 3, P.slate)                     // the spine, lying open
+  }],
+  'mug': [3, 4, (c) => { c.box(0, 0, 3, 4, P.sky) }],
+  'bottle': [3, 8, (c) => {
+    c.box(0, 0, 3, 8, P.skyDark)
+    c.rect(1, 0, 1, 2, P.ink)                       // cap
+  }],
+  'gold-frame': [5, 7, (c) => {
+    c.box(0, 0, 5, 7, P.gold)
+    c.rect(1, 1, 3, 5, P.bark)                      // the photo inside
+  }],
+  // The rug: a dark field of offset guls inside a banded border. Built by
+  // repetition, the way it was woven — quantizing a photo of the whole rug
+  // just gives mush at this size.
+  'rug': [144, 56, (c) => {
+    c.rect(0, 0, 144, 56, [18, 13, 20])             // the field
+    for (let row = 0, y = 9; y < 44; row++, y += 14) {
+      for (let x = row % 2 ? -8 : 3; x < 140; x += 22) gul(c, x, y)
+    }
+    // Border bands, drawn over the field edges.
+    c.rect(0, 0, 144, 5, P.barkDark); c.rect(0, 51, 144, 5, P.barkDark)
+    c.rect(0, 0, 5, 56, P.barkDark); c.rect(139, 0, 5, 56, P.barkDark)
+    for (let x = 1; x < 143; x += 4) {
+      c.rect(x, 1, 2, 3, P.gold); c.rect(x + 2, 1, 1, 3, P.brick)
+      c.rect(x, 52, 2, 3, P.gold); c.rect(x + 2, 52, 1, 3, P.brick)
+    }
+    for (let y = 5; y < 51; y += 4) {
+      c.rect(1, y, 3, 2, P.gold); c.rect(1, y + 2, 3, 1, P.brick)
+      c.rect(140, y, 3, 2, P.gold); c.rect(140, y + 2, 3, 1, P.brick)
+    }
+    c.frame(0, 0, 144, 56, P.ink)
   }],
   'credenza': [48, 86, (c) => {
     c.box(0, 0, 48, 86, P.bark)                     // the desk return, running toward you

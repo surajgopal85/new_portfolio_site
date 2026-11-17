@@ -175,14 +175,16 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
  * gets a real `src` in room.ts.
  */
 function Placeholder({ thing, screen }: { thing: Thing; screen?: Screen }) {
-  if (thing.src) return <img src={thing.src} alt="" />
-  const cls = `${styles.ph} ${styles[`ph_${thing.id.replaceAll('-', '_')}`] ?? ''}`
+  // The monitor's bezel is a sprite with a transparent screen; what's on
+  // screen renders behind it, so the art and the live content stay separate.
   if (thing.id === 'monitor') {
     return (
-      <span className={cls}>
+      <span className={styles.monitor}>
         <span className={`${styles.screen} ${styles[`screen_${screen ?? 'map'}`]}`} />
+        {thing.src && <img src={thing.src} alt="" />}
       </span>
     )
   }
-  return <span className={cls} />
+  if (thing.src) return <img src={thing.src} alt="" />
+  return <span className={`${styles.ph} ${styles[`ph_${thing.id.replaceAll('-', '_')}`] ?? ''}`} />
 }

@@ -79,15 +79,17 @@ Each item is verifiable without a human and without art that doesn't exist.
 
    One thing NOT to fill: the centre of the floor. See the note in
    `art-direction.md` — that's the stage.
-3. **Real sprites for the simple props.** *First pass done:* piano, amp,
-   door, windows, futon, side table, shelf, desk top, desk legs, credenza —
-   all drawn in code by `npm run sprites`, all now live in the scene.
-   Still placeholders: monitor (its screen cycles, so the frame needs to be a
-   PNG with the screen as a child), chair, the small desk props, plush,
-   books, papers, power strip.
-4. **The rug.** Hand-code a symmetrical gul motif — not a photo crop — and
-   tile it with the alternating offset, plus a border band. See
-   `photos/pixel-refs/` for the draft.
+3. ~~**Real sprites for the simple props.**~~ **Done.** 23 sprites drawn in
+   code by `npm run sprites`, every prop in the room now art rather than a
+   CSS box. The monitor's bezel is a sprite with a transparent screen hole
+   and the live screen renders behind it, so the art and the cycling content
+   stay separate.
+
+   The only placeholders left are the characters, which are Suraj's.
+4. ~~**The rug.**~~ **Done.** One gul built symmetrically by construction
+   (a woven motif IS symmetrical, and the eye catches it instantly when it
+   isn't), tiled in offset rows across a dark field, inside a banded border.
+   Reads as a Bokhara at 144x56 where the quantized photo was mush.
 5. **A test suite for the character contract**, so the state machine has
    something to run against the moment it's written: one visitor at a time,
    never two; every visit reaches `away`; phases advance in order; no NaN

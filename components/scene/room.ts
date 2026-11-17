@@ -74,34 +74,34 @@ export const things: readonly Thing[] = [
   // to 78. Everything on the desk has its base on that surface. Depth =
   // (y - 48) / 168.
   { id: 'shelf', x: 104, depth: 0.16, w: 16, h: 20, src: '/art/room/shelf.png' },
-  { id: 'monitor', x: 140, depth: 0.012, w: 20, h: 16, src: null, rises: true, hotspot: 'monitor' },
-  { id: 'gold-frame', x: 170, depth: 0.012, w: 5, h: 7, src: null, rises: true },
-  { id: 'bottle', x: 130, depth: 0.02, w: 3, h: 8, src: null, rises: true },
-  { id: 'laptop', x: 160, depth: 0.036, w: 12, h: 8, src: null, rises: true },
-  { id: 'mug', x: 174, depth: 0.05, w: 3, h: 4, src: null, rises: true },
+  { id: 'monitor', x: 140, depth: 0.012, w: 20, h: 16, src: '/art/room/monitor.png', rises: true, hotspot: 'monitor' },
+  { id: 'gold-frame', x: 170, depth: 0.012, w: 5, h: 7, src: '/art/room/gold-frame.png', rises: true },
+  { id: 'bottle', x: 130, depth: 0.02, w: 3, h: 8, src: '/art/room/bottle.png', rises: true },
+  { id: 'laptop', x: 160, depth: 0.036, w: 12, h: 8, src: '/art/room/laptop.png', rises: true },
+  { id: 'mug', x: 174, depth: 0.05, w: 3, h: 4, src: '/art/room/mug.png', rises: true },
   { id: 'desk-top', x: 126, depth: 0.071, w: 52, h: 12, src: '/art/room/desk-top.png', rises: true },
-  { id: 'keyboard-white', x: 136, depth: 0.078, w: 14, h: 3, src: null, rises: true },
-  { id: 'notebook', x: 152, depth: 0.084, w: 10, h: 3, src: null, rises: true },
+  { id: 'keyboard-white', x: 136, depth: 0.078, w: 14, h: 3, src: '/art/room/keyboard-white.png', rises: true },
+  { id: 'notebook', x: 152, depth: 0.084, w: 10, h: 3, src: '/art/room/notebook.png', rises: true },
   { id: 'desk-frame', x: 128, depth: 0.178, w: 48, h: 18, src: '/art/room/desk-frame.png' },
-  { id: 'chair', x: 144, depth: 0.24, w: 14, h: 16, src: null },
+  { id: 'chair', x: 144, depth: 0.24, w: 14, h: 16, src: '/art/room/chair.png' },
 
   // --- the rest of the room -----------------------------------------------
   { id: 'futon', x: 16, depth: 0.3, w: 36, h: 18, src: '/art/room/futon.png' },
   /** Books and binders on the cube shelf. */
-  { id: 'books', x: 106, depth: 0.05, w: 12, h: 9, src: null, over: 'shelf' },
+  { id: 'books', x: 106, depth: 0.05, w: 12, h: 9, src: '/art/room/books.png', over: 'shelf' },
   /** The cable run from the desk down to the power strip on the floor. */
   { id: 'cable-desk', x: 172, depth: 0.2, w: 2, h: 10, src: null },
-  { id: 'powerstrip', x: 196, depth: 0.3, w: 14, h: 4, src: null },
+  { id: 'powerstrip', x: 196, depth: 0.3, w: 14, h: 4, src: '/art/room/powerstrip.png' },
   { id: 'cable-strip', x: 174, depth: 0.3, w: 23, h: 2, src: null, over: 'powerstrip' },
-  { id: 'rug', x: 96, depth: 0.62, w: 144, h: 56, src: null, flat: true },
+  { id: 'rug', x: 96, depth: 0.62, w: 144, h: 56, src: '/art/room/rug.png', flat: true },
   /** The fan is above the camera; its shadow turns across the rug. */
   { id: 'fan-shadow', x: 128, depth: 0.54, w: 72, h: 30, src: null, flat: true, over: 'rug' },
   { id: 'bone', x: 150, depth: 0.72, w: 9, h: 4, src: null, over: 'rug' },
   /** The side table by the piano, with the burger-cat plush and a stack of
       sheet music on it. */
   { id: 'side-table', x: 110, depth: 0.94, w: 30, h: 22, src: '/art/room/side-table.png' },
-  { id: 'plush', x: 116, depth: 0.92, w: 10, h: 9, src: null, over: 'side-table' },
-  { id: 'papers', x: 128, depth: 0.92, w: 11, h: 4, src: null, over: 'side-table' },
+  { id: 'plush', x: 116, depth: 0.92, w: 10, h: 9, src: '/art/room/plush.png', over: 'side-table' },
+  { id: 'papers', x: 128, depth: 0.92, w: 11, h: 4, src: '/art/room/papers.png', over: 'side-table' },
 
   /** The desk is an L: this is the return, running along the right wall. */
   { id: 'desk-return', x: 304, depth: 0.75, w: 48, h: 86, src: '/art/room/credenza.png' },
