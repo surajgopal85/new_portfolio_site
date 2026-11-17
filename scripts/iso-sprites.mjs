@@ -359,6 +359,18 @@ await write('monitor', (st, t) => {
   const { w, d } = t.tiles
   st.box({ u: w / 2 - 0.1, v: d / 2 - 0.2, w: 0.2, d: 0.4, h: 6, color: P.slate, k: 2 })
   st.box({ u: 0, v: 0, w, d, z: 6, h: t.height - 6, color: P.ink, k: 0 })
+  // The screen faces into the room, on the left face of the panel. It's the
+  // brightest thing in a night room, which is correct: it's the Projects
+  // link, and the eye should land there first.
+  const T = (uu, zz) => [st.X(uu, d), st.Y(uu, d, zz)]
+  st.c.poly(
+    [T(0.08, t.height - 2), T(w - 0.08, t.height - 2), T(w - 0.08, 9), T(0.08, 9)],
+    P.skyDark,
+  )
+  st.c.poly(
+    [T(0.16, t.height - 4), T(w - 0.16, t.height - 4), T(w - 0.16, 11), T(0.16, 11)],
+    P.leafDark,
+  )
 })
 
 /** The piano: keys on an X-stand, seen along its length. */

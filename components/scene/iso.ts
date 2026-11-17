@@ -128,30 +128,30 @@ export function sortKey(t: IsoThing): number {
 
 export const isoThings: readonly IsoThing[] = [
   // --- north wall: the windows you look at while working -----------------
-  { id: 'window-left', gx: 2.6, gy: 0, z: 24, tiles: { w: 2, d: 0 }, height: 40, src: null, wall: 'north' },
-  { id: 'window-right', gx: 5.4, gy: 0, z: 24, tiles: { w: 2, d: 0 }, height: 40, src: null, wall: 'north' },
-  { id: 'corkboard', gx: 8.2, gy: 0, z: 28, tiles: { w: 1.8, d: 0 }, height: 30, src: null, wall: 'north', hotspot: 'corkboard' },
+  { id: 'window-left', gx: 2.6, gy: 0, z: 24, tiles: { w: 2, d: 0 }, height: 40, src: '/art/iso/window-left.png', wall: 'north' },
+  { id: 'window-right', gx: 5.4, gy: 0, z: 24, tiles: { w: 2, d: 0 }, height: 40, src: '/art/iso/window-right.png', wall: 'north' },
+  { id: 'corkboard', gx: 8.2, gy: 0, z: 28, tiles: { w: 1.8, d: 0 }, height: 30, src: '/art/iso/corkboard.png', wall: 'north', hotspot: 'corkboard' },
 
   // --- west wall: the way in, and the music ------------------------------
-  { id: 'ligeti', gx: 0, gy: 2.6, z: 32, tiles: { w: 0, d: 1.8 }, height: 30, src: null, wall: 'west' },
-  { id: 'schiele', gx: 0, gy: 4.9, z: 34, tiles: { w: 0, d: 1 }, height: 34, src: null, wall: 'west' },
-  { id: 'door', gx: 0, gy: 7.2, z: 0, tiles: { w: 0, d: 1.7 }, height: 62, src: null, wall: 'west', hotspot: 'door' },
+  { id: 'ligeti', gx: 0, gy: 2.6, z: 32, tiles: { w: 0, d: 1.8 }, height: 30, src: '/art/iso/ligeti.png', wall: 'west' },
+  { id: 'schiele', gx: 0, gy: 4.9, z: 34, tiles: { w: 0, d: 1 }, height: 34, src: '/art/iso/schiele.png', wall: 'west' },
+  { id: 'door', gx: 0, gy: 7.2, z: 0, tiles: { w: 0, d: 1.7 }, height: 62, src: '/art/iso/door.png', wall: 'west', hotspot: 'door' },
 
   // --- the rug, which owns the middle of the floor -----------------------
-  { id: 'rug', gx: 1.3, gy: 1.3, tiles: { w: 6.5, d: 6.5 }, height: 0, src: null, flat: true },
+  { id: 'rug', gx: 1.3, gy: 1.3, tiles: { w: 6.5, d: 6.5 }, height: 0, src: '/art/iso/rug.png', flat: true },
 
   // --- the floor, far side -----------------------------------------------
-  { id: 'futon', gx: 3.3, gy: 0.5, tiles: { w: 2.2, d: 1.4 }, height: 20, src: null },
-  { id: 'piano', gx: 0.5, gy: 3.4, tiles: { w: 0.8, d: 3.2 }, height: 26, src: null, hotspot: 'piano' },
-  { id: 'amp', gx: 0.6, gy: 4.9, tiles: { w: 0.9, d: 0.9 }, height: 18, src: null },
-  { id: 'side-table', gx: 0.5, gy: 6.3, tiles: { w: 0.9, d: 1.8 }, height: 20, src: null },
+  { id: 'futon', gx: 3.3, gy: 0.5, tiles: { w: 2.2, d: 1.4 }, height: 20, src: '/art/iso/futon.png' },
+  { id: 'piano', gx: 0.5, gy: 3.4, tiles: { w: 0.8, d: 3.2 }, height: 26, src: '/art/iso/piano.png', hotspot: 'piano' },
+  { id: 'amp', gx: 0.6, gy: 4.9, tiles: { w: 0.9, d: 0.9 }, height: 18, src: '/art/iso/amp.png' },
+  { id: 'side-table', gx: 0.5, gy: 6.3, tiles: { w: 0.9, d: 1.8 }, height: 20, src: '/art/iso/side-table.png' },
 
   // --- the desk, along the east side, with walking room beside the rug ---
-  { id: 'shelf', gx: 8.4, gy: 0.9, tiles: { w: 1, d: 1 }, height: 24, src: null },
-  { id: 'desk', gx: 8.3, gy: 2.1, tiles: { w: 1.2, d: 2.6 }, height: 26, src: null },
-  { id: 'monitor', gx: 8.6, gy: 2.3, z: 26, tiles: { w: 0.5, d: 1.4 }, height: 24, src: null, hotspot: 'monitor' },
-  { id: 'laptop', gx: 8.6, gy: 3.4, z: 26, tiles: { w: 0.5, d: 0.9 }, height: 10, src: null },
-  { id: 'chair', gx: 7.1, gy: 2.7, tiles: { w: 1.1, d: 1.1 }, height: 34, src: null },
-  { id: 'credenza', gx: 8.3, gy: 5.2, tiles: { w: 1.2, d: 2.4 }, height: 28, src: null },
-  { id: 'midi', gx: 8.4, gy: 5.4, z: 28, tiles: { w: 0.7, d: 1.9 }, height: 8, src: null },
+  { id: 'shelf', gx: 8.4, gy: 0.9, tiles: { w: 1, d: 1 }, height: 24, src: '/art/iso/shelf.png' },
+  { id: 'desk', gx: 8.3, gy: 2.1, tiles: { w: 1.2, d: 2.6 }, height: 26, src: '/art/iso/desk.png' },
+  { id: 'monitor', gx: 8.6, gy: 2.3, z: 26, tiles: { w: 0.5, d: 1.4 }, height: 24, src: '/art/iso/monitor.png', hotspot: 'monitor' },
+  { id: 'laptop', gx: 8.6, gy: 3.4, z: 26, tiles: { w: 0.5, d: 0.9 }, height: 10, src: '/art/iso/laptop.png' },
+  { id: 'chair', gx: 7.1, gy: 2.7, tiles: { w: 1.1, d: 1.1 }, height: 34, src: '/art/iso/chair.png' },
+  { id: 'credenza', gx: 8.3, gy: 5.2, tiles: { w: 1.2, d: 2.4 }, height: 28, src: '/art/iso/credenza.png' },
+  { id: 'midi', gx: 8.4, gy: 5.4, z: 28, tiles: { w: 0.7, d: 1.9 }, height: 8, src: '/art/iso/midi.png' },
 ]

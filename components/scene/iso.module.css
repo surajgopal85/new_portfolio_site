@@ -1,0 +1,95 @@
+/* The isometric room. Geometry lives in iso.ts; this file only places
+   sprites and paints the light. */
+
+.frame {
+  position: relative;
+  width: 100%;
+  max-width: 1152px;
+  margin: 0 auto;
+  aspect-ratio: 384 / 240;
+  overflow: hidden;
+  background: var(--ink) url('/art/iso/room-bg.png') center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--shadow);
+  touch-action: manipulation;
+}
+
+.thing {
+  position: absolute;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+.thing img { display: block; width: 100%; height: 100%; }
+
+/* The desk top and everything standing on it rise together. */
+.rises { transition: transform 1800ms steps(14, end); }
+.deskUp .rises { transform: translateY(-5%); }
+@media (prefers-reduced-motion: reduce) { .rises { transition: none; } }
+
+.hotspot { pointer-events: auto; cursor: pointer; }
+.hotspot:hover,
+.hotspot:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+.hotspotLabel {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  font-family: var(--font-pixel);
+  font-size: clamp(0.625rem, 1.1vw, 0.8125rem);
+  white-space: nowrap;
+  padding: 0.25em 0.5em;
+  color: var(--ink);
+  background: var(--gold);
+  border: 2px solid var(--ink);
+  opacity: 0;
+  transition: opacity 120ms steps(2, end);
+}
+.hotspot:hover .hotspotLabel,
+.hotspot:focus-visible .hotspotLabel { opacity: 1; }
+
+/* One strip per note, only mounted while sound is on. */
+.key { position: absolute; top: 12%; bottom: 10%; background: transparent; }
+.key:hover { background: rgba(242, 193, 78, 0.35); }
+
+/* Night. The sprites are painted in their own daylight colours; this is the
+   light falling on them. The warm pool sits over the desk, the cool spill at
+   the windows, and the corners fall away. */
+.light {
+  position: absolute;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  background:
+    radial-gradient(26% 30% at 76% 42%, rgba(255, 206, 128, 0.42), transparent 72%),
+    radial-gradient(30% 34% at 44% 22%, rgba(130, 178, 240, 0.24), transparent 74%),
+    radial-gradient(130% 120% at 56% 42%, rgba(21, 17, 27, 0) 20%, rgba(21, 17, 27, 0.7) 100%),
+    linear-gradient(rgba(32, 22, 30, 0.54), rgba(32, 22, 30, 0.54));
+}
+
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1152px;
+  margin: 14px auto 0;
+}
+.status {
+  flex: 1 1 18ch;
+  min-width: 0;
+  font-family: var(--font-pixel);
+  font-size: 0.8125rem;
+  padding: 0.6em 0.8em;
+  color: var(--cream);
+  background: var(--ink);
+  border: 3px solid var(--cream);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }

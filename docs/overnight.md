@@ -299,9 +299,22 @@ half-converted.
 
    Drawn: both windows (night glass, streetlight, the tree outside), the
    panelled door, the Ligeti score, the Schiele, the cork board.
-5. **The new renderer.** `Scene` reads `iso.ts`, sorts by `gx + gy`, keeps
-   the hotspots, the night lighting layer, the desk animation and the piano
-   keys. Then delete `room.ts` and the old sprites.
+5. **The new renderer.** *Built, not yet swapped in.* `IsoScene` reads
+   `iso.ts`, paints in footprint order, keeps the hotspots, the night
+   lighting, the desk animation and the piano keys. Live at **`/iso/`** — a
+   preview route so the current scene keeps working until this one is better.
+
+   What the first assembled look showed, in priority order:
+
+   a. **The walls are mirrored against IMG_0730.** The windows render on the
+      right and the piano wall on the left; in the photo the windows are
+      ahead-left. Swap which axis holds what.
+   b. **The desk corner is a pile-up** — desk, chair, credenza and shelf all
+      overlap. Needs the same spacing pass the rug got.
+   c. **Too murky.** The warm pool sits over the desk but the room reads
+      underlit; the lighting wants more lift and less vignette.
+
+   Then: delete `room.ts`, the old sprites and `/iso/`.
 6. **Characters move on the tile grid.** `lib/characters.ts` spots become
    tile coordinates; the visit machine interpolates in tile space. Update the
    tests — they assert positions inside the room, which is now a diamond.
