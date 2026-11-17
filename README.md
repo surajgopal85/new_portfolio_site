@@ -15,6 +15,12 @@ every pixel here is drawn from scratch. No Nintendo sprites, no Nintendo music.
 | `npm run build` | static export to `out/` |
 | `npm run preview` | build, then serve `out/` — the actual static files CloudFront will serve |
 | `npm run lint` | typecheck |
+| `npm run iso-sprites` | draw the room's sprites in code |
+| `npm run iso -- out.png` | render the room's geometry, flag anything outside the frame |
+| `npm run shot` | screenshot any route, any width, either landing version |
+| `npm run audit` | keyboard path, focus rings, reduced motion, phone width |
+| `npm run og` | regenerate the social card from the live scene |
+| `npm test` | the character state machine's specification |
 | `npm run pixelate -- <photo> [options]` | photo → pixel-art base |
 | `npm run deploy` | build, upload to S3, invalidate CloudFront |
 
@@ -35,18 +41,20 @@ static fallback both render from it, so the two can't drift apart.
 
 ## The camera
 
-The room is drawn from a shallow top-down three-quarter angle — the Cult of
-the Lamb camera. You look down at the floor; everything on it stands upright,
-facing you. The projection is orthographic: no vanishing point, no scaling
-with depth, because perspective scaling puts sprites on fractional pixels.
+You stand in the doorway and look down across the room on the diagonal —
+windows ahead, desk right, piano corner left. `photos/raw/office/IMG_0730` is
+that exact view, and the projection is built to match it.
 
-This is the camera SMB3's own overworld map uses, so the landing scene and the
-projects map speak one visual language. The drawing style stays SMB3
-throughout: flat fills, one shadow step, a hard dark outline, no gradients.
+2:1 dimetric, not true 30-degree isometric. 2:1 keeps every edge on whole
+pixels — two across for one down — where true isometric puts diagonals on
+irrational slopes and they come out furry at this size.
 
-It also solves a problem the first version had: the desk, the piano and the
-door are on three different walls of the real office, and no single eye-level
-photo contains all three. Seen from above, they all fit in one frame.
+Everything is orthographic: no vanishing point, nothing scales with depth.
+Painter's order is the sum of a thing's grid coordinates, which is correct no
+matter how tall anything is.
+
+Stardew Valley sets the density and texture; the drawing rules are in
+`docs/art-direction.md`.
 
 ## Two landing experiences, on purpose
 
@@ -70,9 +78,9 @@ app/                     routes (static export, trailing slashes)
   projects/              overworld map + [slug] case studies
   now/                   the cork board — what I'm studying
 components/scene/        the room
-  room.ts                the floor plan: projection, and every thing in the
-                         room with its position and depth
-  Scene.tsx              depth-sorted renderer, desk animation, hotspots
+  iso.ts                 the projection, and every thing in the room with
+                         its footprint in tiles and its height in pixels
+  IsoScene.tsx           painter-ordered renderer, desk animation, hotspots
 content/site.ts          all non-project copy + the nav map
 content/projects.ts      the project list and case-study text
 content/studying.ts      what's pinned to the cork board
@@ -104,8 +112,13 @@ public/art/              exported pixel art
    reads as a quantized photo until the silhouettes are redrawn — that part is
    not automatable.
 4. Export one transparent PNG per layer at 384×216 into `public/art/office/`.
-5. Set its `src` in `components/scene/room.ts`. The CSS placeholder for that
-   thing disappears on its own.
+5. Set its `src` in `components/scene/iso.ts`.
+
+The room's own props aren't traced from photos at all — they're drawn in code
+by `scripts/iso-sprites.mjs`, because in isometric nearly every prop is a box
+with three shaded faces and one primitive draws most of them. The photos are
+reference for layout, contents and colour. The characters are the exception:
+they're hand-drawn, and `docs/characters.md` says at what size.
 
 The scene is 384×216 art pixels. Every color must come from
 `scripts/palette.json` — 21 colors in four groups (`room`, `outside`, `fur`,

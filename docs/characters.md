@@ -1,7 +1,11 @@
 # Character reference
 
 Three characters wander through the office: **Kibou** (cat), **Peanut** (dog)
-and **Caitlin**. Suraj is the fourth, at the desk.
+and **Caitlin**. Suraj is the fourth, at the desk, and doesn't move.
+
+Positions are tiles on the isometric floor — the same coordinates the
+furniture uses. See `lib/characters.ts` for each visitor's spot and beat,
+and `npm test` for the contract the state machine has to satisfy.
 
 Colors below were sampled off the reference photos in `photos/raw/` and then
 snapped to the nearest palette entry, so what you draw in Aseprite matches what
@@ -9,18 +13,51 @@ the room is already made of. Palette: `scripts/palette.json`.
 
 ## Scale
 
-The scene is 384×216 art px — 24×13.5 tiles at 16px. Everything should sit on
-that grid:
+The room is isometric now (see `docs/art-direction.md` and
+`components/scene/iso.ts`), which changes every number below.
 
-| | height | length |
+Height is measured in pixels, and the wall is 64px for an 8-foot room — so
+**8 pixels to the foot**. A floor tile is 32x16px and about 1.2 feet square.
+
+| | height | footprint |
 |---|---|---|
-| Standing person | 56–64 px (≈4 tiles) | — |
-| Peanut | 28 px at the shoulder | ~44 px nose to rump, + 20 px tail |
-| Kibou | 22 px at the shoulder | ~34 px, + a tail nearly as long again |
+| A person | 44–48 px | 0.5 x 0.5 tiles |
+| Peanut | 18 px at the shoulder | 0.5 x 0.8 tiles |
+| Kibou | 11 px at the shoulder | 0.4 x 0.7 tiles |
 
-At these sizes, detail is not what makes someone recognizable — silhouette and
-two or three color blocks are. Draw the silhouette first, in one flat color,
-and only shade it once it already reads from across the room.
+Check them against the furniture: the desk is 26px (3¼ ft), the chair 32px,
+the credenza 28px. A person at 46px stands head and shoulders above the desk,
+which is what you want.
+
+## Frames: draw two directions, mirror for the other two
+
+In isometric a character faces four ways, named for where they travel on
+screen: `down-right`, `down-left`, `up-right`, `up-left`. But **down-left is
+down-right mirrored, and up-left is up-right mirrored** — so you only draw
+two and flip them.
+
+| view | drawn | used for |
+|---|---|---|
+| down-right | yes | walking toward the camera |
+| up-right | yes | walking away, toward the desk or the windows |
+| down-left | mirror of down-right | — |
+| up-left | mirror of up-right | — |
+
+Per character:
+
+- **4-frame walk cycle** in each of the two drawn directions — 8 frames.
+- **2-frame idle** in down-right, for the `settled` beat — breathing, a tail
+  flick, an ear twitch.
+
+**Ten frames per character, not the twenty the four directions suggest.**
+Export one horizontal strip per direction into
+`public/art/characters/<name>-<down|up>-right.png`, frames evenly spaced,
+transparent background. The renderer flips with `transform: scaleX(-1)`,
+which is lossless on a whole-pixel sprite.
+
+Mirroring does mean asymmetric markings swap sides — Kibou's face blaze, a
+collar, a logo on a shirt. At this size nobody notices, and it halves the
+work.
 
 ## Kibou
 
@@ -83,23 +120,12 @@ Long dark-brown hair falling past the shoulders with a soft wave, parted off
 one side. Lighter skin: ramp `#7a4e2e` → `#a67c55` → `#cdb08a` → `#e8c48a`,
 highlight `#f6ecd8`.
 
-## Frames each character needs
+## The beats
 
 Matching the phases in `lib/characters.ts`:
 
-The room is drawn from a shallow top-down three-quarter angle (see
-`components/scene/room.ts`), so characters cross the floor in depth as well as
-left-to-right. That means three views, not one:
-
-| view | used for | frames |
-|---|---|---|
-| front (¾, facing you) | walking toward the camera, and the `paused` idle | 4 walk + 2 idle |
-| back | walking away, toward the desk or the door | 4 walk |
-| side | crossing the room; mirror it for the other direction | 4 walk |
-
-Fourteen frames per character. Export as one horizontal strip per view into
-`public/art/characters/<name>-<view>.png`, frames evenly spaced, transparent
-background.
+Each visitor enters through the door on the west wall, crosses to their spot,
+does their beat, and leaves. One at a time, with quiet stretches between.
 
 ## Reference photos: what worked
 
@@ -119,14 +145,18 @@ quantization either.
 
 ## Still needed
 
-Three angles of each character — front, back, side. The earlier version of
-this list asked for a profile only; that was written for a flat side-on scene,
-and the top-down camera replaced it.
+**Two three-quarter views of each character**, matching the room's camera:
+one from roughly 45 degrees in front and above, one from 45 degrees behind
+and above. Not front/back/side — that list was written for the top-down
+camera and the isometric one replaced it.
 
-- [ ] Kibou: front, back, side. Standing, plus one sitting for the idle.
-- [ ] Peanut: front, back, side. Standing, plus one sitting.
-- [ ] Caitlin: front and side, standing. (She's in — asked and said yes.)
-- [ ] Suraj: front and side, standing, plus seated at the desk.
+The camera height matters more than the angle: shoot from above the subject,
+looking down at roughly the angle the room is drawn at. For Kibou that means
+standing over him; for Peanut, crouching slightly above.
 
-Same camera height each time, so the three views of one character agree with
-each other.
+- [ ] Kibou: three-quarter front and three-quarter back. Standing, plus one
+      sitting for the idle.
+- [ ] Peanut: the same two, standing, plus one lying down.
+- [ ] Caitlin: the same two, standing. (She's in — asked and said yes.)
+- [ ] Suraj: the same two, plus seated at the desk from behind-right, which
+      is how the scene sees him.
