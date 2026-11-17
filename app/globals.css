@@ -1,0 +1,141 @@
+/* ---------------------------------------------------------------------------
+   Palette. Sixteen colors, SMB3-adjacent in feel but drawn from scratch — all
+   pixel art for this site should come out of this list so the scene, the
+   overworld and the type all read as one world.
+   Keep it in sync with scripts/palette.json, which the pixelate script
+   quantizes photos against.
+   --------------------------------------------------------------------------- */
+:root {
+  --ink: #1a1420;
+  --shadow: #3b2b40;
+  --brick: #b5452f;
+  --brick-light: #e0714a;
+  --tan: #e8c48a;
+  --tan-dark: #c2924f;
+  --sky: #6fa8e8;
+  --sky-dark: #3c6fb0;
+  --leaf: #4f9e4a;
+  --leaf-dark: #2f6b35;
+  --cream: #f6ecd8;
+  --paper: #fffdf6;
+  --gold: #f2c14e;
+  --plum: #6b4a7a;
+  --rose: #d98ca0;
+  --slate: #6d7a8c;
+
+  --bg: var(--cream);
+  --fg: var(--ink);
+  --muted: var(--slate);
+  --rule: rgba(26, 20, 32, 0.14);
+  --accent: var(--brick);
+
+  /* One pixel of art = this many CSS px. The scene scales in whole steps only;
+     half-pixels are what makes pixel art look muddy. */
+  --px: 3;
+
+  --font-pixel: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  --font-text: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #15111b;
+    --fg: var(--cream);
+    --muted: #9aa3b2;
+    --rule: rgba(246, 236, 216, 0.16);
+    --accent: var(--brick-light);
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #15111b;
+  --fg: var(--cream);
+  --muted: #9aa3b2;
+  --rule: rgba(246, 236, 216, 0.16);
+  --accent: var(--brick-light);
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--bg); }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-text);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Never let the browser smooth pixel art. */
+img, canvas { image-rendering: pixelated; }
+
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible,
+button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+h1, h2, h3 { font-family: var(--font-pixel); line-height: 1.2; letter-spacing: -0.01em; }
+
+.page {
+  max-width: 68ch;
+  margin: 0 auto;
+  padding-block: clamp(2rem, 6vw, 4.5rem);
+  padding-inline: 20px;
+}
+
+.eyebrow {
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+
+.lede { font-size: 1.125rem; }
+
+.backlink {
+  display: inline-block;
+  font-family: var(--font-pixel);
+  font-size: 0.8125rem;
+  margin-bottom: 1.5rem;
+}
+
+/* A chunky block of a button, 3px borders, hard shadow — the SMB3 UI feel
+   without copying any of its art. */
+.block-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-pixel);
+  font-size: 0.875rem;
+  padding: 0.6em 1em;
+  color: var(--ink);
+  background: var(--tan);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
+  text-decoration: none;
+  cursor: pointer;
+}
+.block-button:hover { background: var(--gold); }
+.block-button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Respect the OS setting everywhere, not just in the scene. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "office-16",
+  "note": "Keep in sync with the custom properties at the top of app/globals.css.",
+  "colors": [
+    "#1a1420", "#3b2b40", "#b5452f", "#e0714a",
+    "#e8c48a", "#c2924f", "#6fa8e8", "#3c6fb0",
+    "#4f9e4a", "#2f6b35", "#f6ecd8", "#fffdf6",
+    "#f2c14e", "#6b4a7a", "#d98ca0", "#6d7a8c"
+  ]
+}

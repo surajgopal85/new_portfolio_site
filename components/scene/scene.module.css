@@ -1,0 +1,131 @@
+.frame {
+  position: relative;
+  width: 100%;
+  max-width: 1152px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--shadow);
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--shadow);
+  touch-action: manipulation;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.layer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* The desk top and everything bolted to it. Stepped easing reads as mechanical
+   rather than smooth-animated, which suits the art. */
+.rises {
+  transition: transform 1800ms steps(14, end);
+}
+.deskDown .rises { transform: translateY(0); }
+.deskUp .rises { transform: translateY(-7.5%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rises { transition: none; }
+}
+
+/* --- Placeholder art ------------------------------------------------------
+   Flat blocks standing in for the real layers. Delete a rule once its layer
+   has a real `src`; the whole section goes away by the end of phase 2. */
+.ph { position: absolute; }
+.phWall { inset: 0; background: var(--tan); }
+.phWallLower { left: 0; right: 0; top: 64%; bottom: 0; background: var(--tan-dark); }
+.phWindow {
+  left: 54%; top: 10%; width: 22%; height: 26%;
+  background: var(--sky);
+  border: 3px solid var(--ink);
+  box-shadow: inset 0 0 0 3px var(--cream);
+}
+.phWindowBar { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: var(--ink); }
+.phHill { position: absolute; left: -10%; bottom: 0; width: 70%; height: 45%; background: var(--leaf); border-radius: 50% 50% 0 0; }
+.phShelf { left: 8%; top: 16%; width: 28%; height: 5%; background: var(--plum); border: 3px solid var(--ink); }
+.phBook { position: absolute; bottom: 100%; width: 7%; height: 160%; border: 3px solid var(--ink); }
+.phDoor {
+  left: 76%; top: 34%; width: 15%; height: 44%;
+  background: var(--brick); border: 3px solid var(--ink);
+}
+.phKnob { position: absolute; left: 12%; top: 48%; width: 8%; aspect-ratio: 1; background: var(--gold); border: 2px solid var(--ink); }
+.phFloor { left: 0; right: 0; top: 78%; bottom: 0; background: var(--shadow); }
+.phRug { left: 30%; top: 82%; width: 44%; height: 14%; background: var(--rose); border: 3px solid var(--ink); }
+.phPiano { left: 9%; top: 62%; width: 20%; height: 12%; background: var(--ink); border: 3px solid var(--cream); }
+.phKeys { position: absolute; left: 6%; right: 6%; bottom: 18%; height: 42%; background: var(--paper); }
+.phKeyLine { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); }
+.phDeskLeg { top: 52%; width: 3.5%; height: 26%; background: var(--slate); border: 3px solid var(--ink); }
+.phDeskTop { left: 34%; top: 50%; width: 34%; height: 4%; background: var(--tan-dark); border: 3px solid var(--ink); }
+.phMonitor { left: 38%; top: 30%; width: 26%; height: 20%; background: var(--ink); border: 3px solid var(--slate); }
+.phScreen { position: absolute; inset: 8%; background: var(--sky-dark); }
+.phStand { position: absolute; left: 44%; top: 100%; width: 12%; height: 45%; background: var(--slate); border: 3px solid var(--ink); }
+.phKbd { left: 40%; top: 54%; width: 22%; height: 2.5%; background: var(--cream); border: 2px solid var(--ink); }
+.phMug { left: 64%; top: 46%; width: 4%; height: 5%; background: var(--brick-light); border: 3px solid var(--ink); }
+
+/* --- Hotspots ------------------------------------------------------------- */
+.hotspot {
+  position: absolute;
+  display: block;
+  background: transparent;
+  border: 3px dashed transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.hotspot:hover,
+.hotspot:focus-visible {
+  border-color: var(--gold);
+  background: rgba(242, 193, 78, 0.16);
+}
+.hotspot:focus-visible { outline: none; }
+
+.hotspotLabel {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  font-family: var(--font-pixel);
+  font-size: clamp(0.625rem, 1.1vw, 0.8125rem);
+  white-space: nowrap;
+  padding: 0.25em 0.5em;
+  color: var(--ink);
+  background: var(--gold);
+  border: 2px solid var(--ink);
+  opacity: 0;
+  transition: opacity 120ms steps(2, end);
+}
+.hotspot:hover .hotspotLabel,
+.hotspot:focus-visible .hotspotLabel { opacity: 1; }
+
+/* --- Status bar ----------------------------------------------------------- */
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1152px;
+  margin: 14px auto 0;
+}
+
+.status {
+  flex: 1 1 18ch;
+  min-width: 0;
+  font-family: var(--font-pixel);
+  font-size: 0.8125rem;
+  padding: 0.6em 0.8em;
+  color: var(--cream);
+  background: var(--ink);
+  border: 3px solid var(--cream);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+
+.controls { display: flex; gap: 8px; flex-wrap: wrap; }
