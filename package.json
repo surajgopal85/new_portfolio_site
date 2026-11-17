@@ -9,7 +9,8 @@
     "lint": "tsc --noEmit",
     "pixelate": "node scripts/pixelate.mjs",
     "deploy": "bash infra/deploy.sh",
-    "preview": "next build && serve out -l 3000"
+    "preview": "next build && serve out -l 3000",
+    "layout": "node --experimental-strip-types scripts/layout-preview.mjs"
   },
   "keywords": [],
   "author": "",

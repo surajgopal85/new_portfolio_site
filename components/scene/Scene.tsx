@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { hotspots, site } from '@/content/site'
 import { drawOrder, place, type Thing } from './room'
+import { SURAJ } from '@/lib/characters'
 import { teardown, unlock } from '@/lib/piano'
 import styles from './scene.module.css'
 
@@ -68,8 +69,6 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
       <div className={`${styles.frame} ${deskUp ? styles.deskUp : styles.deskDown}`}>
         <div className={styles.backWall} />
         <div className={styles.floor} />
-        <div className={`${styles.sideWall} ${styles.sideLeft}`} />
-        <div className={`${styles.sideWall} ${styles.sideRight}`} />
 
         {/* Back to front. A thing's base sits on the floor, so draw order and
             vertical position agree, and characters can walk behind the desk. */}
@@ -122,6 +121,19 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
             </div>
           )
         })}
+
+        {/* Suraj, at the desk, always. Drawn after the chair he's sitting in
+            and before anything nearer the camera, so a visitor crossing the
+            rug passes in front of him. */}
+        <div
+          className={`${styles.thing} ${styles.typing}`}
+          style={{ ...place(SURAJ), zIndex: 10 + drawOrder.findIndex((t) => t.id === 'chair') }}
+        >
+          <span className={`${styles.ph} ${styles.ph_suraj}`} />
+        </div>
+
+        {/* Visitors mount here — one at a time. See lib/characters.ts, which
+            is yours to write; until step() does something, nobody comes in. */}
       </div>
 
       <div className={styles.statusRow}>
