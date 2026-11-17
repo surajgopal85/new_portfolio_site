@@ -39,6 +39,32 @@
   );
 }
 
+/* --- lighting -------------------------------------------------------------
+   The room is drawn at night, but the sprites are painted in their own
+   colors — their daylight albedo. This layer is the lighting: a blue-dark
+   wash over everything, a warm pool where the lamp and the monitor are, cool
+   spill at the windows, and a vignette pulling the corners down.
+
+   Keeping light separate from paint means a sprite never has to be redrawn
+   for the time of day, and the whole mood is tunable from one rule. It sits
+   above the room and below nothing — `pointer-events: none` keeps every
+   hotspot clickable through it. */
+.light {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background:
+    radial-gradient(52% 48% at 40% 30%, rgba(255, 214, 140, 0.34), transparent 70%),
+    radial-gradient(26% 38% at 9% 26%, rgba(120, 170, 235, 0.26), transparent 72%),
+    radial-gradient(130% 120% at 50% 38%, rgba(21, 17, 27, 0) 26%, rgba(21, 17, 27, 0.66) 100%),
+    linear-gradient(rgba(39, 48, 74, 0.44), rgba(39, 48, 74, 0.44));
+}
+
+/* The monitor is a light source, so it sits above the wash rather than under
+   it — the brightest thing in the room, and the Projects link. */
+.glowing { z-index: 70; }
+
 /* --- things --------------------------------------------------------------- */
 .thing {
   position: absolute;

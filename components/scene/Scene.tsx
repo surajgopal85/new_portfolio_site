@@ -74,7 +74,8 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
             vertical position agree, and characters can walk behind the desk. */}
         {drawOrder.map((thing, i) => {
           const spot = thing.hotspot ? hotspots.find((h) => h.id === thing.hotspot) : undefined
-          const style = { ...place(thing), zIndex: 10 + i }
+          // The monitor glows, so it sits above the night wash.
+          const style = { ...place(thing), zIndex: thing.id === 'monitor' ? 70 : 10 + i }
           const className = `${styles.thing} ${thing.rises ? styles.rises : ''}`
 
           if (spot) {
@@ -134,6 +135,10 @@ export function Scene({ onLeave }: { onLeave: () => void }) {
 
         {/* Visitors mount here — one at a time. See lib/characters.ts, which
             is yours to write; until step() does something, nobody comes in. */}
+
+        {/* Night. Everything above is painted in daylight colors; this is the
+            light falling on it. */}
+        <div className={styles.light} />
       </div>
 
       <div className={styles.statusRow}>
