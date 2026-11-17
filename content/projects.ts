@@ -37,6 +37,18 @@ export const projects: readonly Project[] = [
     stack: ['TypeScript', 'Next.js'],
     visibility: 'public',
     node: { x: 1, y: 2 },
+    // Placeholder copy, here so the case-study layout can be seen before the
+    // real writing exists. Replace all four.
+    study: {
+      problem:
+        'What was actually wrong, for whom, and how you knew — the measurement or the complaint that started it, not a restatement of the title.',
+      decision:
+        "The one call the project turned on, the alternative you rejected, and why. A case study with no rejected alternative reads as a list of features.",
+      result:
+        'What changed, in numbers where there are numbers and in plain words where there are not. Including the parts that did not move.',
+      nextTime:
+        "What you would do differently, said plainly. This is the section people actually remember, and the one most portfolios leave out.",
+    },
   },
   {
     slug: 'placeholder-two',

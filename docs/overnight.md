@@ -166,12 +166,25 @@ belongs to Suraj.
     existing rather than by being remembered. Both land in `out/`.
 
     They say `example.com` until `site.url` is the real domain.
-12. **The case-study page layout** — currently unstyled prose. The quality bar
-    is problem / key decision / result / what I'd change; the page should
-    make that structure visible.
-13. **A 404 that belongs to this site**, not a generic one.
+12. ~~**The case-study page layout.**~~ **Done.** The four beats are numbered
+    01-04 so the structure is visible rather than four headings run together
+    as prose — the shape is the argument. Year and stack as chips, previous
+    and next project at the foot. A project with no `study` says "in
+    progress" instead of pretending.
+
+    Placeholder study copy is in `content/projects.ts` on project one, so
+    the layout can be seen. It's prompts, not prose — replace all four.
+13. ~~**A 404 that belongs to this site.**~~ **Done.** Wrong door, using the
+    room's own door sprite, with every real room listed below it.
 14. **Check the exported build end to end** with `npm run preview`, then run
     `npm run audit` against it rather than against dev.
+
+## Gotcha
+
+Turbopack's cache went stale once tonight: an edit to `content/projects.ts`
+didn't reach the page, and `curl` confirmed the old content was still being
+served while the file on disk was correct. `rm -rf .next` and restart the dev
+server if a change doesn't appear.
 
 ## What NOT to do
 

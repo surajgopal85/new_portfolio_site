@@ -29,6 +29,7 @@ const height = Number(flag('h', 800))
 const out = flag('out', 'shots/shot.png')
 const el = flag('el', null)
 const settle = Number(flag('settle', 900))
+const allow = Number(flag('allow', 0)) // a status that isn't an error here
 
 await mkdir(dirname(out), { recursive: true })
 
@@ -49,7 +50,8 @@ try {
 
   const url = new URL(path, base).href
   const response = await page.goto(url, { waitUntil: 'networkidle0', timeout: 20_000 })
-  if (!response?.ok()) throw new Error(`${url} returned ${response?.status()}`)
+  const status = response?.status() ?? 0
+  if (!response?.ok() && status !== allow) throw new Error(`${url} returned ${status}`)
 
   // Let the CSS animations reach a representative frame.
   await new Promise((r) => setTimeout(r, settle))
@@ -62,7 +64,7 @@ try {
   await target.screenshot({ path: out })
 
   const title = await page.title()
-  console.log(`${out}  ${width}x${height}  ${url}  mode=${mode}  "${title}"`)
+  console.log(`${out}  ${width}x${height}  ${url}  ${status}  mode=${mode}  "${title}"`)
   if (errors.length) console.log('page errors:\n  ' + errors.join('\n  '))
 } finally {
   await browser.close()
