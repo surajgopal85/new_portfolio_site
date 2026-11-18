@@ -512,11 +512,24 @@ isometric and it does more than anything else to stop a character looking
 like a sticker floating over the room. It should shrink as he rises onto the
 desk, which `state.z` already knows.
 
-## Checking it
+## ~~Checking it~~ — done
 
-`npm run kibou -- --sheet` and look at it. Then in the room: screenshots at
-the door, mid-rug and on the desk, confirming he's above the rug the whole
-way. `npm test` and `npm run audit` stay green.
+Sampled a full visit every 300ms for 27 seconds rather than trusting stills:
+
+- on screen for 54 of 90 samples — genuinely away during the quiet gaps
+- all three strips used: `down-right` in, `sit` settled, `up-right` out
+- all four walk frames cycle
+- mirroring fires on the way back to the door (`up-left` is `up-right`
+  flipped)
+- the shadow is present in every frame he is
+- crosses 18% to 70% of the room, no page errors
+
+`npm test` 31/31, `npm run audit` clean, build clean.
+
+**Phase four is done.** The next thing the room needs is Suraj at the desk —
+a cat currently visits an empty chair. Peanut and Caitlin stay configured and
+inert until someone draws them; `SPRITES` in `Visitors.tsx` is the only
+gate.
 
 ## Questions for the morning
 
