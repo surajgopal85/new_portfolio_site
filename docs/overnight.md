@@ -450,6 +450,74 @@ Peanut and Caitlin are fully configured in `lib/characters.ts` — spots,
 speeds, beats — and never scheduled, because `SPRITES` in `Visitors.tsx`
 only lists who has art. Draw them and they start appearing; no other change.
 
+---
+
+# Phase four: Kibou, properly
+
+Three things, in this order. The depth bug first — it's a correctness
+problem and it makes the cat look broken however well he's drawn.
+
+## 1. Depth: the cat walks under the rug
+
+**Confirmed, with the cause.** `sortKey` uses a thing's far corner, which is
+right for a standing box and wrong for a flat one: the rug (6.5 x 6.5 tiles
+at gx 1.3) scores 9.10, as though it were a tall object in the middle of the
+room. A cat entering at the door scores 8.10 and is therefore painted
+*under* the rug; he surfaces near the desk at 10.50.
+
+One sorted list can't express this. Render in three layers instead:
+
+| layer | contents | order |
+|---|---|---|
+| wall | things with `wall:` set | always behind everything in the room |
+| floor | things with `flat:` set — rugs, mats, shadows | above the floor, below anything standing |
+| objects | everything standing, plus characters | sorted by `gx + gy` |
+
+Then a character only ever sorts against furniture, which is the only thing
+it can actually be behind. Keep the existing sort inside the objects layer —
+that part works, and is why he correctly passes behind the desk.
+
+Add a guard to `npm run iso` so this can't come back: no flat thing may sort
+above a standing thing.
+
+## 2. Kibou is too orange
+
+He's an orange-and-white cat and the sprite is ginger with a token white
+chin. From `photos/raw/kibou/`:
+
+- **White bib and belly**, running from under the chin along the underside.
+- **White socks** on all four legs — they're one of the first things you see.
+- **A white blaze** up the muzzle, breaking the orange cap between the eyes.
+- **A white tail tip** on a tail that's otherwise ginger.
+- Orange stays as a **cap over the head and ears** and a **saddle** over the
+  back, rather than covering the whole animal.
+
+The contrast is the point: at eleven pixels the orange/white split is what
+makes him Kibou rather than a generic ginger cat.
+
+## 3. The legs are sticks
+
+One pixel wide with a paw stuck on the end. Instead:
+
+- Two pixels wide, with **haunch and shoulder mass** where they meet the
+  body, so the body and legs are one animal rather than a loaf on pins.
+- **Paws a pixel wider than the leg**, which reads as a foot.
+- The **tail wants to be a plume** — three pixels through most of its
+  length, not two.
+
+## 4. While in there: a contact shadow
+
+A small dark ellipse under him, drawn in the floor layer. Standard in
+isometric and it does more than anything else to stop a character looking
+like a sticker floating over the room. It should shrink as he rises onto the
+desk, which `state.z` already knows.
+
+## Checking it
+
+`npm run kibou -- --sheet` and look at it. Then in the room: screenshots at
+the door, mid-rug and on the desk, confirming he's above the rug the whole
+way. `npm test` and `npm run audit` stay green.
+
 ## Questions for the morning
 
 (Claude appends here rather than guessing.)
