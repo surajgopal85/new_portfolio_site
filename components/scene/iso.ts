@@ -129,10 +129,35 @@ export function placeThing(t: IsoThing): { left: number; top: number; w: number;
   return { left: Math.round(west.x), top: Math.round(back.y - (t.flat ? 0 : t.height)), w, h }
 }
 
-/** Painter's order: the far corner of the footprint decides. */
+/**
+ * Painter's order *within the objects layer*: the far corner of the
+ * footprint decides. Only meaningful for things that stand on the floor.
+ */
 export function sortKey(t: IsoThing): number {
   return t.gx + t.gy + (t.tiles.w + t.tiles.d) / 2 + (t.z ?? 0) / 1000
 }
+
+/**
+ * Which layer a thing belongs to.
+ *
+ * A single sorted list cannot express this room. The rug is 6.5 tiles square
+ * and lies flat, so sorting it by its far corner scores it as though it were
+ * a tall object in the middle of the floor — and a cat walking in at the
+ * door scored lower and was painted *underneath* it. Nothing standing on the
+ * floor can ever be behind a rug, and nothing in the room can ever be behind
+ * a wall, so those two facts belong in the layering rather than in a
+ * comparison that has to get them right by luck.
+ */
+export const LAYER = { wall: 0, floor: 1, objects: 2 } as const
+
+export function layerOf(t: IsoThing): number {
+  if (t.wall) return LAYER.wall
+  if (t.flat) return LAYER.floor
+  return LAYER.objects
+}
+
+/** Base z-index for each layer, with room for the things inside it. */
+export const LAYER_Z = [10, 100, 200] as const
 
 export const isoThings: readonly IsoThing[] = [
   // --- north wall: the windows you look at while working -----------------

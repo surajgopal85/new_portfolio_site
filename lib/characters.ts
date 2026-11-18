@@ -114,25 +114,143 @@ export function facingFor(dgx: number, dgy: number): CharacterState['facing'] {
   return dgy >= 0 ? 'down-left' : 'up-right'
 }
 
+/** How close to the spot a character has to be before it starts to climb. */
+const HOP = 0.8
+
 /**
- * TODO(suraj): the scheduler and the per-visit machine.
- *
- * `npm test` is the specification — the tests skip themselves while this is
- * a stub and activate the moment it moves anyone. The suite has been checked
- * against a throwaway implementation, so if it fails, the implementation is
- * wrong rather than the tests.
- *
- * Order of attack:
- *   1. Keep `step` pure: (state, visit, elapsedMs) => state. Every bug in
- *      this kind of code is a timing bug, and timing bugs are invisible in a
- *      browser and obvious in a trace.
- *   2. Pick durations when you ENTER a phase, not on every tick, or motion
- *      jitters.
- *   3. `facing` follows movement — `facingFor` does that part.
- *   4. Only then wire it to requestAnimationFrame.
- *   5. Never two visitors at once: the scheduler holds one `active` slot and
- *      a new visit can't start until the last reaches 'away'.
+ * Height above the floor, derived from where the character is rather than
+ * stored as a separate animation. A cat heading for the desk rises over the
+ * last stretch and sinks again on the way out, and neither needs its own
+ * state — the position already says everything.
  */
-export function step(state: CharacterState, _visit: Visit, _elapsedMs: number): CharacterState {
-  return state
+function heightFor(gx: number, gy: number, visit: Visit): number {
+  const top = visit.spot.z ?? 0
+  if (!top) return 0
+  const d = Math.hypot(gx - visit.spot.gx, gy - visit.spot.gy)
+  return top * Math.min(1, Math.max(0, 1 - d / HOP))
+}
+
+/** Pick a duration from a range. The one unpure moment, and the reason no
+ *  two visits are the same length. */
+function pick([lo, hi]: readonly [number, number]): number {
+  return lo + Math.random() * (hi - lo)
+}
+
+/**
+ * One tick of one visit.
+ *
+ * Pure apart from the duration drawn when a phase begins: given the same
+ * state and the same elapsed time it produces the same movement, which is
+ * what makes the whole thing testable without a browser. Every bug in this
+ * kind of code is a timing bug, and timing bugs are invisible on screen and
+ * obvious in a trace.
+ */
+export function step(state: CharacterState, visit: Visit, elapsedMs: number): CharacterState {
+  const reach = (visit.speed * elapsedMs) / 1000
+
+  /** Move toward a target, and say whether we arrived this tick. */
+  const toward = (tx: number, ty: number) => {
+    const dgx = tx - state.gx
+    const dgy = ty - state.gy
+    const dist = Math.hypot(dgx, dgy)
+    if (dist <= reach || dist === 0) return { gx: tx, gy: ty, arrived: true, dgx, dgy }
+    return {
+      gx: state.gx + (dgx / dist) * reach,
+      gy: state.gy + (dgy / dist) * reach,
+      arrived: false,
+      dgx,
+      dgy,
+    }
+  }
+
+  switch (state.phase) {
+    case 'entering': {
+      const m = toward(visit.spot.gx, visit.spot.gy)
+      const z = heightFor(m.gx, m.gy, visit)
+      if (m.arrived) {
+        return { ...state, gx: m.gx, gy: m.gy, z, phase: 'settled', timer: pick(visit.stay), frame: 0 }
+      }
+      return {
+        ...state,
+        gx: m.gx,
+        gy: m.gy,
+        z,
+        facing: facingFor(m.dgx, m.dgy),
+        frame: (state.frame + 1) % 4,
+      }
+    }
+
+    case 'settled': {
+      const timer = state.timer - elapsedMs
+      if (timer <= 0) return { ...state, phase: 'leaving', timer: 0, frame: 0 }
+      // Two idle frames, swapping about twice a second.
+      return { ...state, timer, frame: Math.floor(timer / 500) % 2 }
+    }
+
+    case 'leaving': {
+      const m = toward(DOOR.gx, DOOR.gy)
+      const z = heightFor(m.gx, m.gy, visit)
+      if (m.arrived) {
+        return { ...state, gx: m.gx, gy: m.gy, z: 0, phase: 'away', timer: 0, frame: 0 }
+      }
+      return {
+        ...state,
+        gx: m.gx,
+        gy: m.gy,
+        z,
+        facing: facingFor(m.dgx, m.dgy),
+        frame: (state.frame + 1) % 4,
+      }
+    }
+
+    default:
+      return state
+  }
+}
+
+/**
+ * The scheduler: one visitor at a time, with a quiet stretch between.
+ *
+ * Three independent timers would pile up and the room would read as a
+ * screensaver. This holds a single slot — nobody new can start until the
+ * last one is back through the door — which is what makes the room feel
+ * like working alone and being interrupted.
+ */
+export type Schedule = {
+  /** The visit in progress, or null during a quiet stretch. */
+  active: { visit: Visit; state: CharacterState } | null
+  /** Milliseconds until the next visitor is picked. */
+  until: number
+}
+
+export function startSchedule(now = pick(GAP)): Schedule {
+  return { active: null, until: now }
+}
+
+/**
+ * Advance the schedule. `eligible` is the visits that can actually be shown
+ * — a character with no sprites yet is configured but never picked.
+ */
+export function tickSchedule(
+  schedule: Schedule,
+  eligible: readonly Visit[],
+  elapsedMs: number,
+): Schedule {
+  if (schedule.active) {
+    const state = step(schedule.active.state, schedule.active.visit, elapsedMs)
+    if (state.phase === 'away') return { active: null, until: pick(GAP) }
+    return { ...schedule, active: { ...schedule.active, state } }
+  }
+
+  const until = schedule.until - elapsedMs
+  if (until > 0 || eligible.length === 0) return { ...schedule, until }
+
+  const visit = eligible[Math.floor(Math.random() * eligible.length)]
+  return {
+    active: {
+      visit,
+      state: { ...initialState(visit.id), phase: 'entering', facing: 'down-right' },
+    },
+    until: 0,
+  }
 }

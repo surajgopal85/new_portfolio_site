@@ -37,46 +37,51 @@ const FRAME_H = 16
 /**
  * Body and head, down-right: walking toward the camera, face visible.
  *
- * The head sits a clear five rows above the body's back so there's a neck
- * notch. Without it a cat at this size reads as a dachshund — which is what
- * the first pass did.
+ * He's an orange-AND-white cat, and that split is what makes him himself at
+ * this size. Orange is a cap over the head and ears and a saddle over the
+ * back; white is the blaze up the muzzle, the bib, the belly, the socks and
+ * the tail tip. A sprite that's ginger all over is just a ginger cat.
+ *
+ * The head sits a clear five rows above the back so there's a neck notch —
+ * without it a cat this small reads as a dachshund.
  */
 const BODY_DOWN = [
-  '..KK................',
-  '.KOOK........KK.KK..',
+  '.KKK................',
+  '.KWWK...............',
+  '.KWOK........KK.KK..',
   '.KOOK.......KOOKOOK.',
-  '.KOOK.......KOWWWOK.',
-  '.KOOK......KOWPWYOK.',
-  '..KOK.....KKOWWWWOK.',
-  '..KOOKKKKKOOOOOOOK..',
-  '...KOOOOOOOOOOOOK...',
-  '...KOOOOOOOOOOOK....',
-  '...KSWWOOOOWWSK.....',
+  '.KOOK......KOOOOOOK.',
+  '.KOOK.....KOWWWWWOK.',
+  '..KOOKKKKKOWWPWYWOK.',
+  '..KOOOOOOOOOWWWWWK..',
+  '..KOOOOOOOOOOOOOK...',
+  '..KWWWWWWWWWWWWK....',
 ]
 
-/** Body and head, up-right: walking away, so it's all back, ears and tail. */
+/** Body and head, up-right: walking away, so it's back, ears and plume. */
 const BODY_UP = [
-  '..KK................',
+  '.KKK................',
+  '.KWWK...............',
   '.KWOK........KK.KK..',
-  '.KWOK.......KODKDOK.',
-  '.KOOK.......KOOOOOOK',
+  '.KOOK.......KODKDOK.',
   '.KOOK......KOOOOOOK.',
-  '..KOK.....KKOOOOOOK.',
-  '..KOOKKKKKOOOOOOOK..',
-  '...KOOOOOOOOOOOOK...',
-  '...KOODDOOODDOOK....',
-  '...KOOOOOOOOOOK.....',
+  '.KOOK.....KOOOOOOOK.',
+  '..KOOKKKKKOOODDOOOK.',
+  '..KOOOOOOOOOOOOOOK..',
+  '..KOOOOOOOOOOOOOK...',
+  '..KWOOOOOOOOOOWK....',
 ]
 
 /**
- * Four leg positions. A cat's walk at this size is two pairs swapping, and
- * anything more detailed reads as noise.
+ * Two leg positions, alternating. Two pixels wide with a white sock and a
+ * paw a pixel wider than the leg — a cat at this size is a shape with feet,
+ * not a loaf on pins.
  */
 const LEGS = [
-  ['...KK..KK...KK.KK...', '...K....K...K...K...', '...KWK..KWK.KWK.KWK.'],
-  ['....KKKK.....KKKK...', '....K..K.....K..K...', '....KWKWK....KWKWK..'],
-  ['...KK...KK.KK...KK..', '...K.....K.K.....K..', '...KWK...KWKWK...KWK'],
-  ['....KKKK.....KKKK...', '....K..K.....K..K...', '....KWKWK....KWKWK..'],
+  ['..KKK........KKK....', '..KOOK.......KOOK...', '..KWWK.......KWWK...'],
+  ['...KKK......KKK.....', '...KOOK.....KOOK....', '...KWWK.....KWWK....'],
+  ['..KKK.........KKK...', '..KOOK........KOOK..', '..KWWK........KWWK..'],
+  ['...KKK......KKK.....', '...KOOK.....KOOK....', '...KWWK.....KWWK....'],
 ]
 
 /** Sitting, facing down-right. The settled pose, with the tail curled round. */
@@ -86,15 +91,15 @@ const SIT = [
     '.......KOOKOOK......',
     '.......KOOOOOOK.....',
     '......KOWWWWWWOK....',
-    '......KOWYWPWYOK....',
+    '......KOWYWPWYWK....',
     '.......KWWWWWWK.....',
-    '......KOOOOOOOK.....',
-    '.....KOOOOOOOOK.....',
-    '.....KOWWWWWOOK.....',
-    '....KKOWWWWWOOK.....',
-    '...KOOKWWWWWWKK.....',
-    '...KOOKKWWWWWK......',
-    '....KKK.KKKKK.......',
+    '......KOWWWWWOK.....',
+    '.....KOWWWWWWOK.....',
+    '.....KOWWWWWWOK.....',
+    '....KKOWWWWWWOK.....',
+    '...KWWKWWWWWWKK.....',
+    '...KWOKKWWWWWK......',
+    '....KKK.KWWKK.......',
   ],
   [
     '....................',
@@ -102,15 +107,15 @@ const SIT = [
     '.......KOOKOOK......',
     '.......KOOOOOOK.....',
     '......KOWWWWWWOK....',
-    '......KOWYWPWYOK....',
+    '......KOWYWPWYWK....',
     '.......KWWWWWWK.....',
-    '......KOOOOOOOK.....',
-    '.....KOOOOOOOOK.....',
-    '.....KOWWWWWOOK.....',
-    '....KKOWWWWWOOK.....',
-    '...KOOKWWWWWWKK.....',
-    '...KOOKKWWWWWK......',
-    '....KKK.KKKKK.......',
+    '......KOWWWWWOK.....',
+    '.....KOWWWWWWOK.....',
+    '.....KOWWWWWWOK.....',
+    '....KKOWWWWWWOK.....',
+    '...KWWKWWWWWWKK.....',
+    '...KWOKKWWWWWK......',
+    '....KKK.KWWKK.......',
   ],
 ]
 

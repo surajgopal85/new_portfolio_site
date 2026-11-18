@@ -86,11 +86,15 @@ your call, not Claude's.)
 
 ## Guardrails
 
-- **Work on a branch.** `scene/overnight`. Never commit to `main`.
-- **Push the branch regularly** — Suraj asked for this on 18 Nov, replacing
-  the earlier local-only rule. Push `scene/overnight`, never `main`, and
-  never open a pull request or merge. A push at the end of a tick costs
-  seconds and means the work survives the machine going to sleep.
+- **Work on a branch.** Currently `kibou`; `scene/overnight` was merged into
+  `main` on 18 Nov. Never commit to `main`.
+- **Push the branch regularly.** A push at the end of a tick costs seconds
+  and means the work survives the machine going to sleep.
+- **Opening the PR is Suraj's job, not Claude's** — `gh` on this machine is
+  authenticated as `ssgopal85`, which isn't a collaborator on the repo, so
+  `gh pr create` fails with "must be a collaborator". Pushes work because
+  they go over SSH as `surajgopal85`. Push the branch and hand over the
+  compare URL.
 - **Never touch AWS.** No `bootstrap.sh`, no `deploy.sh`, no credentials.
 - **Small commits**, each one building and typechecking, each message saying
   what changed and why, so the night reads back in five minutes.
@@ -411,26 +415,196 @@ Draw the best silhouette possible and say so plainly.
    horizontal strip per direction in `public/art/characters/`.
    Reference: `photos/raw/kibou/` — orange-and-white, white chest and paws,
    white blaze up the muzzle, a tail nearly as long as the body.
-2. **Render characters.** A layer in `IsoScene` that places a character from
+2. ~~**Render characters.**~~ **Done.** A layer in `IsoScene` that places a character from
    its tile position with `toScreen`, sorts into the same painter's order as
    the furniture (so he passes behind the desk and in front of the rug), and
    mirrors with `scaleX(-1)` for the two left-going directions.
-3. **The state machine.** Implement `step` in `lib/characters.ts` against the
+3. ~~**The state machine.**~~ **Done — all 31 tests green.** Implement `step` in `lib/characters.ts` against the
    spec in `lib/characters.test.ts`. Pure function, durations chosen on phase
    entry, `facingFor` for direction. The 21 skipped tests must go green.
-4. **The scheduler.** One visitor at a time, never two, with a quiet gap
+4. ~~**The scheduler.**~~ **Done.** One visitor at a time, never two, with a quiet gap
    between visits — `GAP` in characters.ts. Kibou is the only one with
    sprites, so he's the only one who can be scheduled; leave the other two
    configured and inert.
-5. **The hop onto the desk.** His spot has `z: 26`. Interpolate height on the
+5. ~~**The hop onto the desk.**~~ **Done.** His spot has `z: 26`. Interpolate height on the
    last stretch so he rises onto the desk rather than teleporting up it.
-6. **Check it.** `npm test`, `npm run audit`, and a screenshot — plus a
+6. ~~**Check it.**~~ **Done.** `npm test`, `npm run audit`, and a screenshot — plus a
    couple of frames apart to confirm he actually moves.
 
 ### Keep
 
 Reduced motion already drops to the plain version, so the machine never has
 to care. Nothing here should make the scene fail if the sprites are missing.
+
+## Phase three is done
+
+Kibou walks in through the door, crosses the room, rises onto the desk, sits
+between Suraj and the monitor, and leaves. Verified by sampling his position
+over sixteen seconds — he moves — and by screenshots of the walk and the sit.
+
+The one thing that isn't there: **Suraj isn't at the desk.** The room has a
+cat visiting an empty chair. He needs the same ten frames, and the scheduler
+already has a slot for him that nothing fills.
+
+Peanut and Caitlin are fully configured in `lib/characters.ts` — spots,
+speeds, beats — and never scheduled, because `SPRITES` in `Visitors.tsx`
+only lists who has art. Draw them and they start appearing; no other change.
+
+---
+
+# Phase four: Kibou, properly
+
+Three things, in this order. The depth bug first — it's a correctness
+problem and it makes the cat look broken however well he's drawn.
+
+## 1. ~~Depth: the cat walks under the rug~~ — fixed
+
+**Confirmed, with the cause.** `sortKey` uses a thing's far corner, which is
+right for a standing box and wrong for a flat one: the rug (6.5 x 6.5 tiles
+at gx 1.3) scores 9.10, as though it were a tall object in the middle of the
+room. A cat entering at the door scores 8.10 and is therefore painted
+*under* the rug; he surfaces near the desk at 10.50.
+
+One sorted list can't express this. Render in three layers instead:
+
+| layer | contents | order |
+|---|---|---|
+| wall | things with `wall:` set | always behind everything in the room |
+| floor | things with `flat:` set — rugs, mats, shadows | above the floor, below anything standing |
+| objects | everything standing, plus characters | sorted by `gx + gy` |
+
+Then a character only ever sorts against furniture, which is the only thing
+it can actually be behind. Keep the existing sort inside the objects layer —
+that part works, and is why he correctly passes behind the desk.
+
+Add a guard to `npm run iso` so this can't come back: no flat thing may sort
+above a standing thing.
+
+## 2. ~~Kibou is too orange~~ — fixed
+
+He's an orange-and-white cat and the sprite is ginger with a token white
+chin. From `photos/raw/kibou/`:
+
+- **White bib and belly**, running from under the chin along the underside.
+- **White socks** on all four legs — they're one of the first things you see.
+- **A white blaze** up the muzzle, breaking the orange cap between the eyes.
+- **A white tail tip** on a tail that's otherwise ginger.
+- Orange stays as a **cap over the head and ears** and a **saddle** over the
+  back, rather than covering the whole animal.
+
+The contrast is the point: at eleven pixels the orange/white split is what
+makes him Kibou rather than a generic ginger cat.
+
+## 3. ~~The legs are sticks~~ — fixed
+
+One pixel wide with a paw stuck on the end. Instead:
+
+- Two pixels wide, with **haunch and shoulder mass** where they meet the
+  body, so the body and legs are one animal rather than a loaf on pins.
+- **Paws a pixel wider than the leg**, which reads as a foot.
+- The **tail wants to be a plume** — three pixels through most of its
+  length, not two.
+
+## 4. ~~While in there: a contact shadow~~ — added
+
+A small dark ellipse under him, drawn in the floor layer. Standard in
+isometric and it does more than anything else to stop a character looking
+like a sticker floating over the room. It should shrink as he rises onto the
+desk, which `state.z` already knows.
+
+## ~~Checking it~~ — done
+
+Sampled a full visit every 300ms for 27 seconds rather than trusting stills:
+
+- on screen for 54 of 90 samples — genuinely away during the quiet gaps
+- all three strips used: `down-right` in, `sit` settled, `up-right` out
+- all four walk frames cycle
+- mirroring fires on the way back to the door (`up-left` is `up-right`
+  flipped)
+- the shadow is present in every frame he is
+- crosses 18% to 70% of the room, no page errors
+
+`npm test` 31/31, `npm run audit` clean, build clean.
+
+**Phase four is done.** The next thing the room needs is Suraj at the desk —
+a cat currently visits an empty chair. Peanut and Caitlin stay configured and
+inert until someone draws them; `SPRITES` in `Visitors.tsx` is the only
+gate.
+
+---
+
+# Phase five: Peanut
+
+The second visitor. Her beat is already written in `lib/characters.ts`:
+*crosses to the rug, turns around twice, lies down.* She has a spot, a speed
+and a stay range, and is never scheduled only because `SPRITES` in
+`Visitors.tsx` lists who has art.
+
+Reference: `photos/raw/peanut/` — `IMG_0165` is the usable one, daylight,
+pale dog against a dark floor.
+
+## 1. What she looks like at this size
+
+18 px at the shoulder, 0.5 x 0.8 tiles — nearly double Kibou, so there's
+room for markings he couldn't carry. From the photos:
+
+- **Pale cream coat**, lighter than the floor. She'll read as the bright
+  thing in a dark room, which is the opposite of Kibou and good for telling
+  them apart at a glance.
+- **Darker tan ears, folded over**, set wide. The only dark mass on an
+  otherwise pale animal, so they carry the whole read of the head.
+- **A white blaze** from forehead to a black nose.
+- **A long thin whip tail with a white tip** — much thinner than Kibou's
+  plume. Tail shape is the fastest way to tell two animals apart in
+  silhouette.
+- **White chest and speckled front paws.**
+- Lean and leggy, where the cat is low and round.
+
+The ramp is in `docs/characters.md`.
+
+## 2. The frames
+
+Same ten-frame structure as Kibou, with one difference: her settled pose is
+**lying down**, not sitting.
+
+- 4-frame walk `down-right`, 4-frame walk `up-right`
+- 2-frame lie-down for the settled beat (breathing)
+
+Plus the turn, below.
+
+## 3. "Turns around twice" needs somewhere to live
+
+The beat says she circles before lying down, which the state machine can't
+currently express — `settled` goes straight to the idle frames.
+
+The cheapest honest way: add **`elapsed`** to `CharacterState`, reset on
+phase entry and incremented each tick. Then `settled` can run the turn for
+its first ~1200ms — cycling `facing` through all four directions using the
+walk frames — before dropping to the lying frames. `elapsed` is additive, no
+existing test asserts on it, and the walk cycle can use it too instead of
+counting ticks.
+
+Don't add a phase. The four phases are load-bearing in 21 tests and a circle
+before lying down is a detail of being settled, not a new state.
+
+## 4. Generalise the sprite table
+
+`SPRITES` in `Visitors.tsx` hardcodes `sit` and fixed frame counts. Make it
+per character: strip names and frame counts together, so a dog that lies
+down and a cat that sits don't need different code.
+
+## 5. Then it schedules itself
+
+Nothing else to wire. Once Peanut is in `SPRITES` the scheduler picks
+between her and Kibou — still one at a time, still with the quiet gap. That
+is the whole point of the single slot.
+
+## Checking it
+
+`npm run peanut -- --sheet`, then sample a full visit the way phase four did:
+both characters appear across a long enough window, never two at once, she
+lies down rather than standing on the rug, and the shadow tracks her. `npm
+test` and `npm run audit` stay green.
 
 ## Questions for the morning
 

@@ -5,7 +5,18 @@ import { useEffect, useState } from 'react'
 import { hotspots } from '@/content/site'
 import { artPieces } from '@/content/art'
 import { KEYS, playNote, teardown, unlock } from '@/lib/piano'
-import { SCENE_H, SCENE_W, isoThings, placeThing, sortKey, type IsoThing } from './iso'
+import {
+  LAYER,
+  LAYER_Z,
+  SCENE_H,
+  SCENE_W,
+  isoThings,
+  layerOf,
+  placeThing,
+  sortKey,
+  type IsoThing,
+} from './iso'
+import { Visitors } from './Visitors'
 import styles from './iso.module.css'
 
 const IDLE_HINT = 'Click something in the room.'
@@ -55,10 +66,19 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
     onBlur: () => setStatus(IDLE_HINT),
   })
 
-  // Painter's order, then z-index from it. Paint order and DOM order stay
-  // separate so the interactive things can be mounted in navigation order.
-  const painted = [...isoThings].sort((a, b) => sortKey(a) - sortKey(b))
-  const zOf = (t: IsoThing) => 10 + painted.indexOf(t)
+  // Three layers — see layerOf in iso.ts for why one sorted list can't do
+  // this. Within the objects layer, painter's order by footprint. Paint
+  // order and DOM order stay separate so the interactive things can be
+  // mounted in navigation order.
+  const byLayer = [LAYER.wall, LAYER.floor, LAYER.objects].map((layer) =>
+    isoThings.filter((t) => layerOf(t) === layer).sort((a, b) => sortKey(a) - sortKey(b)),
+  )
+  const standing = byLayer[LAYER.objects]
+  const painted = byLayer.flat()
+  const zOf = (t: IsoThing) => {
+    const layer = layerOf(t)
+    return LAYER_Z[layer] + byLayer[layer].indexOf(t)
+  }
 
   // The navigation first, then the three pieces on the walls. Each piece
   // opens a page about itself, which is a better "about me" than a
@@ -138,6 +158,14 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
             </button>
           )
         })()}
+
+        {/* Whoever's visiting, sorted into the same painter's order as the
+            furniture, so they pass behind the desk and in front of the rug. */}
+        <Visitors
+          depthOf={(gx, gy) =>
+            LAYER_Z[LAYER.objects] + standing.filter((t) => sortKey(t) < gx + gy).length
+          }
+        />
 
         <div className={styles.light} />
       </div>
