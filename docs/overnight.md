@@ -87,7 +87,10 @@ your call, not Claude's.)
 ## Guardrails
 
 - **Work on a branch.** `scene/overnight`. Never commit to `main`.
-- **Never push.** Everything stays local until we're happy with it.
+- **Push the branch regularly** — Suraj asked for this on 18 Nov, replacing
+  the earlier local-only rule. Push `scene/overnight`, never `main`, and
+  never open a pull request or merge. A push at the end of a tick costs
+  seconds and means the work survives the machine going to sleep.
 - **Never touch AWS.** No `bootstrap.sh`, no `deploy.sh`, no credentials.
 - **Small commits**, each one building and typechecking, each message saying
   what changed and why, so the night reads back in five minutes.
