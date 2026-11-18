@@ -9,7 +9,7 @@ import {
   type CharacterState,
   type Schedule,
 } from '@/lib/characters'
-import { SCENE_H, SCENE_W, toScreen } from './iso'
+import { LAYER, LAYER_Z, SCENE_H, SCENE_W, toScreen } from './iso'
 import styles from './iso.module.css'
 
 /**
@@ -78,7 +78,28 @@ function Visitor({ state, zIndex }: { state: CharacterState; zIndex: number }) {
 
   const base = toScreen({ gx: state.gx, gy: state.gy, z: state.z })
 
+  // The contact shadow sits on the floor under him, above the rug and below
+  // the furniture. It's what stops a character reading as a sticker laid
+  // over the room — and it shrinks as he climbs, because the floor is
+  // further away. `state.z` already knows how high he is.
+  const floor = toScreen({ gx: state.gx, gy: state.gy })
+  const lift = state.z / 26
+  const shadowW = 11 * (1 - lift * 0.45)
+  const shadowH = shadowW / 2
+
   return (
+    <>
+      <div
+        className={styles.shadow}
+        style={{
+          left: `${((floor.x - shadowW / 2) / SCENE_W) * 100}%`,
+          top: `${((floor.y - shadowH / 2 - 1) / SCENE_H) * 100}%`,
+          width: `${(shadowW / SCENE_W) * 100}%`,
+          height: `${(shadowH / SCENE_H) * 100}%`,
+          opacity: 0.38 - lift * 0.16,
+          zIndex: LAYER_Z[LAYER.floor] + 50,
+        }}
+      />
     <div
       className={styles.visitor}
       style={{
@@ -93,6 +114,7 @@ function Visitor({ state, zIndex }: { state: CharacterState; zIndex: number }) {
         transform: mirrored ? 'scaleX(-1)' : undefined,
       }}
     />
+    </>
   )
 }
 

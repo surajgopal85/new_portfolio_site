@@ -9,7 +9,7 @@
  */
 import sharp from 'sharp'
 const M = await import('../components/scene/iso.ts')
-const { TILE_W, TILE_H, ROOM, WALL_H, SCENE_W, SCENE_H, toScreen, isoThings, CORNERS, placeThing, sortKey } = M
+const { TILE_W, TILE_H, ROOM, WALL_H, SCENE_W, SCENE_H, toScreen, isoThings, CORNERS, placeThing, sortKey, layerOf } = M
 
 const p = (c) => `${c.x},${c.y}`
 const parts = []
@@ -37,7 +37,13 @@ const fill = {
 }
 
 const problems = []
-for (const t of [...isoThings].sort((a, b) => sortKey(a) - sortKey(b))) {
+// Same layering the renderer uses: walls behind, flat things on the floor,
+// everything standing sorted among itself. If this preview and IsoScene ever
+// disagree, the preview is lying.
+const layered = [0, 1, 2].flatMap((layer) =>
+  isoThings.filter((t) => layerOf(t) === layer).sort((a, b) => sortKey(a) - sortKey(b)),
+)
+for (const t of layered) {
   if (t.flat) {
     const a = toScreen({ gx: t.gx, gy: t.gy })
     const b = toScreen({ gx: t.gx + t.tiles.w, gy: t.gy })

@@ -457,7 +457,7 @@ only lists who has art. Draw them and they start appearing; no other change.
 Three things, in this order. The depth bug first — it's a correctness
 problem and it makes the cat look broken however well he's drawn.
 
-## 1. Depth: the cat walks under the rug
+## 1. ~~Depth: the cat walks under the rug~~ — fixed
 
 **Confirmed, with the cause.** `sortKey` uses a thing's far corner, which is
 right for a standing box and wrong for a flat one: the rug (6.5 x 6.5 tiles
@@ -480,7 +480,7 @@ that part works, and is why he correctly passes behind the desk.
 Add a guard to `npm run iso` so this can't come back: no flat thing may sort
 above a standing thing.
 
-## 2. Kibou is too orange
+## 2. ~~Kibou is too orange~~ — fixed
 
 He's an orange-and-white cat and the sprite is ginger with a token white
 chin. From `photos/raw/kibou/`:
@@ -495,7 +495,7 @@ chin. From `photos/raw/kibou/`:
 The contrast is the point: at eleven pixels the orange/white split is what
 makes him Kibou rather than a generic ginger cat.
 
-## 3. The legs are sticks
+## 3. ~~The legs are sticks~~ — fixed
 
 One pixel wide with a paw stuck on the end. Instead:
 
@@ -505,7 +505,7 @@ One pixel wide with a paw stuck on the end. Instead:
 - The **tail wants to be a plume** — three pixels through most of its
   length, not two.
 
-## 4. While in there: a contact shadow
+## 4. ~~While in there: a contact shadow~~ — added
 
 A small dark ellipse under him, drawn in the floor layer. Standard in
 isometric and it does more than anything else to stop a character looking
