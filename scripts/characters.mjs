@@ -32,6 +32,7 @@ const PALETTE = {
   C: [232, 196, 138],              // Peanut's cream coat
   T: [166, 124, 85],               // her darker, folded ears
   N: [26, 20, 32],                 // black nose
+  G: [217, 140, 160],              // tongue
 }
 
 /**
@@ -179,31 +180,39 @@ const walk = (body) =>
 const PEANUT_W = 26
 const PEANUT_H = 22
 
+/**
+ * Down-right: walking toward the camera.
+ *
+ * Three things keep her from reading as a cat. The ears **hang down the
+ * side of the skull** rather than standing up — a dropped ear is the single
+ * clearest dog signal in silhouette. The **snout projects** past the skull
+ * instead of stopping at a flat face. And the **tongue** is out, because
+ * it usually is.
+ */
 const P_DOWN = [
   '...K......................',
   '..KWK.....................',
-  '..KWK.............KTK.KTK.',
-  '..KCK............KTCKKCTK.',
-  '..KCK...........KCCCCCCCK.',
-  '..KCKKKKKKKKKKKKCCCCWWCCK.',
-  '..KCCCCCCCCCCCCCCCCWYWWCK.',
-  '..KCCCCCCCCCCCCCCCCWWWNKK.',
-  '..KCCCCCCCCCCCCCCCCCWWWK..',
-  '..KWWCCCCCCCCCCWWWCCCK....',
-  '...KCCK......KCCK.........',
+  '..KWK............KCCCCK...',
+  '..KCK...........KCCCCCCK..',
+  '..KCK..........KTCCWWCCCK.',
+  '..KCKKKKKKKKKKKKTCWYWCCCK.',
+  '..KCCCCCCCCCCCCKTTCCWWCCK.',
+  '..KCCCCCCCCCCCCKTTCWWWNNK.',
+  '..KWWCCCCCCCCCCKTKCWWWNK..',
+  '...KCCK......KCCKK.KGGK...',
 ]
 
+/** Up-right: walking away. Ears still hang; no face, so the tail carries it. */
 const P_UP = [
   '...K......................',
   '..KWK.....................',
-  '..KWK.............KTK.KTK.',
-  '..KCK............KTCKKCTK.',
-  '..KCK...........KCCCCCCCK.',
-  '..KCKKKKKKKKKKKKCCCCCCCCK.',
-  '..KCCCCCCCCCCCCCCCCCCCCK..',
-  '..KCCCCTTCCCCTTCCCCCCCK...',
-  '..KCCCCCCCCCCCCCCCCCCK....',
-  '..KWCCCCCCCCCCCCCCCWK.....',
+  '..KWK...........KCCCCCK...',
+  '..KCK..........KCCCCCCCK..',
+  '..KCK.........KTCCCCCCTK..',
+  '..KCKKKKKKKKKKKTTCCCCTTK..',
+  '..KCCCCCCCCCCCKTTCCCCTTK..',
+  '..KCCCCTTCCCCCKTKCCCCKTK..',
+  '..KWCCCCCCCCCCCKCCCCCK....',
   '...KCCK......KCCK.........',
 ]
 
@@ -216,34 +225,33 @@ const P_LEGS = [
 ]
 
 /**
- * Lying down, which is her settled beat — not sitting. The first four frames
- * are the circling she does before she drops; see the `elapsed` handling in
- * lib/characters.ts.
+ * Lying down — her settled beat, not sitting. Head up, ears hanging, tongue
+ * out: the two frames are a breath apart, and the tongue moves between them.
  */
 const P_LIE = [
   [
     '..........................',
-    '..........................',
-    '..................KTK.KTK.',
-    '.................KTCKKCTK.',
-    '....K...........KCCCCCCCK.',
-    '...KWKKKKKKKKKKKCCCCWWCCK.',
-    '...KCCCCCCCCCCCCCCCWYWWCK.',
-    '...KCCCCCCCCCCCCCCCWWWNKK.',
-    '...KWWCCCCCCCCCWWWCCCWWK..',
-    '....KKKKKKKKKKKKKKKKKK....',
+    '.................KCCCCK...',
+    '................KCCCCCCK..',
+    '...............KTCCWWCCCK.',
+    '....K..........KTCWYWCCCK.',
+    '...KWKKKKKKKKKKKTTCCWWCCK.',
+    '...KCCCCCCCCCCCKTTCWWWNNK.',
+    '...KCCCCCCCCCCCKTKCWWWNK..',
+    '...KWWCCCCCCCCCKK..KGGK...',
+    '....KKKKKKKKKKKK..........',
   ],
   [
     '..........................',
-    '..........................',
-    '..................KTK.KTK.',
-    '.................KTCKKCTK.',
-    '....K...........KCCCCCCCK.',
-    '...KWKKKKKKKKKKKCCCCWWCCK.',
-    '...KCCCCCCCCCCCCCCCWYWWCK.',
-    '...KCCCCCCCCCCCCCCCWWWNKK.',
-    '...KWCCCCCCCCCCWWWCCCCWWK.',
-    '....KKKKKKKKKKKKKKKKKKK...',
+    '.................KCCCCK...',
+    '................KCCCCCCK..',
+    '...............KTCCWWCCCK.',
+    '....K..........KTCWYWCCCK.',
+    '...KWKKKKKKKKKKKTTCCWWCCK.',
+    '...KCCCCCCCCCCCKTTCWWWNNK.',
+    '...KCCCCCCCCCCCKTKCWWWNK..',
+    '...KWCCCCCCCCCCKK...KGK...',
+    '....KKKKKKKKKKKKK.........',
   ],
 ]
 
