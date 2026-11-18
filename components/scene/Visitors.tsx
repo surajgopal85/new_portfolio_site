@@ -56,25 +56,41 @@ const SPRITES: Partial<Record<CharacterId, Art>> = {
 const eligible = visits.filter((v) => SPRITES[v.id])
 
 /**
+ * `?who=peanut` summons one visitor immediately and keeps summoning only
+ * them — for checking a character's art without waiting out the schedule.
+ *
+ * Visits are one at a time with a 12-34s gap and a coin flip each time, so
+ * a particular animal can easily be three minutes away. That's right for a
+ * room and wrong for looking at a sprite you just redrew.
+ */
+function requested(): { only: readonly Visit[]; delay: number } {
+  if (typeof window === 'undefined') return { only: eligible, delay: 2000 }
+  const who = new URLSearchParams(window.location.search).get('who')
+  const match = eligible.filter((v) => v.id === who)
+  return match.length ? { only: match, delay: 200 } : { only: eligible, delay: 2000 }
+}
+
+/**
  * Runs the schedule on an animation frame. One visitor at a time; see
  * lib/characters.ts for why that's a single slot rather than three timers.
  */
 function useSchedule(): Schedule {
-  const [schedule, setSchedule] = useState<Schedule>(() => startSchedule(2000))
+  const [cast] = useState(requested)
+  const [schedule, setSchedule] = useState<Schedule>(() => startSchedule(cast.delay))
   const raf = useRef(0)
   const last = useRef(0)
 
   useEffect(() => {
-    if (eligible.length === 0) return
+    if (cast.only.length === 0) return
     const frame = (now: number) => {
       const elapsed = last.current ? Math.min(now - last.current, 100) : 16
       last.current = now
-      setSchedule((s) => tickSchedule(s, eligible, elapsed))
+      setSchedule((s) => tickSchedule(s, cast.only, elapsed))
       raf.current = requestAnimationFrame(frame)
     }
     raf.current = requestAnimationFrame(frame)
     return () => cancelAnimationFrame(raf.current)
-  }, [])
+  }, [cast])
 
   return schedule
 }
