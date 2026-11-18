@@ -683,6 +683,70 @@ in both; visitors still sort correctly around him.
 up — he should be seated in one and standing in the other, hands at the
 keyboard in both. Visitors still pass in front of and behind him correctly.
 
+---
+
+# Phase seven: Suraj gets up, and Caitlin arrives
+
+Two parts. Do them in order — the first changes how characters are
+rendered and the second rides on it.
+
+## Part one: he stretches his legs
+
+**The constraint that makes this work:** he stays at the desk the large
+majority of the time. If he wanders freely he becomes a fourth visitor, the
+chair is empty again, and the asymmetry the whole room depends on — one
+person working, everyone else interrupting — disappears. Target something
+like 85% at the desk.
+
+The beat: every few minutes he stands, walks a short way (the window, the
+piano, the middle of the rug), stands there a moment, and comes back to the
+chair. Then he's seated and typing again.
+
+**The payoff is the front view.** Walking toward the camera is `down-left`
+or `down-right`, which means we see his face — the glasses, the beard. That
+is the fix for "he doesn't read as Suraj" that doesn't require turning the
+desk around, and it's better than the fallback because it's occasional
+rather than permanent.
+
+New frames needed: a 4-frame walk `down-right` (front, face visible) and
+`up-right` (back), plus a 2-frame standing idle facing the camera for the
+pause. Mirrors cover the other two directions, as always.
+
+His machine is his own — he is not in the visitor scheduler, and the "one
+visitor at a time" rule is unaffected. At most one visitor plus Suraj.
+
+Reuse `step` if it fits; write him a smaller one if forcing it distorts
+either. Don't break the 31 tests.
+
+## Part two: Caitlin
+
+The fourth character, and the last. She's already configured in
+`lib/characters.ts` with a spot beside the desk and a beat: *comes to the
+side of the desk, says something, goes back out.* She has no sprites, which
+is the only reason she's never scheduled.
+
+- Same ten frames as the others: 4-frame walk in two directions, 2-frame
+  idle. Person-sized, 44-48px, the same as Suraj.
+- From `photos/raw/wife_and_i/`: long dark-brown hair past the shoulders
+  with a soft wave, parted off-centre. The hair mass is the silhouette —
+  let it break the shoulder line on one side, which is what distinguishes
+  her from Suraj at this size, since both are dark-haired. Lighter skin
+  ramp: `#7a4e2e` → `#a67c55` → `#cdb08a` → `#e8c48a`.
+- She arrives facing the camera on the way in, so her face reads too.
+
+**"Says something" has nowhere to go yet.** The scene has a status bar for
+hover hints. Either she gets a small speech mark above her head for a second
+or two, or the beat is just a pause and the line is dropped from the text.
+A speech bubble with no words in it is better than inventing words for
+someone's wife — if a bubble is drawn, leave it wordless.
+
+## Checking it
+
+`?who=caitlin` should summon her. Screenshots: Suraj seated, Suraj walking
+with his face visible, Caitlin beside the desk. Confirm he's at the desk the
+large majority of a long sample, and that there's never more than one
+visitor plus him.
+
 ## Open after phase six
 
 **The glasses don't read.** As the plan warned: at this size, in a
