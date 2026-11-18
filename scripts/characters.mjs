@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Kibou, in ten frames.
+ * The visitors, in ten frames each.
  *
- *   npm run kibou                  # write public/art/characters/kibou-*.png
- *   npm run kibou -- --sheet x.png # and a contact sheet to look at
+ *   npm run characters                  # write public/art/characters/*.png
+ *   npm run characters -- --sheet x.png # and a contact sheet to look at
  *
  * Hand-plotted rather than built from boxes: at eleven pixels tall a cat is
  * all silhouette, and the box primitive that draws the furniture would give
@@ -20,7 +20,7 @@
 import { mkdir } from 'node:fs/promises'
 import sharp from 'sharp'
 
-const C = {
+const PALETTE = {
   '.': null,                       // transparent
   K: [26, 20, 32],                 // outline
   O: [207, 138, 78],               // ginger
@@ -29,10 +29,15 @@ const C = {
   S: [205, 176, 138],              // white fur, shaded
   P: [217, 140, 160],              // nose
   Y: [79, 158, 74],                // eye
+  C: [232, 196, 138],              // Peanut's cream coat
+  T: [166, 124, 85],               // her darker, folded ears
+  N: [26, 20, 32],                 // black nose
 }
 
-const FRAME_W = 20
-const FRAME_H = 16
+/**
+ * Each character declares its own frame size: Peanut is nearly twice
+ * Kibou's height and would be clipped by his.
+ */
 
 /**
  * Body and head, down-right: walking toward the camera, face visible.
@@ -122,7 +127,7 @@ const SIT = [
 function drawRows(data, rows, offsetX, offsetY, stripW) {
   rows.forEach((row, y) => {
     ;[...row].forEach((ch, x) => {
-      const col = C[ch]
+      const col = PALETTE[ch]
       if (!col) return
       const px = offsetX + x
       const py = offsetY + y
@@ -136,19 +141,20 @@ function drawRows(data, rows, offsetX, offsetY, stripW) {
 }
 
 /** One horizontal strip, frames evenly spaced, transparent between them. */
-async function strip(name, frames) {
-  const w = FRAME_W * frames.length
-  const data = new Uint8ClampedArray(w * FRAME_H * 4)
+async function strip(name, frames, fw, fh) {
+  const w = fw * frames.length
+  const data = new Uint8ClampedArray(w * fh * 4)
   frames.forEach((rows, i) => {
-    // Sit upright on the frame's bottom edge, whatever the pose's height.
-    drawRows(data, rows, i * FRAME_W, FRAME_H - rows.length, w)
+    // Stand on the frame's bottom edge, whatever the pose's height — so a
+    // sitting cat and a walking one have their feet in the same place.
+    drawRows(data, rows, i * fw, fh - rows.length, w)
   })
   const out = `public/art/characters/${name}.png`
-  await sharp(Buffer.from(data.buffer), { raw: { width: w, height: FRAME_H, channels: 4 } })
+  await sharp(Buffer.from(data.buffer), { raw: { width: w, height: fh, channels: 4 } })
     .png()
     .toFile(out)
-  console.log(`${out}  ${w}x${FRAME_H}  ${frames.length} frames`)
-  return { name, out, w }
+  console.log(`${out}  ${w}x${fh}  ${frames.length} frames`)
+  return { name, out, w, fh }
 }
 
 await mkdir('public/art/characters', { recursive: true })
@@ -160,27 +166,122 @@ const walk = (body) =>
     return [...bob, ...body, ...legs]
   })
 
+/**
+ * Peanut: pale, lean and leggy, where Kibou is ginger, low and round. At 18px
+ * at the shoulder she's nearly twice his height, which leaves room for
+ * markings he couldn't carry.
+ *
+ * The two things that identify her in silhouette: the folded darker ears,
+ * which are the only dark mass on a pale animal and so carry the whole read
+ * of the head, and the thin whip tail with its white tip — the opposite of
+ * his plume. Tail shape is the fastest way to tell two animals apart.
+ */
+const PEANUT_W = 26
+const PEANUT_H = 22
+
+const P_DOWN = [
+  '...K......................',
+  '..KWK.....................',
+  '..KWK.............KTK.KTK.',
+  '..KCK............KTCKKCTK.',
+  '..KCK...........KCCCCCCCK.',
+  '..KCKKKKKKKKKKKKCCCCWWCCK.',
+  '..KCCCCCCCCCCCCCCCCWYWWCK.',
+  '..KCCCCCCCCCCCCCCCCWWWNKK.',
+  '..KCCCCCCCCCCCCCCCCCWWWK..',
+  '..KWWCCCCCCCCCCWWWCCCK....',
+  '...KCCK......KCCK.........',
+]
+
+const P_UP = [
+  '...K......................',
+  '..KWK.....................',
+  '..KWK.............KTK.KTK.',
+  '..KCK............KTCKKCTK.',
+  '..KCK...........KCCCCCCCK.',
+  '..KCKKKKKKKKKKKKCCCCCCCCK.',
+  '..KCCCCCCCCCCCCCCCCCCCCK..',
+  '..KCCCCTTCCCCTTCCCCCCCK...',
+  '..KCCCCCCCCCCCCCCCCCCK....',
+  '..KWCCCCCCCCCCCCCCCWK.....',
+  '...KCCK......KCCK.........',
+]
+
+/** Long legs, which is most of what makes her read as a dog and not a cat. */
+const P_LEGS = [
+  ['..KCK........KCK..........', '..KCK........KCK..........', '..KWWK......KWWK.........'],
+  ['...KCK......KCK...........', '...KCK......KCK...........', '...KWWK....KWWK..........'],
+  ['..KCK.........KCK.........', '..KCK.........KCK.........', '..KWWK.......KWWK........'],
+  ['...KCK......KCK...........', '...KCK......KCK...........', '...KWWK....KWWK..........'],
+]
+
+/**
+ * Lying down, which is her settled beat — not sitting. The first four frames
+ * are the circling she does before she drops; see the `elapsed` handling in
+ * lib/characters.ts.
+ */
+const P_LIE = [
+  [
+    '..........................',
+    '..........................',
+    '..................KTK.KTK.',
+    '.................KTCKKCTK.',
+    '....K...........KCCCCCCCK.',
+    '...KWKKKKKKKKKKKCCCCWWCCK.',
+    '...KCCCCCCCCCCCCCCCWYWWCK.',
+    '...KCCCCCCCCCCCCCCCWWWNKK.',
+    '...KWWCCCCCCCCCWWWCCCWWK..',
+    '....KKKKKKKKKKKKKKKKKK....',
+  ],
+  [
+    '..........................',
+    '..........................',
+    '..................KTK.KTK.',
+    '.................KTCKKCTK.',
+    '....K...........KCCCCCCCK.',
+    '...KWKKKKKKKKKKKCCCCWWCCK.',
+    '...KCCCCCCCCCCCCCCCWYWWCK.',
+    '...KCCCCCCCCCCCCCCCWWWNKK.',
+    '...KWCCCCCCCCCCWWWCCCCWWK.',
+    '....KKKKKKKKKKKKKKKKKKK...',
+  ],
+]
+
+async function peanut() {
+  const walkP = (body) =>
+    P_LEGS.map((legs, i) => [...(i % 2 === 1 ? [''] : []), ...body, ...legs])
+  return [
+    await strip('peanut-down-right', walkP(P_DOWN), PEANUT_W, PEANUT_H),
+    await strip('peanut-up-right', walkP(P_UP), PEANUT_W, PEANUT_H),
+    await strip('peanut-idle', P_LIE, PEANUT_W, PEANUT_H),
+  ]
+}
+
+const KIBOU_W = 20
+const KIBOU_H = 16
+
 const written = [
-  await strip('kibou-down-right', walk(BODY_DOWN)),
-  await strip('kibou-up-right', walk(BODY_UP)),
-  await strip('kibou-sit', SIT),
+  await strip('kibou-down-right', walk(BODY_DOWN), KIBOU_W, KIBOU_H),
+  await strip('kibou-up-right', walk(BODY_UP), KIBOU_W, KIBOU_H),
+  await strip('kibou-idle', SIT, KIBOU_W, KIBOU_H),
+  ...(await peanut()),
 ]
 
 if (process.argv.includes('--sheet')) {
   const path = process.argv[process.argv.indexOf('--sheet') + 1]
-  const Z = 8
+  const Z = 6
   const comps = []
   for (const [i, s] of written.entries()) {
     comps.push({
       input: await sharp(s.out).resize({ width: s.w * Z, kernel: 'nearest' }).toBuffer(),
       left: 8,
-      top: 8 + i * (FRAME_H * Z + 8),
+      top: 8 + written.slice(0, i).reduce((a, p) => a + p.fh * Z + 8, 0),
     })
   }
   await sharp({
     create: {
       width: Math.max(...written.map((s) => s.w)) * Z + 16,
-      height: written.length * (FRAME_H * Z + 8) + 8,
+      height: written.reduce((a, p) => a + p.fh * Z + 8, 0) + 8,
       channels: 4,
       background: '#6b5340',
     },

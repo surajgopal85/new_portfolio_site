@@ -2,36 +2,56 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
+  isCircling,
   startSchedule,
   tickSchedule,
   visits,
   type CharacterId,
   type CharacterState,
   type Schedule,
+  type Visit,
 } from '@/lib/characters'
 import { LAYER, LAYER_Z, SCENE_H, SCENE_W, toScreen } from './iso'
 import styles from './iso.module.css'
 
 /**
- * Who has sprites. A character configured in characters.ts but not listed
- * here is never scheduled — so the other two can sit in the file, fully
- * described, until someone draws them.
+ * Who has sprites, and at what size. A character configured in
+ * characters.ts but not listed here is never scheduled — so Caitlin can sit
+ * in that file, fully described, until someone draws her.
+ *
+ * Frame sizes differ per character: Peanut is nearly twice Kibou's height.
+ * See scripts/characters.mjs.
  */
-const SPRITES: Partial<
-  Record<CharacterId, { down: string; up: string; sit: string; walkFrames: number; sitFrames: number }>
-> = {
+type Art = {
+  down: string
+  up: string
+  idle: string
+  walkFrames: number
+  idleFrames: number
+  frameW: number
+  frameH: number
+}
+
+const SPRITES: Partial<Record<CharacterId, Art>> = {
   kibou: {
     down: '/art/characters/kibou-down-right.png',
     up: '/art/characters/kibou-up-right.png',
-    sit: '/art/characters/kibou-sit.png',
+    idle: '/art/characters/kibou-idle.png',
     walkFrames: 4,
-    sitFrames: 2,
+    idleFrames: 2,
+    frameW: 20,
+    frameH: 16,
+  },
+  peanut: {
+    down: '/art/characters/peanut-down-right.png',
+    up: '/art/characters/peanut-up-right.png',
+    idle: '/art/characters/peanut-idle.png',
+    walkFrames: 4,
+    idleFrames: 2,
+    frameW: 26,
+    frameH: 22,
   },
 }
-
-/** Frame size in art pixels — see scripts/kibou.mjs. */
-const FRAME_W = 20
-const FRAME_H = 16
 
 const eligible = visits.filter((v) => SPRITES[v.id])
 
@@ -66,13 +86,15 @@ function useSchedule(): Schedule {
  * lossless on a whole-pixel sprite and halves the art. See
  * docs/characters.md.
  */
-function Visitor({ state, zIndex }: { state: CharacterState; zIndex: number }) {
+function Visitor({ state, visit, zIndex }: { state: CharacterState; visit: Visit; zIndex: number }) {
   const sprite = SPRITES[state.id]
   if (!sprite) return null
 
-  const sitting = state.phase === 'settled'
-  const strip = sitting ? sprite.sit : state.facing.startsWith('up') ? sprite.up : sprite.down
-  const count = sitting ? sprite.sitFrames : sprite.walkFrames
+  // Circling counts as walking, not as settled — a dog turning twice before
+  // she drops is still on her feet.
+  const idle = state.phase === 'settled' && !isCircling(state, visit)
+  const strip = idle ? sprite.idle : state.facing.startsWith('up') ? sprite.up : sprite.down
+  const count = idle ? sprite.idleFrames : sprite.walkFrames
   const frame = Math.min(state.frame, count - 1)
   const mirrored = state.facing.endsWith('left')
 
@@ -84,7 +106,7 @@ function Visitor({ state, zIndex }: { state: CharacterState; zIndex: number }) {
   // further away. `state.z` already knows how high he is.
   const floor = toScreen({ gx: state.gx, gy: state.gy })
   const lift = state.z / 26
-  const shadowW = 11 * (1 - lift * 0.45)
+  const shadowW = sprite.frameW * 0.55 * (1 - lift * 0.45)
   const shadowH = shadowW / 2
 
   return (
@@ -103,10 +125,10 @@ function Visitor({ state, zIndex }: { state: CharacterState; zIndex: number }) {
     <div
       className={styles.visitor}
       style={{
-        left: `${((base.x - FRAME_W / 2) / SCENE_W) * 100}%`,
-        top: `${((base.y - FRAME_H) / SCENE_H) * 100}%`,
-        width: `${(FRAME_W / SCENE_W) * 100}%`,
-        height: `${(FRAME_H / SCENE_H) * 100}%`,
+        left: `${((base.x - sprite.frameW / 2) / SCENE_W) * 100}%`,
+        top: `${((base.y - sprite.frameH) / SCENE_H) * 100}%`,
+        width: `${(sprite.frameW / SCENE_W) * 100}%`,
+        height: `${(sprite.frameH / SCENE_H) * 100}%`,
         zIndex,
         backgroundImage: `url('${strip}')`,
         backgroundSize: `${count * 100}% 100%`,
@@ -126,6 +148,6 @@ function Visitor({ state, zIndex }: { state: CharacterState; zIndex: number }) {
 export function Visitors({ depthOf }: { depthOf: (gx: number, gy: number) => number }) {
   const schedule = useSchedule()
   if (!schedule.active) return null
-  const { state } = schedule.active
-  return <Visitor state={state} zIndex={depthOf(state.gx, state.gy)} />
+  const { state, visit } = schedule.active
+  return <Visitor state={state} visit={visit} zIndex={depthOf(state.gx, state.gy)} />
 }
