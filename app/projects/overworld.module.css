@@ -1,47 +1,80 @@
+/* The overworld. Same camera, same 16px grid and the same drawing rules as
+   the room — see docs/art-direction.md. The terrain is one sprite; the path
+   and the level nodes are drawn over it from the project list, so adding a
+   project never means redrawing the map. */
+
 .map {
   position: relative;
   margin-top: 1.5rem;
-  aspect-ratio: 5 / 3;
-  min-height: 320px;
-  background: var(--leaf-dark);
+  aspect-ratio: 384 / 216;
+  background: url('/art/room/overworld.png') center / 100% 100% no-repeat;
+  image-rendering: pixelated;
   border: 3px solid var(--ink);
   box-shadow: 6px 6px 0 var(--shadow);
-  background-image:
-    radial-gradient(circle at 20% 80%, var(--leaf) 0 18%, transparent 18%),
-    radial-gradient(circle at 78% 24%, var(--leaf) 0 14%, transparent 14%),
-    radial-gradient(circle at 48% 62%, var(--sky-dark) 0 10%, transparent 10%);
 }
 
 .paths { position: absolute; inset: 0; width: 100%; height: 100%; }
 .path {
   stroke: var(--tan);
-  stroke-width: 0.9;
-  stroke-dasharray: 2 2.4;
+  stroke-width: 3;
+  stroke-linecap: square;
+  stroke-dasharray: 3 5;
   vector-effect: non-scaling-stroke;
 }
 
+/* A level tile: chunky, numbered, and lifting off its shadow on hover —
+   the SMB3 map read, drawn from scratch. */
 .node {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: min(17ch, 34vw);
   display: grid;
-  gap: 2px;
-  padding: 0.7em 0.8em;
-  text-align: center;
+  justify-items: center;
+  gap: 4px;
   text-decoration: none;
   color: var(--ink);
+}
+
+.tile {
+  display: grid;
+  place-items: center;
+  width: clamp(28px, 4.2vw, 44px);
+  aspect-ratio: 1;
+  font-family: var(--font-pixel);
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
   background: var(--tan);
   border: 3px solid var(--ink);
-  box-shadow: 4px 4px 0 var(--shadow);
+  box-shadow: 3px 3px 0 var(--shadow);
 }
-.node:hover, .node:focus-visible { background: var(--gold); }
-.node:active { transform: translate(calc(-50% + 2px), calc(-50% + 2px)); box-shadow: 2px 2px 0 var(--shadow); }
+.node:hover .tile,
+.node:focus-visible .tile {
+  background: var(--gold);
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--shadow);
+}
+.node:active .tile { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--shadow); }
+.node:focus-visible { outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  .tile, .node:hover .tile, .node:focus-visible .tile { transform: none; }
+}
 
-.nodeNumber {
+/* The label sits under its tile on a solid plate, because a thin pixel font
+   over grass is unreadable at any size. */
+.label {
   font-family: var(--font-pixel);
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  color: var(--brick);
+  font-size: clamp(0.5625rem, 1vw, 0.75rem);
+  line-height: 1.25;
+  text-align: center;
+  max-width: 14ch;
+  padding: 2px 5px;
+  background: var(--ink);
+  color: var(--cream);
+  border: 2px solid var(--cream);
 }
-.nodeTitle { font-family: var(--font-pixel); font-size: 0.9375rem; line-height: 1.2; }
-.nodePitch { font-size: 0.75rem; line-height: 1.35; color: var(--shadow); }
+
+/* Under the map rather than on it: pitches are prose, and prose doesn't
+   belong on grass. */
+.legend { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+.legendItem { display: grid; grid-template-columns: 2.2em 1fr; gap: 0.75rem; align-items: baseline; }
+.legendNum { font-family: var(--font-pixel); font-size: 0.75rem; color: var(--accent); }
+.legendTitle { font-family: var(--font-pixel); font-size: 0.9375rem; }
+.legendPitch { margin: 0.15rem 0 0; font-size: 0.875rem; color: var(--muted); }

@@ -33,11 +33,12 @@ a cropped paw.
 - [x] The cat — `kibou/`. Good color reference, no usable sprite pose.
 - [x] The dog — `peanut/`. `IMG_0165` is the one that pixelates cleanly.
 - [x] Caitlin and Suraj — `wife_and_i/`. Faces and coloring, all ¾ or head-on.
-- [ ] **Front, back and side of all four.** The scene is drawn from a shallow
-      top-down angle, so characters walk toward and away from the camera as
-      well as across it. One side only — the other direction is mirrored.
+- [ ] **Two three-quarter views of all four**, matching the room's isometric
+      camera: 45 degrees in front and above, and 45 degrees behind and above.
+      Only two, because the other two directions are these mirrored. See
+      `docs/characters.md`.
 - [ ] **The pause pose** — sitting for the pets, standing relaxed for people,
-      shot front-on.
+      from the three-quarter front.
 - [x] Caitlin's okay on being drawn in — yes.
 
 ---

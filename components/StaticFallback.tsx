@@ -1,56 +1,78 @@
 import Link from 'next/link'
 import { hotspots, site } from '@/content/site'
 import { publicProjects } from '@/content/projects'
+import styles from './fallback.module.css'
 
 /**
- * The plain version. Not a consolation prize: this is what the exported HTML
- * contains, what a screen reader reads, what a crawler indexes, and what a
- * slow phone on a train gets. It has to stand on its own.
+ * The plain version. See fallback.module.css for why it gets a design rather
+ * than a bare list.
  */
 export function StaticFallback({ onEnter }: { onEnter?: () => void }) {
   return (
-    <main className="page">
-      <p className="eyebrow">{site.role}</p>
-      <h1>{site.name}</h1>
-      <p className="lede">{site.pitch}</p>
+    <div className={styles.page}>
+      <header className={styles.hero}>
+        <p className="eyebrow">{site.role}</p>
+        <h1 className={styles.name}>{site.name}</h1>
+        <p className={styles.lede}>{site.pitch}</p>
 
-      {onEnter && (
-        <p>
-          <button type="button" className="block-button" onClick={onEnter}>
-            Visit the office
-          </button>
-        </p>
-      )}
+        {onEnter && (
+          <p className={styles.enter}>
+            <button type="button" className="block-button" onClick={onEnter}>
+              Visit the office →
+            </button>
+          </p>
+        )}
+      </header>
 
-      <h2>Pages</h2>
-      <ul>
-        {hotspots.map((spot) => (
-          <li key={spot.id}>
-            <Link href={spot.href}>{spot.label}</Link> — {spot.hint}
+      <section className={styles.section}>
+        <h2 className={styles.heading}>Pages</h2>
+        <ul className={styles.blocks}>
+          {hotspots.map((spot) => (
+            <li key={spot.id}>
+              <Link href={spot.href} className={styles.block}>
+                <span className={styles.blockLabel}>{spot.label}</span>
+                <span className={styles.blockHint}>{spot.hint}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.heading}>Projects</h2>
+        <ol className={styles.projects}>
+          {publicProjects.map((project, i) => (
+            <li key={project.slug} className={styles.project}>
+              <span className={styles.projectNum}>{String(i + 1).padStart(2, '0')}</span>
+              <span>
+                <Link href={`/projects/${project.slug}/`} className={styles.projectLink}>
+                  {project.title}
+                </Link>
+                <p className={styles.projectPitch}>{project.pitch}</p>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.heading}>Elsewhere</h2>
+        <ul className={styles.links}>
+          <li>
+            <a href={`mailto:${site.email}`}>{site.email}</a>
           </li>
-        ))}
-      </ul>
+          {site.socials.map((social) => (
+            <li key={social.label}>
+              <a href={social.href}>{social.label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <h2>Projects</h2>
-      <ul>
-        {publicProjects.map((project) => (
-          <li key={project.slug}>
-            <Link href={`/projects/${project.slug}/`}>{project.title}</Link> — {project.pitch}
-          </li>
-        ))}
-      </ul>
-
-      <h2>Elsewhere</h2>
-      <ul>
-        <li>
-          <a href={`mailto:${site.email}`}>{site.email}</a>
-        </li>
-        {site.socials.map((social) => (
-          <li key={social.label}>
-            <a href={social.href}>{social.label}</a>
-          </li>
-        ))}
-      </ul>
-    </main>
+      <p className={styles.foot}>
+        This is the plain version — no images, no scripts needed. The office is
+        a pixel-art room you can look around in.
+      </p>
+    </div>
   )
 }

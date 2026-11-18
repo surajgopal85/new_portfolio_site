@@ -41,6 +41,13 @@ bone, the power strip and its cable run, the shelf, cables behind the desk.
 When a region of floor looks bare, the answer is another small object, not a
 larger nearby one.
 
+### Except the middle of the floor
+
+Density applies to the edges. The open floor between the desk, the rug and
+the door is where Kibou, Peanut and Caitlin walk, stop and leave — it's the
+stage, and it has to stay clear. An empty-looking centre is the design
+working, not a gap to fill. Fill the perimeter instead.
+
 ## Drawing rules
 
 - Flat fills plus **one** shadow step per surface. Three tones maximum on
