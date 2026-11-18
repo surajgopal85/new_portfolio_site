@@ -415,26 +415,40 @@ Draw the best silhouette possible and say so plainly.
    horizontal strip per direction in `public/art/characters/`.
    Reference: `photos/raw/kibou/` — orange-and-white, white chest and paws,
    white blaze up the muzzle, a tail nearly as long as the body.
-2. **Render characters.** A layer in `IsoScene` that places a character from
+2. ~~**Render characters.**~~ **Done.** A layer in `IsoScene` that places a character from
    its tile position with `toScreen`, sorts into the same painter's order as
    the furniture (so he passes behind the desk and in front of the rug), and
    mirrors with `scaleX(-1)` for the two left-going directions.
-3. **The state machine.** Implement `step` in `lib/characters.ts` against the
+3. ~~**The state machine.**~~ **Done — all 31 tests green.** Implement `step` in `lib/characters.ts` against the
    spec in `lib/characters.test.ts`. Pure function, durations chosen on phase
    entry, `facingFor` for direction. The 21 skipped tests must go green.
-4. **The scheduler.** One visitor at a time, never two, with a quiet gap
+4. ~~**The scheduler.**~~ **Done.** One visitor at a time, never two, with a quiet gap
    between visits — `GAP` in characters.ts. Kibou is the only one with
    sprites, so he's the only one who can be scheduled; leave the other two
    configured and inert.
-5. **The hop onto the desk.** His spot has `z: 26`. Interpolate height on the
+5. ~~**The hop onto the desk.**~~ **Done.** His spot has `z: 26`. Interpolate height on the
    last stretch so he rises onto the desk rather than teleporting up it.
-6. **Check it.** `npm test`, `npm run audit`, and a screenshot — plus a
+6. ~~**Check it.**~~ **Done.** `npm test`, `npm run audit`, and a screenshot — plus a
    couple of frames apart to confirm he actually moves.
 
 ### Keep
 
 Reduced motion already drops to the plain version, so the machine never has
 to care. Nothing here should make the scene fail if the sprites are missing.
+
+## Phase three is done
+
+Kibou walks in through the door, crosses the room, rises onto the desk, sits
+between Suraj and the monitor, and leaves. Verified by sampling his position
+over sixteen seconds — he moves — and by screenshots of the walk and the sit.
+
+The one thing that isn't there: **Suraj isn't at the desk.** The room has a
+cat visiting an empty chair. He needs the same ten frames, and the scheduler
+already has a slot for him that nothing fills.
+
+Peanut and Caitlin are fully configured in `lib/characters.ts` — spots,
+speeds, beats — and never scheduled, because `SPRITES` in `Visitors.tsx`
+only lists who has art. Draw them and they start appearing; no other change.
 
 ## Questions for the morning
 

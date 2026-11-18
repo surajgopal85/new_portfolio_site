@@ -57,6 +57,14 @@
 .key { position: absolute; top: 12%; bottom: 10%; background: transparent; }
 .key:hover { background: rgba(242, 193, 78, 0.35); }
 
+/* A visitor: one frame of a sprite strip, positioned by tile. */
+.visitor {
+  position: absolute;
+  pointer-events: none;
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+}
+
 /* Night. The sprites are painted in their own daylight colours; this is the
    light falling on them. The warm pool sits over the desk, the cool spill at
    the windows, and the corners fall away. */

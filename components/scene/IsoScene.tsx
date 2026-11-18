@@ -6,6 +6,7 @@ import { hotspots } from '@/content/site'
 import { artPieces } from '@/content/art'
 import { KEYS, playNote, teardown, unlock } from '@/lib/piano'
 import { SCENE_H, SCENE_W, isoThings, placeThing, sortKey, type IsoThing } from './iso'
+import { Visitors } from './Visitors'
 import styles from './iso.module.css'
 
 const IDLE_HINT = 'Click something in the room.'
@@ -138,6 +139,12 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
             </button>
           )
         })()}
+
+        {/* Whoever's visiting, sorted into the same painter's order as the
+            furniture, so they pass behind the desk and in front of the rug. */}
+        <Visitors
+          depthOf={(gx, gy) => 10 + painted.filter((t) => sortKey(t) < gx + gy).length}
+        />
 
         <div className={styles.light} />
       </div>
