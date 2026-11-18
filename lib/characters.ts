@@ -50,6 +50,13 @@ export type CharacterState = {
    * lives in the state rather than a closure.
    */
   timer: number
+  /**
+   * Milliseconds spent in the current phase so far, reset on entry. The
+   * counterpart to `timer`: some beats are measured from the start of a
+   * phase rather than its end — Peanut circling before she lies down, for
+   * one.
+   */
+  elapsed: number
 }
 
 export type Visit = {
@@ -62,6 +69,8 @@ export type Visit = {
   stay: readonly [number, number]
   /** What they do while settled — the reason each visit differs. */
   beat: string
+  /** Circles a couple of times before settling, the way a dog does. */
+  circlesFirst?: boolean
 }
 
 /** The doorway, in tiles: the west wall, nearest the camera. */
@@ -86,6 +95,7 @@ export const visits: readonly Visit[] = [
     speed: 2.4,
     stay: [8000, 18000],
     beat: 'Crosses to the rug, turns around twice, lies down.',
+    circlesFirst: true,
   },
   {
     id: 'caitlin',
@@ -101,7 +111,17 @@ export const visits: readonly Visit[] = [
 export const GAP: readonly [number, number] = [12_000, 34_000]
 
 export function initialState(id: CharacterId): CharacterState {
-  return { id, phase: 'away', gx: DOOR.gx, gy: DOOR.gy, z: 0, facing: 'down-right', frame: 0, timer: 0 }
+  return {
+    id,
+    phase: 'away',
+    gx: DOOR.gx,
+    gy: DOOR.gy,
+    z: 0,
+    facing: 'down-right',
+    frame: 0,
+    timer: 0,
+    elapsed: 0,
+  }
 }
 
 /**
@@ -116,6 +136,24 @@ export function facingFor(dgx: number, dgy: number): CharacterState['facing'] {
 
 /** How close to the spot a character has to be before it starts to climb. */
 const HOP = 0.8
+
+/**
+ * How long the circling lasts before a dog drops. Two full turns, which is
+ * what the beat says and roughly what she actually does.
+ */
+export const CIRCLE_MS = 1400
+
+/** Is this character still circling rather than settled? */
+export function isCircling(state: CharacterState, visit: Visit): boolean {
+  return state.phase === 'settled' && !!visit.circlesFirst && state.elapsed < CIRCLE_MS
+}
+
+const TURN_ORDER: readonly CharacterState['facing'][] = [
+  'down-right',
+  'down-left',
+  'up-left',
+  'up-right',
+]
 
 /**
  * Height above the floor, derived from where the character is rather than
@@ -168,7 +206,16 @@ export function step(state: CharacterState, visit: Visit, elapsedMs: number): Ch
       const m = toward(visit.spot.gx, visit.spot.gy)
       const z = heightFor(m.gx, m.gy, visit)
       if (m.arrived) {
-        return { ...state, gx: m.gx, gy: m.gy, z, phase: 'settled', timer: pick(visit.stay), frame: 0 }
+        return {
+          ...state,
+          gx: m.gx,
+          gy: m.gy,
+          z,
+          phase: 'settled',
+          timer: pick(visit.stay),
+          elapsed: 0,
+          frame: 0,
+        }
       }
       return {
         ...state,
@@ -177,21 +224,37 @@ export function step(state: CharacterState, visit: Visit, elapsedMs: number): Ch
         z,
         facing: facingFor(m.dgx, m.dgy),
         frame: (state.frame + 1) % 4,
+        elapsed: state.elapsed + elapsedMs,
       }
     }
 
     case 'settled': {
       const timer = state.timer - elapsedMs
-      if (timer <= 0) return { ...state, phase: 'leaving', timer: 0, frame: 0 }
+      const elapsed = state.elapsed + elapsedMs
+      if (timer <= 0) return { ...state, phase: 'leaving', timer: 0, elapsed: 0, frame: 0 }
+
+      // A dog circles before it drops. Two turns, using the walk frames and
+      // stepping through all four facings — which is why `elapsed` exists.
+      if (visit.circlesFirst && elapsed < CIRCLE_MS) {
+        const stepsIn = Math.floor((elapsed / CIRCLE_MS) * 8)
+        return {
+          ...state,
+          timer,
+          elapsed,
+          facing: TURN_ORDER[stepsIn % TURN_ORDER.length],
+          frame: Math.floor(elapsed / 110) % 4,
+        }
+      }
+
       // Two idle frames, swapping about twice a second.
-      return { ...state, timer, frame: Math.floor(timer / 500) % 2 }
+      return { ...state, timer, elapsed, frame: Math.floor(timer / 500) % 2 }
     }
 
     case 'leaving': {
       const m = toward(DOOR.gx, DOOR.gy)
       const z = heightFor(m.gx, m.gy, visit)
       if (m.arrived) {
-        return { ...state, gx: m.gx, gy: m.gy, z: 0, phase: 'away', timer: 0, frame: 0 }
+        return { ...state, gx: m.gx, gy: m.gy, z: 0, phase: 'away', timer: 0, elapsed: 0, frame: 0 }
       }
       return {
         ...state,
@@ -200,6 +263,7 @@ export function step(state: CharacterState, visit: Visit, elapsedMs: number): Ch
         z,
         facing: facingFor(m.dgx, m.dgy),
         frame: (state.frame + 1) % 4,
+        elapsed: state.elapsed + elapsedMs,
       }
     }
 
@@ -249,7 +313,7 @@ export function tickSchedule(
   return {
     active: {
       visit,
-      state: { ...initialState(visit.id), phase: 'entering', facing: 'down-right' },
+      state: { ...initialState(visit.id), phase: 'entering', facing: 'down-right', elapsed: 0 },
     },
     until: 0,
   }

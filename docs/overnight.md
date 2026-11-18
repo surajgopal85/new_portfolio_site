@@ -543,7 +543,7 @@ and a stay range, and is never scheduled only because `SPRITES` in
 Reference: `photos/raw/peanut/` — `IMG_0165` is the usable one, daylight,
 pale dog against a dark floor.
 
-## 1. What she looks like at this size
+## 1. ~~What she looks like at this size~~ — drawn
 
 18 px at the shoulder, 0.5 x 0.8 tiles — nearly double Kibou, so there's
 room for markings he couldn't carry. From the photos:
@@ -562,7 +562,7 @@ room for markings he couldn't carry. From the photos:
 
 The ramp is in `docs/characters.md`.
 
-## 2. The frames
+## 2. ~~The frames~~ — done
 
 Same ten-frame structure as Kibou, with one difference: her settled pose is
 **lying down**, not sitting.
@@ -572,7 +572,7 @@ Same ten-frame structure as Kibou, with one difference: her settled pose is
 
 Plus the turn, below.
 
-## 3. "Turns around twice" needs somewhere to live
+## 3. ~~"Turns around twice" needs somewhere to live~~ — `elapsed` added
 
 The beat says she circles before lying down, which the state machine can't
 currently express — `settled` goes straight to the idle frames.
@@ -587,21 +587,25 @@ counting ticks.
 Don't add a phase. The four phases are load-bearing in 21 tests and a circle
 before lying down is a detail of being settled, not a new state.
 
-## 4. Generalise the sprite table
+## 4. ~~Generalise the sprite table~~ — done
 
 `SPRITES` in `Visitors.tsx` hardcodes `sit` and fixed frame counts. Make it
 per character: strip names and frame counts together, so a dog that lies
 down and a cat that sits don't need different code.
 
-## 5. Then it schedules itself
+## 5. ~~Then it schedules itself~~ — confirmed
 
 Nothing else to wire. Once Peanut is in `SPRITES` the scheduler picks
 between her and Kibou — still one at a time, still with the quiet gap. That
 is the whole point of the single slot.
 
-## Checking it
+## ~~Checking it~~ — done
 
-`npm run peanut -- --sheet`, then sample a full visit the way phase four did:
+Over 99 seconds both visit and never two at once: kibou 103 samples,
+peanut 60, max on screen 1. All six strips used. Caught her lying on the
+rug.
+
+~~`npm run peanut -- --sheet`, then sample a full visit the way phase four did:
 both characters appear across a long enough window, never two at once, she
 lies down rather than standing on the rug, and the shadow tracks her. `npm
 test` and `npm run audit` stay green.
