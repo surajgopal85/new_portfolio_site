@@ -371,6 +371,54 @@ More photos landed: `photos/raw/office/IMG_0728-0730` (including the doorway
 view) and five more of Kibou in `photos/raw/kibou/`. The Kibou ones are for
 Suraj's sprite work, not for this phase.
 
+---
+
+# Phase three: Kibou
+
+The first character. He walks in through the door on the west wall, crosses
+the room, hops onto the desk, sits between Suraj and the monitor for a while,
+and leaves.
+
+**Ownership changed here.** Earlier phases reserved the character art and the
+state machine for Suraj. He has explicitly asked for both to be written, on
+the understanding that the sprites are a first pass: ten frames he can
+repaint in Aseprite and drop in without touching any code. Don't hand this
+back.
+
+**Be honest about the limit.** A cat 11px tall drawn in code reads as "small
+ginger animal", not as Kibou. The plume tail, the orange cap with the white
+blaze, the ear tufts — those are exactly what code loses and a hand finds.
+Draw the best silhouette possible and say so plainly.
+
+### The order
+
+1. **The sprites.** `npm run iso-sprites`. Ten frames: a 4-frame walk in
+   `down-right` and in `up-right`, plus a 2-frame sit for the settled beat.
+   11px at the shoulder, ~0.4 x 0.7 tiles, from `docs/characters.md`. One
+   horizontal strip per direction in `public/art/characters/`.
+   Reference: `photos/raw/kibou/` — orange-and-white, white chest and paws,
+   white blaze up the muzzle, a tail nearly as long as the body.
+2. **Render characters.** A layer in `IsoScene` that places a character from
+   its tile position with `toScreen`, sorts into the same painter's order as
+   the furniture (so he passes behind the desk and in front of the rug), and
+   mirrors with `scaleX(-1)` for the two left-going directions.
+3. **The state machine.** Implement `step` in `lib/characters.ts` against the
+   spec in `lib/characters.test.ts`. Pure function, durations chosen on phase
+   entry, `facingFor` for direction. The 21 skipped tests must go green.
+4. **The scheduler.** One visitor at a time, never two, with a quiet gap
+   between visits — `GAP` in characters.ts. Kibou is the only one with
+   sprites, so he's the only one who can be scheduled; leave the other two
+   configured and inert.
+5. **The hop onto the desk.** His spot has `z: 26`. Interpolate height on the
+   last stretch so he rises onto the desk rather than teleporting up it.
+6. **Check it.** `npm test`, `npm run audit`, and a screenshot — plus a
+   couple of frames apart to confirm he actually moves.
+
+### Keep
+
+Reduced motion already drops to the plain version, so the machine never has
+to care. Nothing here should make the scene fail if the sprites are missing.
+
 ## Questions for the morning
 
 (Claude appends here rather than guessing.)
