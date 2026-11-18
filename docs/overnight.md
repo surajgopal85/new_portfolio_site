@@ -392,7 +392,17 @@ Draw the best silhouette possible and say so plainly.
 
 ### The order
 
-1. **The sprites.** `npm run iso-sprites`. Ten frames: a 4-frame walk in
+1. ~~**The sprites.**~~ **Done.** `npm run kibou` — ten frames in three
+   strips: `kibou-down-right`, `kibou-up-right` (4 each) and `kibou-sit` (2).
+   Hand-plotted as string grids, one character per pixel, because the box
+   primitive that draws the furniture gives a ginger brick at this size.
+
+   Took two passes: the first read as a dachshund. The fix was a neck notch —
+   the head has to sit a clear five rows above the back, or a cat this small
+   is just a long low animal. The tail rises rather than sticking out.
+
+   *Superseded instructions below, kept for the record:* ~~`npm run
+   iso-sprites`. Ten frames: a 4-frame walk in
    `down-right` and in `up-right`, plus a 2-frame sit for the settled beat.
    11px at the shoulder, ~0.4 x 0.7 tiles, from `docs/characters.md`. One
    horizontal strip per direction in `public/art/characters/`.
