@@ -734,7 +734,7 @@ visitor at a time" rule is unaffected. At most one visitor plus Suraj.
 Reuse `step` if it fits; write him a smaller one if forcing it distorts
 either. Don't break the 31 tests.
 
-## Part two: Caitlin
+## ~~Part two: Caitlin~~ — done
 
 The fourth character, and the last. She's already configured in
 `lib/characters.ts` with a spot beside the desk and a beat: *comes to the
@@ -756,9 +756,17 @@ or two, or the beat is just a pause and the line is dropped from the text.
 A speech bubble with no words in it is better than inventing words for
 someone's wife — if a bubble is drawn, leave it wordless.
 
-## Checking it
+## ~~Checking it~~ — done
 
-`?who=caitlin` should summon her. Screenshots: Suraj seated, Suraj walking
+Two minutes of sampling, every 300ms:
+
+- Suraj stationary and working in 99% of samples; walking in about 1%.
+- All three visitors appeared — kibou 126 samples, peanut 55, caitlin 54.
+- **Never more than one visitor at a time**, which is the rule the whole
+  scheduler exists to keep.
+- The speech mark appears while she's settled, and only then.
+
+~~`?who=caitlin` should summon her. Screenshots: Suraj seated, Suraj walking
 with his face visible, Caitlin beside the desk. Confirm he's at the desk the
 large majority of a long sample, and that there's never more than one
 visitor plus him.

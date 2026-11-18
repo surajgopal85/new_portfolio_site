@@ -66,6 +66,27 @@
   border-radius: 50%;
 }
 
+/* A wordless speech mark. Deliberately wordless — see Visitors.tsx. */
+.speech {
+  position: absolute;
+  display: flex;
+  gap: 2.5%;
+  align-items: center;
+  justify-content: center;
+  width: 4.7%;
+  height: 4%;
+  padding: 0 0.6%;
+  pointer-events: none;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
+}
+.speech span {
+  width: 18%;
+  aspect-ratio: 1;
+  background: var(--ink);
+}
+
 /* A visitor: one frame of a sprite strip, positioned by tile. */
 .visitor {
   position: absolute;

@@ -52,6 +52,15 @@ const SPRITES: Partial<Record<CharacterId, Art>> = {
     frameW: 26,
     frameH: 22,
   },
+  caitlin: {
+    down: '/art/characters/caitlin-down-right.png',
+    up: '/art/characters/caitlin-up-right.png',
+    idle: '/art/characters/caitlin-idle.png',
+    walkFrames: 4,
+    idleFrames: 2,
+    frameW: 22,
+    frameH: 44,
+  },
 }
 
 const eligible = visits.filter((v) => SPRITES[v.id])
@@ -145,20 +154,41 @@ function Visitor({ state, visit, zIndex }: { state: CharacterState; visit: Visit
           zIndex: LAYER_Z[LAYER.floor] + 50,
         }}
       />
-    <div
-      className={styles.visitor}
-      style={{
-        left: `${((base.x - sprite.frameW / 2) / SCENE_W) * 100}%`,
-        top: `${((base.y - sprite.frameH) / SCENE_H) * 100}%`,
-        width: `${(sprite.frameW / SCENE_W) * 100}%`,
-        height: `${(sprite.frameH / SCENE_H) * 100}%`,
-        zIndex,
-        backgroundImage: `url('${strip}')`,
-        backgroundSize: `${count * 100}% 100%`,
-        backgroundPosition: count > 1 ? `${(frame / (count - 1)) * 100}% 0` : '0 0',
-        transform: mirrored ? 'scaleX(-1)' : undefined,
-      }}
-    />
+      {/* Her beat says she says something. There are no words in it and
+          there shouldn't be — a wordless mark beats putting words in
+          someone's mouth. */}
+      {idle && state.id === 'caitlin' && (
+        <div
+          className={styles.speech}
+          style={{
+            left: `${((base.x + 3) / SCENE_W) * 100}%`,
+            // The frame is taller than she is — her head starts a dozen
+            // rows down it — so the mark hangs off the sprite's top edge
+            // rather than above the whole frame.
+            top: `${((base.y - sprite.frameH + 3) / SCENE_H) * 100}%`,
+            zIndex: zIndex + 1,
+          }}
+          aria-hidden="true"
+        >
+          <span />
+          <span />
+          <span />
+        </div>
+      )}
+      <div
+        className={styles.visitor}
+        style={{
+          left: `${((base.x - sprite.frameW / 2) / SCENE_W) * 100}%`,
+          top: `${((base.y - sprite.frameH) / SCENE_H) * 100}%`,
+          width: `${(sprite.frameW / SCENE_W) * 100}%`,
+          height: `${(sprite.frameH / SCENE_H) * 100}%`,
+          zIndex,
+          backgroundImage: `url('${strip}')`,
+          backgroundSize: `${count * 100}% 100%`,
+          backgroundPosition: count > 1 ? `${(frame / (count - 1)) * 100}% 0` : '0 0',
+          transform: mirrored ? 'scaleX(-1)' : undefined,
+        }}
+      />
     </>
   )
 }

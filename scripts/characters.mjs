@@ -40,6 +40,8 @@ const PALETTE = {
   E: [232, 236, 240],              // the clear glasses frame
   R: [109, 122, 140],              // shirt
   B: [39, 48, 74],                 // trousers
+  M: [58, 38, 34],                 // Caitlin's dark brown hair
+  V: [107, 74, 122],               // her top
 }
 
 /**
@@ -474,6 +476,72 @@ const SURAJ_SIT_FRONT = [
 /** A one-pixel bob, which is all it takes to read as typing. */
 const typing = (rows) => [rows, ['', ...rows]]
 
+/**
+ * Caitlin.
+ *
+ * She and Suraj are the same height and both dark-haired, so the thing that
+ * separates them at this size is the **hair mass**: hers falls past the
+ * shoulders and breaks the shoulder line on both sides, where his stops at
+ * the skull. That silhouette is doing all the work — at 44px you won't read
+ * a face across a room, but you will read an outline.
+ */
+const CAIT_FRONT = [
+  '......KMMMMMMK......',
+  '.....KMMMMMMMMK.....',
+  '....KMMMMMMMMMMK....',
+  '....KMMMMMMMMMMK....',
+  '....KMMLLLLLLMMK....',
+  '....KMMLLLLLLMMK....',
+  '....KMLKLLLLKLMK....',
+  '....KMLLLLLLLLMK....',
+  '....KMLLLCCLLLMK....',
+  '....KMMLLLLLLMMK....',
+  '...KMMMLLLLLLMMMK...',
+  '...KMMMMKKKKMMMMK...',
+  '...KMMMMVVVVMMMMK...',
+  '..KKMMMVVVVVVMMMKK..',
+  '..KMMMVVVVVVVVMMMK..',
+  '..KLMMVVVVVVVVMMLK..',
+  '..KLKMVVVVVVVVMKLK..',
+  '..KLKMVVVVVVVVMKLK..',
+  '..KLKKVVVVVVVVKKLK..',
+  '..KCK.VVVVVVVV.KCK..',
+  '...KK.VVVVVVVV.KK...',
+  '......KVVVVVVK......',
+  '......KBBBBBBK......',
+  '......KBBBBBBK......',
+  '......KBBBBBBK......',
+]
+
+/** Walking away: hair all the way down, which is the whole silhouette. */
+const CAIT_BACK = [
+  '......KMMMMMMK......',
+  '.....KMMMMMMMMK.....',
+  '....KMMMMMMMMMMK....',
+  '....KMMMMMMMMMMK....',
+  '....KMMMMMMMMMMK....',
+  '....KMMMMMMMMMMK....',
+  '....KMMMMMMMMMMK....',
+  '....KMMMMMMMMMMK....',
+  '....KMMMMMMMMMMK....',
+  '....KMMMMMMMMMMK....',
+  '...KMMMMMMMMMMMMK...',
+  '...KMMMMMMMMMMMMK...',
+  '...KMMMMMMMMMMMMK...',
+  '..KKMMMMMMMMMMMMKK..',
+  '..KMMMMMMMMMMMMMMK..',
+  '..KLMMMMMMMMMMMMLK..',
+  '..KLKMMMMMMMMMMKLK..',
+  '..KLKMMVVVVVVMMKLK..',
+  '..KLKKVVVVVVVVKKLK..',
+  '..KCK.VVVVVVVV.KCK..',
+  '...KK.VVVVVVVV.KK...',
+  '......KVVVVVVK......',
+  '......KBBBBBBK......',
+  '......KBBBBBBK......',
+  '......KBBBBBBK......',
+]
+
 /** A person's walk: body plus alternating legs, with a bob on the off-beat. */
 const walkPerson = (body) =>
   SURAJ_LEGS.map((legs, i) => [...(i % 2 === 1 ? [''] : []), ...body, ...legs])
@@ -492,6 +560,9 @@ const written = [
   await strip('suraj-up-right', walkPerson(SURAJ_BACK), SURAJ_W, SURAJ_H),
   await strip('suraj-idle', typing(SURAJ_FRONT.concat(SURAJ_LEGS[1])), SURAJ_W, SURAJ_H),
   await strip('suraj-sit-front', typing(SURAJ_SIT_FRONT), SURAJ_W, SURAJ_H),
+  await strip('caitlin-down-right', walkPerson(CAIT_FRONT), SURAJ_W, SURAJ_H),
+  await strip('caitlin-up-right', walkPerson(CAIT_BACK), SURAJ_W, SURAJ_H),
+  await strip('caitlin-idle', typing(CAIT_FRONT.concat(SURAJ_LEGS[1])), SURAJ_W, SURAJ_H),
 ]
 
 if (process.argv.includes('--sheet')) {
