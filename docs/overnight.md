@@ -690,7 +690,23 @@ keyboard in both. Visitors still pass in front of and behind him correctly.
 Two parts. Do them in order — the first changes how characters are
 rendered and the second rides on it.
 
-## ~~Part one: he stretches his legs~~ — done
+## ~~Part one: he stretches his legs~~ — done, then reworked
+
+Suraj's idea, and a better one: rather than wandering off, he **switches
+between the two ends of the L** — the computer (back to the room) and the
+writing end (facing it). He never leaves the desk, so the premise gets
+stronger rather than weaker, and you still get his face. One trip in four
+is still a short wander, for life.
+
+Two things the screenshots forced:
+
+- **He stands at the writing end rather than sitting.** Seated his head is
+  33px and the return in front of him is 27px, so the desk ate everything
+  but his hair.
+- **He stands at the END of the return, not along its side.** Beside a long
+  box in isometric you always lose: a box's sort key comes from its far
+  corner, so a desk paints over anything level with it. Past its near end
+  he's unambiguously in front, and fully visible.
 
 **The constraint that makes this work:** he stays at the desk the large
 majority of the time. If he wanders freely he becomes a fourth visitor, the

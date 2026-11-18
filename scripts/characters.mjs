@@ -441,6 +441,36 @@ const SURAJ_LEGS = [
   ['....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KKKKKKKKK.......'],
 ]
 
+/**
+ * Seated at the writing side of the L, facing the room.
+ *
+ * Head and shoulders only, like the other seated pose — the desk hides the
+ * rest, which is what a desk does. This is the angle that shows his face
+ * without him leaving the desk at all.
+ */
+const SURAJ_SIT_FRONT = [
+  '.......KHHHHK.......',
+  '......KHHHHHHK......',
+  '.....KHHHHHHHHK.....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '....KHSSSSSSSSHK....',
+  '....KHSSSSSSSSHK....',
+  '....KSEEKSSKEESK....',
+  '....KSEKKSSKKESK....',
+  '....KSSSSSSSSSSK....',
+  '....KSDSSDDSSDSK....',
+  '.....KDDDDDDDDK.....',
+  '......KSSSSSSK......',
+  '.......KRRRRK.......',
+  '....KKKRRRRRRKKK....',
+  '..KKRRRRRRRRRRRRKK..',
+  '..KSRRRRRRRRRRRRSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KLKRRRRRRRRRRKLK..',
+  '...KKRRRRRRRRRRKK...',
+]
+
 /** A one-pixel bob, which is all it takes to read as typing. */
 const typing = (rows) => [rows, ['', ...rows]]
 
@@ -461,6 +491,7 @@ const written = [
   await strip('suraj-down-right', walkPerson(SURAJ_FRONT), SURAJ_W, SURAJ_H),
   await strip('suraj-up-right', walkPerson(SURAJ_BACK), SURAJ_W, SURAJ_H),
   await strip('suraj-idle', typing(SURAJ_FRONT.concat(SURAJ_LEGS[1])), SURAJ_W, SURAJ_H),
+  await strip('suraj-sit-front', typing(SURAJ_SIT_FRONT), SURAJ_W, SURAJ_H),
 ]
 
 if (process.argv.includes('--sheet')) {

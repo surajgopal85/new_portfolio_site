@@ -34,16 +34,51 @@ export type ResidentState = {
   elapsed: number
   /** Where he's crossing to this time. */
   target: { gx: number; gy: number }
+  /** Which seat he's at, or heading for. */
+  seat: SeatName
+  /** True when the trip is a stretch of the legs rather than a seat change. */
+  wandering: boolean
 }
 
 /**
- * Where he goes. Short trips: the window, the piano corner, the middle of
- * the floor. Nowhere that would take him out of frame or behind the desk.
+ * The two places he works.
+ *
+ * The desk is an L. At the computer he faces the north wall, so his back is
+ * to the room — true to life, and it hides the glasses. At the writing side
+ * he faces along the return, which is toward the camera: the desk hides his
+ * legs and his face is visible over it.
+ *
+ * Switching between them is better than wandering for the same purpose. He
+ * never leaves the desk, so the premise gets stronger rather than weaker.
+ */
+export const SEATS = {
+  /** The computer end: seated, back to the room, which is true to life. */
+  computer: { gx: SURAJ.gx, gy: SURAJ.gy, facing: 'up-right' as const, front: false, stands: false },
+  /**
+   * The writing end of the L: he stands at it, facing into the room.
+   *
+   * Standing rather than sitting for a plain reason — seated, his head is
+   * 33px and the return in front of him is 27px, so the desk ate all but
+   * his hair. Standing he's 39px and clears it, and leaning on a desk to
+   * write something is what people do anyway.
+   *
+   * And he stands at the END of the return rather than along its side.
+   * Beside a long box in isometric you always lose: the desk's sort key
+   * comes from its far corner, so it paints over anything level with it.
+   * Past its near end he's unambiguously in front, and fully visible.
+   */
+  writing: { gx: 7.8, gy: 5.1, facing: 'down-right' as const, front: true, stands: true },
+}
+
+export type SeatName = keyof typeof SEATS
+
+/**
+ * Where he goes on the rarer occasions he actually gets up. Short trips,
+ * nowhere that takes him out of frame.
  */
 export const WANDER = [
   { gx: 4.2, gy: 2.2 }, // the middle of the rug
   { gx: 2.6, gy: 4.4 }, // over by the piano
-  { gx: 5.4, gy: 1.6 }, // under the windows
 ] as const
 
 /** Tiles per second. He's not in a hurry; it's his house. */
@@ -60,18 +95,35 @@ export const WORK_MS: readonly [number, number] = [75_000, 150_000]
 export const STAND_MS: readonly [number, number] = [5_000, 11_000]
 
 const pick = ([lo, hi]: readonly [number, number]) => lo + Math.random() * (hi - lo)
-const pickSpot = () => WANDER[Math.floor(Math.random() * WANDER.length)]
+const other = (seat: SeatName): SeatName => (seat === 'computer' ? 'writing' : 'computer')
+
+/**
+ * Most trips are a move to the other end of the desk; one in four is a
+ * stretch of the legs. Both show his face — the seat change because the
+ * writing side looks into the room, the wander because walking toward the
+ * camera does.
+ */
+function nextTrip(seat: SeatName) {
+  if (Math.random() < 0.25) {
+    const spot = WANDER[Math.floor(Math.random() * WANDER.length)]
+    return { target: spot, seat, wandering: true }
+  }
+  const next = other(seat)
+  return { target: { gx: SEATS[next].gx, gy: SEATS[next].gy }, seat: next, wandering: false }
+}
 
 export function startResident(firstTrip = pick(WORK_MS)): ResidentState {
   return {
     phase: 'working',
-    gx: SURAJ.gx,
-    gy: SURAJ.gy,
-    facing: 'up-right',
+    gx: SEATS.computer.gx,
+    gy: SEATS.computer.gy,
+    facing: SEATS.computer.facing,
     frame: 0,
     timer: firstTrip,
     elapsed: 0,
-    target: pickSpot(),
+    target: { gx: SEATS.writing.gx, gy: SEATS.writing.gy },
+    seat: 'computer',
+    wandering: false,
   }
 }
 
@@ -96,13 +148,28 @@ export function stepResident(state: ResidentState, elapsedMs: number): ResidentS
   }
 
   switch (state.phase) {
-    case 'working':
+    case 'working': {
       if (timer > 0) return { ...state, timer, elapsed }
-      return { ...state, phase: 'crossing', timer: 0, elapsed: 0, frame: 0, target: pickSpot() }
+      const trip = nextTrip(state.seat)
+      return { ...state, phase: 'crossing', timer: 0, elapsed: 0, frame: 0, ...trip }
+    }
 
     case 'crossing': {
       const m = toward(state.target.gx, state.target.gy)
       if (m.arrived) {
+        // A seat change goes straight back to work; a wander stands a while.
+        if (!state.wandering) {
+          return {
+            ...state,
+            gx: m.gx,
+            gy: m.gy,
+            phase: 'working',
+            facing: SEATS[state.seat].facing,
+            timer: pick(WORK_MS),
+            elapsed: 0,
+            frame: 0,
+          }
+        }
         return {
           ...state,
           gx: m.gx,
@@ -129,14 +196,14 @@ export function stepResident(state: ResidentState, elapsedMs: number): ResidentS
       return { ...state, phase: 'returning', timer: 0, elapsed: 0, frame: 0 }
 
     case 'returning': {
-      const m = toward(SURAJ.gx, SURAJ.gy)
+      const m = toward(SEATS[state.seat].gx, SEATS[state.seat].gy)
       if (m.arrived) {
         return {
           ...state,
           gx: m.gx,
           gy: m.gy,
           phase: 'working',
-          facing: 'up-right',
+          facing: SEATS[state.seat].facing,
           timer: pick(WORK_MS),
           elapsed: 0,
           frame: 0,

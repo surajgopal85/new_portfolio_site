@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { startResident, stepResident, type ResidentState } from '@/lib/resident'
+import { SEATS, startResident, stepResident, type ResidentState } from '@/lib/resident'
 import {
   isCircling,
   startSchedule,
@@ -210,12 +210,18 @@ export function Resident({
   const H = 44
   const SEAT = 13
   const working = state.phase === 'working'
-  const seated = working && !deskUp
+  const seat = SEATS[state.seat]
+  const front = seat.front
+  // The standing desk is the computer end of the L, so only that seat sits
+  // or stands with it. The writing end he stands at regardless.
+  const seated = working && !seat.stands && !deskUp
 
   const strip = working
-    ? seated
-      ? '/art/characters/suraj-sit.png'
-      : '/art/characters/suraj-type.png'
+    ? seat.stands
+      ? '/art/characters/suraj-idle.png'
+      : seated
+        ? '/art/characters/suraj-sit.png'
+        : '/art/characters/suraj-type.png'
     : state.phase === 'standing'
       ? '/art/characters/suraj-idle.png'
       : state.facing.startsWith('up')
@@ -229,8 +235,31 @@ export function Resident({
   const base = toScreen({ gx: state.gx, gy: state.gy, z: seated ? SEAT : 0 })
   const floor = toScreen({ gx: state.gx, gy: state.gy })
 
+  const chairW = 29
+  const chairH = 39
+  // The chair lives at the computer end. He stands at the writing end, so
+  // it doesn't follow him there.
+  const chairAt = SEATS.computer
+  const chairLeft = toScreen({ gx: chairAt.gx, gy: chairAt.gy + 0.9 }).x
+  const chairTop = toScreen({ gx: chairAt.gx, gy: chairAt.gy }).y - 25
+  const chair = (
+    <div
+      className={styles.visitor}
+      style={{
+        left: `${(chairLeft / SCENE_W) * 100}%`,
+        top: `${(chairTop / SCENE_H) * 100}%`,
+        width: `${(chairW / SCENE_W) * 100}%`,
+        height: `${(chairH / SCENE_H) * 100}%`,
+        zIndex: depthOf(chairAt.gx, chairAt.gy) + 1,
+        backgroundImage: "url('/art/iso/chair.png')",
+        backgroundSize: '100% 100%',
+      }}
+    />
+  )
+
   return (
     <>
+
       <div
         className={styles.shadow}
         style={{
@@ -256,6 +285,7 @@ export function Resident({
           transform: mirrored ? 'scaleX(-1)' : undefined,
         }}
       />
+      {chair}
     </>
   )
 }
