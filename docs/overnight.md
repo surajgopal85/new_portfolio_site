@@ -86,11 +86,15 @@ your call, not Claude's.)
 
 ## Guardrails
 
-- **Work on a branch.** `scene/overnight`. Never commit to `main`.
-- **Push the branch regularly** — Suraj asked for this on 18 Nov, replacing
-  the earlier local-only rule. Push `scene/overnight`, never `main`, and
-  never open a pull request or merge. A push at the end of a tick costs
-  seconds and means the work survives the machine going to sleep.
+- **Work on a branch.** Currently `kibou`; `scene/overnight` was merged into
+  `main` on 18 Nov. Never commit to `main`.
+- **Push the branch regularly.** A push at the end of a tick costs seconds
+  and means the work survives the machine going to sleep.
+- **Opening the PR is Suraj's job, not Claude's** — `gh` on this machine is
+  authenticated as `ssgopal85`, which isn't a collaborator on the repo, so
+  `gh pr create` fails with "must be a collaborator". Pushes work because
+  they go over SSH as `surajgopal85`. Push the branch and hand over the
+  compare URL.
 - **Never touch AWS.** No `bootstrap.sh`, no `deploy.sh`, no credentials.
 - **Small commits**, each one building and typechecking, each message saying
   what changed and why, so the night reads back in five minutes.
