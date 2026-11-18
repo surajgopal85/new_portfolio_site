@@ -622,7 +622,7 @@ else is an interruption.
 there, like the furniture, and `SURAJ` in `lib/characters.ts` already holds
 his tile position.
 
-## 1. The decision to make first: which way does he face?
+## 1. ~~Which way does he face?~~ — three-quarter back view, in the file
 
 He sits at the north wall desk, so realistically he faces **away from the
 camera** — you'd see the back of his head and shoulders. That's honest and
@@ -637,7 +637,7 @@ legible.
 
 Note which one is in the file. Don't silently pick the easier one.
 
-## 2. The standing desk already tells you when he stands
+## 2. ~~The standing desk already tells you when he stands~~ — wired
 
 `deskUp` exists in `IsoScene` and the desk animates between two heights. So:
 
@@ -650,7 +650,7 @@ room's best small joke: the desk rises and he stands up with it.
 Both poses are a **2-frame typing loop** — a one-pixel bob, nothing more.
 Hands on the keyboard either way.
 
-## 3. What identifies him at 46px
+## 3. ~~What identifies him at 46px~~ — drawn
 
 From `photos/raw/wife_and_i/`:
 
@@ -661,24 +661,35 @@ From `photos/raw/wife_and_i/`:
 - Skin ramp in `docs/characters.md`: `#4a2f1d` → `#7a4e2e` → `#a67c55` →
   `#cdb08a`, lit side `#e8c48a`.
 
-## 4. The chair
+## 4. ~~The chair~~ — composed
 
 He should sit *in* the chair, not beside it. The chair is a separate prop at
 `gx 6.9, gy 2.6`; either compose the two or fold the chair into the seated
 sprite. Composing is better — the chair stays when he stands.
 
-## 5. Render him
+## 5. ~~Render him~~ — done
 
 He isn't scheduled, so he doesn't belong in `Visitors`. Give him his own
 small component, sorted into the same painter's order, with the same
 contact shadow. The desk is at `gy 0.35-1.35`; he sits in front of it, so he
 draws after it and in front of the rug.
 
-## Checking it
+## ~~Checking it~~ — done
 
-`npm run characters -- --sheet`, then screenshots with the desk down and
+Seated with the desk down, standing with it up, hands at keyboard height
+in both; visitors still sort correctly around him.
+
+~~`npm run characters -- --sheet`, then screenshots with the desk down and
 up — he should be seated in one and standing in the other, hands at the
 keyboard in both. Visitors still pass in front of and behind him correctly.
+
+## Open after phase six
+
+**The glasses don't read.** As the plan warned: at this size, in a
+three-quarter back view, they're a single pale pixel on the near cheek. He's
+unmistakably a person at a desk, and not unmistakably *Suraj*. The fallback
+— seating him at the corner of the L turned toward the room — is still
+available and is a layout change, not a redraw. Suraj's call.
 
 ## Questions for the morning
 

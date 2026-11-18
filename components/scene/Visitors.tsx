@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import {
+  SURAJ,
   isCircling,
   startSchedule,
   tickSchedule,
@@ -152,6 +153,58 @@ function Visitor({ state, visit, zIndex }: { state: CharacterState; visit: Visit
         transform: mirrored ? 'scaleX(-1)' : undefined,
       }}
     />
+    </>
+  )
+}
+
+/**
+ * Suraj, at the desk, always.
+ *
+ * He stands when the desk does — which is the room's best small joke, and
+ * costs nothing: `deskUp` already existed and nothing was using it.
+ */
+export function Resident({ deskUp, zIndex }: { deskUp: boolean; zIndex: number }) {
+  const [frame, setFrame] = useState(0)
+  useEffect(() => {
+    const t = window.setInterval(() => setFrame((f) => (f + 1) % 2), 240)
+    return () => window.clearInterval(t)
+  }, [])
+
+  // Seated, he's on the chair's seat rather than the floor — 13px up. The
+  // sprite is head and shoulders only, so his head lands about three
+  // quarters of its standing height, which is what sitting looks like.
+  const W = 22
+  const H = 44
+  const SEAT = 13
+  const base = toScreen({ gx: SURAJ.gx, gy: SURAJ.gy, z: deskUp ? 0 : SEAT })
+  const strip = deskUp ? '/art/characters/suraj-stand.png' : '/art/characters/suraj-sit.png'
+
+  return (
+    <>
+      <div
+        className={styles.shadow}
+        style={{
+          left: `${((base.x - 7) / SCENE_W) * 100}%`,
+          top: `${((base.y - 4) / SCENE_H) * 100}%`,
+          width: `${(14 / SCENE_W) * 100}%`,
+          height: `${(7 / SCENE_H) * 100}%`,
+          opacity: 0.34,
+          zIndex: LAYER_Z[LAYER.floor] + 50,
+        }}
+      />
+      <div
+        className={styles.visitor}
+        style={{
+          left: `${((base.x - W / 2) / SCENE_W) * 100}%`,
+          top: `${((base.y - H) / SCENE_H) * 100}%`,
+          width: `${(W / SCENE_W) * 100}%`,
+          height: `${(H / SCENE_H) * 100}%`,
+          zIndex,
+          backgroundImage: `url('${strip}')`,
+          backgroundSize: '200% 100%',
+          backgroundPosition: `${frame * 100}% 0`,
+        }}
+      />
     </>
   )
 }

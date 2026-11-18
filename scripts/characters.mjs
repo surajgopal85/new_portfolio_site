@@ -33,6 +33,13 @@ const PALETTE = {
   T: [166, 124, 85],               // her darker, folded ears
   N: [26, 20, 32],                 // black nose
   G: [217, 140, 160],              // tongue
+  H: [32, 24, 30],                 // Suraj's hair
+  S: [166, 124, 85],               // skin
+  L: [205, 176, 138],              // skin, lit side
+  D: [122, 78, 46],                // skin, shadow
+  E: [232, 236, 240],              // the clear glasses frame
+  R: [109, 122, 140],              // shirt
+  B: [39, 48, 74],                 // trousers
 }
 
 /**
@@ -265,6 +272,103 @@ async function peanut() {
   ]
 }
 
+/**
+ * Suraj at the desk.
+ *
+ * He is NOT a visitor — no scheduler, no phases, no door. He's the constant
+ * the room is organised around, and everyone else is an interruption.
+ *
+ * FACING: three-quarter back view, which is what someone at a desk against
+ * a wall actually looks like. The cost is his face; the compensation is the
+ * clear-framed glasses, visible as a pale edge on the near cheek. If that
+ * doesn't read at size, the fallback is to seat him at the corner of the L
+ * turned toward the room — less true to the photo, far more legible.
+ *
+ * What identifies him at 44px: dark curly hair drawn as a mass wider than
+ * the skull, the glasses, a short beard.
+ */
+const SURAJ_W = 22
+const SURAJ_H = 44
+
+/** Standing at the raised desk. */
+const SURAJ_STAND = [
+  '.......KHHHHK.......',
+  '......KHHHHHHK......',
+  '.....KHHHHHHHHK.....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHHK...',
+  '....KHHHHHHHHHSEK...',
+  '....KHHHHHHHHSSEK...',
+  '.....KHHHHHHHSSLK...',
+  '.....KHHHHHHSSSLK...',
+  '......KDDDDSSSLK....',
+  '.......KSSSSSLK.....',
+  '........KSSSLK......',
+  '........KRRRK.......',
+  '.....KKKRRRRKKK.....',
+  '...KKRRRRRRRRRRKK...',
+  '..KRRRRRRRRRRRRRRK..',
+  '..KRRRRRRRRRRRRRRK..',
+  '..KSRRRRRRRRRRRRSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KLKRRRRRRRRRRKLK..',
+  '...KKRRRRRRRRRRKK...',
+  '....KRRRRRRRRRRK....',
+  '....KRRRRRRRRRRK....',
+  '....KBBBBBBBBBBK....',
+  '....KBBBBBBBBBBK....',
+  '....KBBBBBBBBBBK....',
+  '....KBBBBKKBBBBK....',
+  '....KBBBK.KBBBBK....',
+  '....KBBBK.KBBBBK....',
+  '....KBBBK.KBBBBK....',
+  '....KBBBK.KBBBBK....',
+  '....KBBBK.KBBBBK....',
+  '....KBBBK.KBBBBK....',
+  '....KBBBK.KBBBBK....',
+  '....KKKKK.KKKKKK....',
+]
+
+/**
+ * Seated at the lowered desk: head, shoulders and the top of the torso
+ * only.
+ *
+ * This sprite is drawn sitting ON the chair's seat, not standing on the
+ * floor — the renderer places it at seat height. Anchoring it to the floor
+ * is what put his head level with the chair back and hid him completely.
+ * A seated head is about three quarters of a standing one, which the
+ * shorter sprite plus the seat height gives for free.
+ */
+const SURAJ_SIT = [
+  '.......KHHHHK.......',
+  '......KHHHHHHK......',
+  '.....KHHHHHHHHK.....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHHK...',
+  '....KHHHHHHHHHSEK...',
+  '....KHHHHHHHHSSEK...',
+  '.....KHHHHHHHSSLK...',
+  '.....KHHHHHHSSSLK...',
+  '......KDDDDSSSLK....',
+  '.......KSSSSSLK.....',
+  '........KSSSLK......',
+  '........KRRRK.......',
+  '.....KKKRRRRKKK.....',
+  '...KKRRRRRRRRRRKK...',
+  '..KRRRRRRRRRRRRRRK..',
+  '..KSRRRRRRRRRRRRSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KLKRRRRRRRRRRKLK..',
+]
+
+/** A one-pixel bob, which is all it takes to read as typing. */
+const typing = (rows) => [rows, ['', ...rows]]
+
 const KIBOU_W = 20
 const KIBOU_H = 16
 
@@ -273,6 +377,8 @@ const written = [
   await strip('kibou-up-right', walk(BODY_UP), KIBOU_W, KIBOU_H),
   await strip('kibou-idle', SIT, KIBOU_W, KIBOU_H),
   ...(await peanut()),
+  await strip('suraj-stand', typing(SURAJ_STAND), SURAJ_W, SURAJ_H),
+  await strip('suraj-sit', typing(SURAJ_SIT), SURAJ_W, SURAJ_H),
 ]
 
 if (process.argv.includes('--sheet')) {
