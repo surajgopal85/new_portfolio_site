@@ -610,6 +610,76 @@ both characters appear across a long enough window, never two at once, she
 lies down rather than standing on the rug, and the shadow tracks her. `npm
 test` and `npm run audit` stay green.
 
+---
+
+# Phase six: Suraj at the desk
+
+The room currently has animals visiting an empty chair, which undercuts the
+whole premise. He's the constant the scene is organised around; everyone
+else is an interruption.
+
+**He is not a visitor.** No scheduler, no phases, no door. He's always
+there, like the furniture, and `SURAJ` in `lib/characters.ts` already holds
+his tile position.
+
+## 1. The decision to make first: which way does he face?
+
+He sits at the north wall desk, so realistically he faces **away from the
+camera** — you'd see the back of his head and shoulders. That's honest and
+it's what a person at a desk looks like, but it loses the one feature that
+identifies him at this size: the clear-framed glasses.
+
+Draw the first pass as a **three-quarter back view** — the back of the head,
+one shoulder forward, and a sliver of cheek carrying the edge of the glasses
+frame. If that doesn't read, the fallback is to seat him at the corner of
+the L turned toward the room, which is less true to the photo and much more
+legible.
+
+Note which one is in the file. Don't silently pick the easier one.
+
+## 2. The standing desk already tells you when he stands
+
+`deskUp` exists in `IsoScene` and the desk animates between two heights. So:
+
+- desk down → seated frames
+- desk up → standing frames
+
+That connects two features that currently ignore each other, and it's the
+room's best small joke: the desk rises and he stands up with it.
+
+Both poses are a **2-frame typing loop** — a one-pixel bob, nothing more.
+Hands on the keyboard either way.
+
+## 3. What identifies him at 46px
+
+From `photos/raw/wife_and_i/`:
+
+- **Dark curly hair with real volume** — draw it as a mass wider than the
+  skull, not a cap.
+- **Clear-framed glasses**, two light pixels across the eyes. The identifier.
+- Short beard.
+- Skin ramp in `docs/characters.md`: `#4a2f1d` → `#7a4e2e` → `#a67c55` →
+  `#cdb08a`, lit side `#e8c48a`.
+
+## 4. The chair
+
+He should sit *in* the chair, not beside it. The chair is a separate prop at
+`gx 6.9, gy 2.6`; either compose the two or fold the chair into the seated
+sprite. Composing is better — the chair stays when he stands.
+
+## 5. Render him
+
+He isn't scheduled, so he doesn't belong in `Visitors`. Give him his own
+small component, sorted into the same painter's order, with the same
+contact shadow. The desk is at `gy 0.35-1.35`; he sits in front of it, so he
+draws after it and in front of the rug.
+
+## Checking it
+
+`npm run characters -- --sheet`, then screenshots with the desk down and
+up — he should be seated in one and standing in the other, hands at the
+keyboard in both. Visitors still pass in front of and behind him correctly.
+
 ## Questions for the morning
 
 (Claude appends here rather than guessing.)
