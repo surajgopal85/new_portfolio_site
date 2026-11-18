@@ -1,0 +1,57 @@
+/* A page for one piece on the wall. The sprite is shown at the size the room
+   draws it, scaled up with nearest-neighbour — the pixels are the point. */
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: clamp(16px, 4vw, 32px);
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.sprite {
+  image-rendering: pixelated;
+  width: clamp(96px, 18vw, 160px);
+  height: auto;
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--rule);
+  background: var(--sand);
+}
+
+.title { margin: 0.2em 0 0.3em; font-size: clamp(1.5rem, 4.5vw, 2.25rem); line-height: 1.1; }
+.credit { margin: 0; font-size: 0.9375rem; color: var(--muted); }
+
+.heading {
+  margin: 2rem 0 0.6rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.body { margin: 0; max-width: 62ch; line-height: 1.65; }
+.pending { margin: 0; padding: 1rem; color: var(--muted); border: 3px dashed var(--rule); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.5rem; }
+
+.others {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  padding-top: 1.25rem;
+  border-top: 3px solid var(--rule);
+}
+.other {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.6rem 0.9rem;
+  font-family: var(--font-pixel);
+  font-size: 0.875rem;
+  text-decoration: none;
+  color: var(--fg);
+  border: 3px solid var(--fg);
+  box-shadow: 4px 4px 0 var(--rule);
+}
+.other:hover, .other:focus-visible { background: var(--gold); color: var(--ink); }
+.other img { image-rendering: pixelated; width: 28px; height: auto; }

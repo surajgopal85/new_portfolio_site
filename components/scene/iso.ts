@@ -90,7 +90,15 @@ export type IsoThing = {
   /** Height of the footprint off the floor — a thing on the desk sits at 26. */
   z?: number
   src: string | null
-  hotspot?: 'monitor' | 'piano' | 'door' | 'corkboard'
+  hotspot?:
+    | 'monitor'
+    | 'piano'
+    | 'door'
+    | 'corkboard'
+    /** The three pieces on the walls, each with a page of its own. */
+    | 'ligeti'
+    | 'schiele'
+    | 'twin-peaks'
   /** Mounted flat on a wall rather than standing on the floor. */
   wall?: 'north' | 'west'
   /** Lies flat on the floor: drawn as a diamond, no height. */
@@ -130,11 +138,12 @@ export const isoThings: readonly IsoThing[] = [
   // --- north wall: the windows you look at while working -----------------
   { id: 'window-left', gx: 2.6, gy: 0, z: 24, tiles: { w: 2, d: 0 }, height: 40, src: '/art/iso/window-left.png', wall: 'north' },
   { id: 'window-right', gx: 5.4, gy: 0, z: 24, tiles: { w: 2, d: 0 }, height: 40, src: '/art/iso/window-right.png', wall: 'north' },
-  { id: 'corkboard', gx: 8.2, gy: 0, z: 28, tiles: { w: 1.8, d: 0 }, height: 30, src: '/art/iso/corkboard.png', wall: 'north', hotspot: 'corkboard' },
+  { id: 'twin-peaks', gx: 7.6, gy: 0, z: 30, tiles: { w: 0.7, d: 0 }, height: 26, src: '/art/iso/twin-peaks.png', wall: 'north', hotspot: 'twin-peaks' },
+  { id: 'corkboard', gx: 8.7, gy: 0, z: 28, tiles: { w: 1.2, d: 0 }, height: 30, src: '/art/iso/corkboard.png', wall: 'north', hotspot: 'corkboard' },
 
   // --- west wall: the way in, and the music ------------------------------
-  { id: 'ligeti', gx: 0, gy: 2.6, z: 32, tiles: { w: 0, d: 1.8 }, height: 30, src: '/art/iso/ligeti.png', wall: 'west' },
-  { id: 'schiele', gx: 0, gy: 4.9, z: 34, tiles: { w: 0, d: 1 }, height: 34, src: '/art/iso/schiele.png', wall: 'west' },
+  { id: 'ligeti', gx: 0, gy: 2.6, z: 32, tiles: { w: 0, d: 1.8 }, height: 30, src: '/art/iso/ligeti.png', wall: 'west', hotspot: 'ligeti' },
+  { id: 'schiele', gx: 0, gy: 4.9, z: 34, tiles: { w: 0, d: 1 }, height: 34, src: '/art/iso/schiele.png', wall: 'west', hotspot: 'schiele' },
   { id: 'door', gx: 0, gy: 7.2, z: 0, tiles: { w: 0, d: 1.7 }, height: 62, src: '/art/iso/door.png', wall: 'west', hotspot: 'door' },
 
   // --- the rug, which owns the middle of the floor -----------------------
@@ -146,12 +155,24 @@ export const isoThings: readonly IsoThing[] = [
   { id: 'amp', gx: 0.6, gy: 4.9, tiles: { w: 0.9, d: 0.9 }, height: 18, src: '/art/iso/amp.png' },
   { id: 'side-table', gx: 0.5, gy: 6.3, tiles: { w: 0.9, d: 1.8 }, height: 20, src: '/art/iso/side-table.png' },
 
-  // --- the desk, along the east side, with walking room beside the rug ---
-  { id: 'shelf', gx: 8.1, gy: 0.7, tiles: { w: 0.9, d: 0.9 }, height: 22, src: '/art/iso/shelf.png' },
-  { id: 'desk', gx: 8.1, gy: 1.9, tiles: { w: 1.1, d: 2.4 }, height: 26, src: '/art/iso/desk.png' },
-  { id: 'monitor', gx: 8.35, gy: 2.2, z: 26, tiles: { w: 0.45, d: 1.3 }, height: 24, src: '/art/iso/monitor.png', hotspot: 'monitor' },
-  { id: 'laptop', gx: 8.35, gy: 3.3, z: 26, tiles: { w: 0.45, d: 0.8 }, height: 10, src: '/art/iso/laptop.png' },
-  { id: 'chair', gx: 6.9, gy: 2.6, tiles: { w: 1, d: 1 }, height: 32, src: '/art/iso/chair.png' },
-  { id: 'credenza', gx: 8.1, gy: 5.0, tiles: { w: 1.1, d: 2.1 }, height: 28, src: '/art/iso/credenza.png' },
-  { id: 'midi', gx: 8.2, gy: 5.2, z: 28, tiles: { w: 0.6, d: 1.7 }, height: 8, src: '/art/iso/midi.png' },
+  // --- the desk: an L, the way it actually is ----------------------------
+  // The long leg runs under the windows and carries the computer; the return
+  // runs along the east side toward the camera and carries the controller.
+  { id: 'desk-north', gx: 5.0, gy: 0.35, tiles: { w: 3.6, d: 1.0 }, height: 26, src: '/art/iso/desk-north.png' },
+  { id: 'monitor', gx: 6.5, gy: 0.5, z: 26, tiles: { w: 1.0, d: 0.45 }, height: 24, src: '/art/iso/monitor.png', hotspot: 'monitor' },
+  { id: 'laptop', gx: 7.7, gy: 0.5, z: 26, tiles: { w: 0.8, d: 0.45 }, height: 10, src: '/art/iso/laptop.png' },
+  { id: 'bottle', gx: 5.3, gy: 0.5, z: 26, tiles: { w: 0.25, d: 0.25 }, height: 11, src: '/art/iso/bottle.png' },
+  { id: 'mug', gx: 6.1, gy: 0.75, z: 26, tiles: { w: 0.25, d: 0.25 }, height: 6, src: '/art/iso/mug.png' },
+  { id: 'shelf', gx: 4.6, gy: 0.5, tiles: { w: 0.9, d: 0.9 }, height: 22, src: '/art/iso/shelf.png' },
+  { id: 'chair', gx: 6.6, gy: 1.6, tiles: { w: 1, d: 1 }, height: 32, src: '/art/iso/chair.png' },
+
+  { id: 'desk-east', gx: 8.2, gy: 1.35, tiles: { w: 1.1, d: 3.3 }, height: 27, src: '/art/iso/desk-east.png' },
+  { id: 'midi', gx: 8.35, gy: 2.1, z: 27, tiles: { w: 0.6, d: 1.7 }, height: 8, src: '/art/iso/midi.png' },
+  { id: 'papers', gx: 8.45, gy: 4.1, z: 27, tiles: { w: 0.5, d: 0.5 }, height: 3, src: '/art/iso/papers.png' },
+
+  // --- the small things that make it somebody's room ---------------------
+  { id: 'powerstrip', gx: 7.4, gy: 1.3, tiles: { w: 0.5, d: 0.2 }, height: 3, src: '/art/iso/powerstrip.png' },
+  { id: 'books', gx: 4.65, gy: 0.6, z: 22, tiles: { w: 0.6, d: 0.5 }, height: 9, src: '/art/iso/books.png' },
+  { id: 'plush', gx: 0.75, gy: 6.8, z: 20, tiles: { w: 0.5, d: 0.5 }, height: 8, src: '/art/iso/plush.png' },
+  { id: 'bone', gx: 3.1, gy: 6.1, tiles: { w: 0.45, d: 0.3 }, height: 3, src: '/art/iso/bone.png' },
 ]

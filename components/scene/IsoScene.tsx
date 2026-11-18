@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { hotspots } from '@/content/site'
+import { artPieces } from '@/content/art'
 import { KEYS, playNote, teardown, unlock } from '@/lib/piano'
 import { SCENE_H, SCENE_W, isoThings, placeThing, sortKey, type IsoThing } from './iso'
 import styles from './iso.module.css'
@@ -21,8 +22,8 @@ function style(t: IsoThing, z: number) {
   }
 }
 
-/** Things that stand on the desk and rise with it. */
-const ON_DESK = new Set(['monitor', 'laptop'])
+/** Things standing on the standing desk, which rise with it. */
+const ON_DESK = new Set(['monitor', 'laptop', 'bottle', 'mug'])
 
 export function IsoScene({ onLeave }: { onLeave: () => void }) {
   const [deskUp, setDeskUp] = useState(false)
@@ -59,11 +60,19 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
   const painted = [...isoThings].sort((a, b) => sortKey(a) - sortKey(b))
   const zOf = (t: IsoThing) => 10 + painted.indexOf(t)
 
+  // The navigation first, then the three pieces on the walls. Each piece
+  // opens a page about itself, which is a better "about me" than a
+  // paragraph claiming to be interesting.
+  const links = [
+    ...hotspots.map((h) => ({ id: h.id, href: h.href, label: h.label, hint: h.hint })),
+    ...artPieces.map((a) => ({ id: a.id, href: `/art/${a.slug}/`, label: a.title, hint: a.hint })),
+  ]
+
   return (
     <>
       <div className={`${styles.frame} ${deskUp ? styles.deskUp : ''}`}>
         {painted.map((t) =>
-          t.hotspot || t.id === 'desk' ? null : (
+          t.hotspot || t.id === 'desk-north' ? null : (
             <div
               key={t.id}
               className={`${styles.thing} ${ON_DESK.has(t.id) ? styles.rises : ''}`}
@@ -74,7 +83,7 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
           ),
         )}
 
-        {hotspots.map((spot) => {
+        {links.map((spot) => {
           const t = painted.find((x) => x.hotspot === spot.id)
           if (!t) return null
           return (
@@ -111,7 +120,7 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
 
         {/* The desk is last: it isn't navigation, it's a toy. */}
         {(() => {
-          const desk = painted.find((t) => t.id === 'desk')
+          const desk = painted.find((t) => t.id === 'desk-north')
           if (!desk) return null
           return (
             <button

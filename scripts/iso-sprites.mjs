@@ -327,7 +327,7 @@ async function writeWall(id, draw) {
 // --- the props that aren't a single box -----------------------------------
 
 /** A standing desk: a slab on two legs, not a solid block. */
-await write('desk', (st, t) => {
+await write('desk-north', (st, t) => {
   const { w, d } = t.tiles
   const legH = t.height - 4
   for (const [u, v] of [[0.1, 0.15], [0.1, d - 0.35], [w - 0.3, 0.15], [w - 0.3, d - 0.35]]) {
@@ -419,8 +419,8 @@ await write('futon', (st, t) => {
   st.box({ u: 0.06, v: d * 0.78, w: w - 0.12, d: 0.04, h: t.height * 0.5 + 1, color: P.skyDark, k: 0, outline: null })
 })
 
-/** The desk return: drawers with handles, running toward the camera. */
-await write('credenza', (st, t) => {
+/** The desk's return: a wooden run toward the camera, with drawers. */
+await write('desk-east', (st, t) => {
   const { w, d } = t.tiles
   st.box({ u: 0, v: 0, w, d, h: t.height, color: P.bark, k: 1 })
   // drawer fronts on the face turned toward the room
@@ -430,6 +430,56 @@ await write('credenza', (st, t) => {
     st.box({ u: 0.02, v: v0, w: w - 0.04, d: v1 - v0, z: 3, h: t.height - 8, color: P.barkDark, k: 1, outline: null, faces: false })
     st.box({ u: 0.02, v: (v0 + v1) / 2 - 0.06, w: w - 0.04, d: 0.12, z: t.height - 12, h: 2, color: P.slate, k: 0, outline: null, faces: false })
   }
+})
+
+// --- the small things ------------------------------------------------------
+
+/** Simple solids: a shape, a colour, and the same light as everything else. */
+const SMALL = {
+  mug: P.sky,
+  papers: P.paper,
+  bone: P.cream,
+}
+for (const [id, color] of Object.entries(SMALL)) {
+  await write(id, (st, t) => st.box({ w: t.tiles.w, d: t.tiles.d, h: t.height, color, k: 0 }))
+}
+
+await write('bottle', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ w, d, h: t.height - 2, color: P.skyDark, k: 0 })
+  st.box({ u: w * 0.25, v: d * 0.25, w: w * 0.5, d: d * 0.5, z: t.height - 2, h: 2, color: P.ink, k: 0 })
+})
+
+await write('powerstrip', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ w, d, h: t.height, color: P.paper, k: 0 })
+  for (let u = 0.08; u < w - 0.08; u += 0.12) {
+    st.box({ u, v: d * 0.3, w: 0.07, d: d * 0.4, z: t.height, h: 1, color: P.slate, k: 0, outline: null })
+  }
+})
+
+await write('books', (st, t) => {
+  const { w, d } = t.tiles
+  const spines = [P.brick, P.leafDark, P.plum, P.gold]
+  for (let i = 0; i < spines.length; i++) {
+    st.box({
+      u: (i * w) / spines.length,
+      v: 0,
+      w: w / spines.length - 0.02,
+      d,
+      h: t.height - (i % 2) * 2,
+      color: spines[i],
+      k: 1,
+    })
+  }
+})
+
+/** The burger-cat plush: a ginger cat wearing a bun. */
+await write('plush', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ w, d, h: t.height - 4, color: P.ginger, k: 0 })       // the cat
+  st.box({ u: 0.04, v: 0.04, w: w - 0.08, d: d - 0.08, z: t.height - 5, h: 2, color: P.leaf, k: 0 })  // lettuce
+  st.box({ u: 0.02, v: 0.02, w: w - 0.04, d: d - 0.04, z: t.height - 3, h: 3, color: P.gold, k: 0 })  // the top bun
 })
 
 // --- things on the walls --------------------------------------------------
@@ -465,12 +515,30 @@ await writeWall('ligeti', (st) => {
   const a = st.along
   st.panel(0, a, 0, st.H, P.ink)                            // frame
   st.panel(0.06, a - 0.06, 3, st.H - 3, P.paper)
-  // Wehinger's score: rows of coloured marks on white
-  const cols = [P.brick, P.leafDark, P.gold, P.plum, P.skyDark]
+  // Wehinger's listening score reads as sweeps and clusters, not a grid of
+  // dots: long smears of one colour, dense knots, and empty staves between.
+  const cols = [P.brick, P.leafDark, P.gold, P.plum, P.skyDark, P.rose]
+  let seed = 9173
+  const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff)
   for (let r = 0; r < 5; r++) {
-    for (let i = 0; i < 7; i++) {
-      const s0 = 0.1 + (i * (a - 0.2)) / 7
-      st.panel(s0, s0 + 0.05 + (i % 3) * 0.02, 6 + r * 5, 9 + r * 5, cols[(r + i) % cols.length])
+    const y = 5 + r * 5
+    st.panel(0.1, a - 0.1, y - 1, y, [228, 224, 216])        // the staff line
+    let x = 0.1 + rnd() * 0.1
+    while (x < a - 0.18) {
+      const kind = rnd()
+      const col = cols[Math.floor(rnd() * cols.length)]
+      if (kind < 0.3) {
+        const len = 0.1 + rnd() * 0.25                        // a smear
+        st.panel(x, Math.min(x + len, a - 0.12), y, y + 2, col)
+        x += len + 0.06
+      } else if (kind < 0.7) {
+        for (let k = 0; k < 3; k++) {                         // a cluster
+          st.panel(x + k * 0.035, x + k * 0.035 + 0.025, y + (k % 2), y + 3 + (k % 2), col)
+        }
+        x += 0.14 + rnd() * 0.1
+      } else {
+        x += 0.1 + rnd() * 0.2                                // silence
+      }
     }
   }
   st.outline(0, a, 0, st.H)
@@ -479,10 +547,40 @@ await writeWall('ligeti', (st) => {
 await writeWall('schiele', (st) => {
   const a = st.along
   st.panel(0, a, 0, st.H, P.ink)
-  st.panel(0.05, a - 0.05, 2, st.H - 2, P.barkDark)         // the dark ground
-  st.panel(a * 0.3, a * 0.72, st.H - 16, st.H - 5, P.cream) // the pale collar
-  st.panel(a * 0.38, a * 0.62, st.H - 14, st.H - 8, P.clay) // the face
-  st.panel(a * 0.36, a * 0.64, 4, st.H - 16, P.shadow)      // the waistcoat
+  st.panel(0.04, a - 0.04, 2, st.H - 2, [22, 18, 16])        // the near-black ground
+  // the ruff: a pale fan behind the head, which is the thing you recognise
+  st.panel(a * 0.18, a * 0.84, st.H - 15, st.H - 3, P.cream)
+  st.panel(a * 0.26, a * 0.76, st.H - 17, st.H - 13, P.rose)
+  st.panel(a * 0.3, a * 0.7, st.H - 13, st.H - 5, [34, 26, 22])  // dark hair
+  st.panel(a * 0.38, a * 0.62, st.H - 12, st.H - 7, P.clay)      // the face
+  st.panel(a * 0.42, a * 0.58, st.H - 11, st.H - 10, P.brick)    // the mouth
+  // the waistcoat, with its scatter of pale dots
+  st.panel(a * 0.3, a * 0.7, 5, st.H - 15, P.shadow)
+  for (let i = 0; i < 7; i++) {
+    const x = a * (0.36 + (i % 3) * 0.1)
+    st.panel(x, x + 0.03, 8 + i * 3, 10 + i * 3, P.cream)
+  }
+  st.outline(0, a, 0, st.H)
+})
+
+/** The Twin Peaks print: the red room's chevrons, and the figure. */
+await writeWall('twin-peaks', (st) => {
+  const a = st.along
+  st.panel(0, a, 0, st.H, P.ink)
+  st.panel(0.05, a - 0.05, 2, st.H - 2, P.brick)
+  // zigzag bands top and bottom, the lodge floor
+  for (const base of [st.H - 9, 3]) {
+    for (let i = 0; i * 0.09 < a - 0.1; i++) {
+      const x = 0.05 + i * 0.09
+      const upper = i % 2 === 0
+      st.panel(x, Math.min(x + 0.09, a - 0.05), base + (upper ? 3 : 0), base + (upper ? 6 : 3), P.cream)
+      st.panel(x, Math.min(x + 0.09, a - 0.05), base + (upper ? 0 : 3), base + (upper ? 3 : 6), P.ink)
+    }
+  }
+  // the figure, arms up
+  st.panel(a * 0.42, a * 0.58, st.H * 0.4, st.H * 0.62, P.cream)
+  st.panel(a * 0.3, a * 0.42, st.H * 0.55, st.H * 0.72, P.cream)
+  st.panel(a * 0.58, a * 0.7, st.H * 0.55, st.H * 0.72, P.cream)
   st.outline(0, a, 0, st.H)
 })
 
@@ -493,6 +591,20 @@ await writeWall('corkboard', (st) => {
   st.panel(a * 0.55, a * 0.8, st.H * 0.45, st.H * 0.8, P.paper)  // the one pinned card
   st.outline(0, a, 0, st.H)
 })
+
+// Every thing in iso.ts that claims a sprite must have one. A missing file
+// renders as a white box in the room and is easy to miss — this is cheaper
+// than noticing it in a screenshot.
+{
+  const { existsSync } = await import('node:fs')
+  const missing = isoThings.filter((t) => t.src && !existsSync(`public${t.src}`))
+  if (missing.length) {
+    console.error(`\nMISSING SPRITES:\n  ${missing.map((t) => `${t.id} -> ${t.src}`).join('\n  ')}`)
+    process.exitCode = 1
+  } else {
+    console.log(`\nall ${isoThings.filter((t) => t.src).length} referenced sprites exist`)
+  }
+}
 
 if (process.argv.includes('--sheet')) {
   const path = process.argv[process.argv.indexOf('--sheet') + 1]
