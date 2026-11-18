@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { hotspots } from '@/content/site'
 import { artPieces } from '@/content/art'
 import { KEYS, playNote, teardown, unlock } from '@/lib/piano'
-import { SURAJ } from '@/lib/characters'
 import {
   LAYER,
   LAYER_Z,
@@ -17,7 +16,7 @@ import {
   sortKey,
   type IsoThing,
 } from './iso'
-import { Resident, Visitors } from './Visitors'
+import { Resident, Visitors, hurryResident } from './Visitors'
 import styles from './iso.module.css'
 
 const IDLE_HINT = 'Click something in the room.'
@@ -160,12 +159,13 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
           )
         })()}
 
-        {/* Suraj, at the desk, always — standing when the desk is up. */}
+        {/* Suraj, who lives here: at the desk most of the time, up and
+            about occasionally. Sorted like everyone else. */}
         <Resident
           deskUp={deskUp}
-          zIndex={
-            LAYER_Z[LAYER.objects] +
-            standing.filter((t) => sortKey(t) < SURAJ.gx + SURAJ.gy).length
+          hurry={hurryResident()}
+          depthOf={(gx, gy) =>
+            LAYER_Z[LAYER.objects] + standing.filter((t) => sortKey(t) < gx + gy).length
           }
         />
 

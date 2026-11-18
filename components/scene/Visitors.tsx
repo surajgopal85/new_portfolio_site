@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { startResident, stepResident, type ResidentState } from '@/lib/resident'
 import {
-  SURAJ,
   isCircling,
   startSchedule,
   tickSchedule,
@@ -69,6 +69,12 @@ function requested(): { only: readonly Visit[]; delay: number } {
   const who = new URLSearchParams(window.location.search).get('who')
   const match = eligible.filter((v) => v.id === who)
   return match.length ? { only: match, delay: 200 } : { only: eligible, delay: 2000 }
+}
+
+/** `?who=suraj` sends him off on a wander straight away, for checking it. */
+export function hurryResident(): boolean {
+  if (typeof window === 'undefined') return false
+  return new URLSearchParams(window.location.search).get('who') === 'suraj'
 }
 
 /**
@@ -158,34 +164,78 @@ function Visitor({ state, visit, zIndex }: { state: CharacterState; visit: Visit
 }
 
 /**
- * Suraj, at the desk, always.
+ * Suraj, who lives here.
  *
- * He stands when the desk does — which is the room's best small joke, and
- * costs nothing: `deskUp` already existed and nothing was using it.
+ * At the desk by a long way most of the time — seated when it's down,
+ * standing when it's up, which is the room's best small joke. Every few
+ * minutes he gets up, crosses the room, stands a moment and comes back.
+ * That exists so you can see his face: walking toward the camera is the
+ * only angle that shows the glasses.
+ *
+ * See lib/resident.ts for why he isn't a visitor.
  */
-export function Resident({ deskUp, zIndex }: { deskUp: boolean; zIndex: number }) {
-  const [frame, setFrame] = useState(0)
+export function Resident({
+  deskUp,
+  depthOf,
+  hurry,
+}: {
+  deskUp: boolean
+  depthOf: (gx: number, gy: number) => number
+  hurry: boolean
+}) {
+  const [state, setState] = useState<ResidentState>(() => startResident(hurry ? 1200 : undefined))
+  const [bob, setBob] = useState(0)
+  const raf = useRef(0)
+  const last = useRef(0)
+
   useEffect(() => {
-    const t = window.setInterval(() => setFrame((f) => (f + 1) % 2), 240)
+    const frame = (now: number) => {
+      const elapsed = last.current ? Math.min(now - last.current, 100) : 16
+      last.current = now
+      setState((s) => stepResident(s, elapsed))
+      raf.current = requestAnimationFrame(frame)
+    }
+    raf.current = requestAnimationFrame(frame)
+    return () => cancelAnimationFrame(raf.current)
+  }, [])
+
+  // The typing bob runs on its own clock, because it's a loop rather than a
+  // phase.
+  useEffect(() => {
+    const t = window.setInterval(() => setBob((b) => (b + 1) % 2), 240)
     return () => window.clearInterval(t)
   }, [])
 
-  // Seated, he's on the chair's seat rather than the floor — 13px up. The
-  // sprite is head and shoulders only, so his head lands about three
-  // quarters of its standing height, which is what sitting looks like.
   const W = 22
   const H = 44
   const SEAT = 13
-  const base = toScreen({ gx: SURAJ.gx, gy: SURAJ.gy, z: deskUp ? 0 : SEAT })
-  const strip = deskUp ? '/art/characters/suraj-stand.png' : '/art/characters/suraj-sit.png'
+  const working = state.phase === 'working'
+  const seated = working && !deskUp
+
+  const strip = working
+    ? seated
+      ? '/art/characters/suraj-sit.png'
+      : '/art/characters/suraj-type.png'
+    : state.phase === 'standing'
+      ? '/art/characters/suraj-idle.png'
+      : state.facing.startsWith('up')
+        ? '/art/characters/suraj-up-right.png'
+        : '/art/characters/suraj-down-right.png'
+
+  const count = working || state.phase === 'standing' ? 2 : 4
+  const frame = working ? bob : Math.min(state.frame, count - 1)
+  const mirrored = !working && state.facing.endsWith('left')
+
+  const base = toScreen({ gx: state.gx, gy: state.gy, z: seated ? SEAT : 0 })
+  const floor = toScreen({ gx: state.gx, gy: state.gy })
 
   return (
     <>
       <div
         className={styles.shadow}
         style={{
-          left: `${((base.x - 7) / SCENE_W) * 100}%`,
-          top: `${((base.y - 4) / SCENE_H) * 100}%`,
+          left: `${((floor.x - 7) / SCENE_W) * 100}%`,
+          top: `${((floor.y - 4) / SCENE_H) * 100}%`,
           width: `${(14 / SCENE_W) * 100}%`,
           height: `${(7 / SCENE_H) * 100}%`,
           opacity: 0.34,
@@ -199,10 +249,11 @@ export function Resident({ deskUp, zIndex }: { deskUp: boolean; zIndex: number }
           top: `${((base.y - H) / SCENE_H) * 100}%`,
           width: `${(W / SCENE_W) * 100}%`,
           height: `${(H / SCENE_H) * 100}%`,
-          zIndex,
+          zIndex: depthOf(state.gx, state.gy),
           backgroundImage: `url('${strip}')`,
-          backgroundSize: '200% 100%',
-          backgroundPosition: `${frame * 100}% 0`,
+          backgroundSize: `${count * 100}% 100%`,
+          backgroundPosition: count > 1 ? `${(frame / (count - 1)) * 100}% 0` : '0 0',
+          transform: mirrored ? 'scaleX(-1)' : undefined,
         }}
       />
     </>

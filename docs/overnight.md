@@ -690,7 +690,7 @@ keyboard in both. Visitors still pass in front of and behind him correctly.
 Two parts. Do them in order — the first changes how characters are
 rendered and the second rides on it.
 
-## Part one: he stretches his legs
+## ~~Part one: he stretches his legs~~ — done
 
 **The constraint that makes this work:** he stays at the desk the large
 majority of the time. If he wanders freely he becomes a fourth visitor, the
@@ -747,13 +747,13 @@ with his face visible, Caitlin beside the desk. Confirm he's at the desk the
 large majority of a long sample, and that there's never more than one
 visitor plus him.
 
-## Open after phase six
+## ~~Open after phase six: the glasses don't read~~ — solved by walking
 
-**The glasses don't read.** As the plan warned: at this size, in a
-three-quarter back view, they're a single pale pixel on the near cheek. He's
-unmistakably a person at a desk, and not unmistakably *Suraj*. The fallback
-— seating him at the corner of the L turned toward the room — is still
-available and is a layout change, not a redraw. Suraj's call.
+The three-quarter back view hid his face, as the plan predicted. Turning the
+desk around would have fixed it permanently and wrongly. Getting him up
+every few minutes fixes it occasionally and rightly: walking toward the
+camera shows the glasses, the beard, the whole face, and the rest of the
+time his back is to you, which is what a person at a desk looks like.
 
 ## Questions for the morning
 

@@ -366,8 +366,87 @@ const SURAJ_SIT = [
   '..KLKRRRRRRRRRRKLK..',
 ]
 
+/**
+ * Facing the camera. This is why he gets up at all: walking toward you is
+ * the only angle that shows the glasses, which are the thing that makes him
+ * him at this size. Everything above the shoulders is the point.
+ */
+const SURAJ_FRONT = [
+  '.......KHHHHK.......',
+  '......KHHHHHHK......',
+  '.....KHHHHHHHHK.....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '....KHSSSSSSSSHK....',
+  '....KHSSSSSSSSHK....',
+  '....KSEEKSSKEESK....',
+  '....KSEKKSSKKESK....',
+  '....KSSSSSSSSSSK....',
+  '....KSDSSDDSSDSK....',
+  '.....KDDDDDDDDK.....',
+  '......KSSSSSSK......',
+  '.......KRRRRK.......',
+  '....KKKRRRRRRKKK....',
+  '..KKRRRRRRRRRRRRKK..',
+  '..KSRRRRRRRRRRRRSK..',
+  '..KSRRRRRRRRRRRRSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KLKRRRRRRRRRRKLK..',
+  '...KKRRRRRRRRRRKK...',
+  '....KRRRRRRRRRRK....',
+  '....KBBBBBBBBBBK....',
+  '....KBBBBBBBBBBK....',
+  '....KBBBBBBBBBBK....',
+]
+
+/** Walking away: the back of him, same build. */
+const SURAJ_BACK = [
+  '.......KHHHHK.......',
+  '......KHHHHHHK......',
+  '.....KHHHHHHHHK.....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '....KHHHHHHHHHHK....',
+  '.....KHHHHHHHHK.....',
+  '.....KHHHHHHHHK.....',
+  '......KDDDDDDK......',
+  '......KSSSSSSK......',
+  '.......KRRRRK.......',
+  '....KKKRRRRRRKKK....',
+  '..KKRRRRRRRRRRRRKK..',
+  '..KSRRRRRRRRRRRRSK..',
+  '..KSRRRRRRRRRRRRSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KSKRRRRRRRRRRKSK..',
+  '..KLKRRRRRRRRRRKLK..',
+  '...KKRRRRRRRRRRKK...',
+  '....KRRRRRRRRRRK....',
+  '....KBBBBBBBBBBK....',
+  '....KBBBBBBBBBBK....',
+  '....KBBBBBBBBBBK....',
+]
+
+/** Four leg positions. A person's walk is two legs swapping; at this size
+ *  anything more detailed is noise. */
+const SURAJ_LEGS = [
+  ['...KBBBK.KBBBK......', '...KBBBK.KBBBK......', '...KBBBK.KBBBK......', '...KBBBK.KBBBK......', '...KKKKK.KKKKK......'],
+  ['....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KKKKKKKKK.......'],
+  ['..KBBBK...KBBBK.....', '..KBBBK...KBBBK.....', '..KBBBK...KBBBK.....', '..KBBBK...KBBBK.....', '..KKKKK...KKKKK.....'],
+  ['....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KBBBKBBBK.......', '....KKKKKKKKK.......'],
+]
+
 /** A one-pixel bob, which is all it takes to read as typing. */
 const typing = (rows) => [rows, ['', ...rows]]
+
+/** A person's walk: body plus alternating legs, with a bob on the off-beat. */
+const walkPerson = (body) =>
+  SURAJ_LEGS.map((legs, i) => [...(i % 2 === 1 ? [''] : []), ...body, ...legs])
 
 const KIBOU_W = 20
 const KIBOU_H = 16
@@ -377,8 +456,11 @@ const written = [
   await strip('kibou-up-right', walk(BODY_UP), KIBOU_W, KIBOU_H),
   await strip('kibou-idle', SIT, KIBOU_W, KIBOU_H),
   ...(await peanut()),
-  await strip('suraj-stand', typing(SURAJ_STAND), SURAJ_W, SURAJ_H),
+  await strip('suraj-type', typing(SURAJ_STAND), SURAJ_W, SURAJ_H),
   await strip('suraj-sit', typing(SURAJ_SIT), SURAJ_W, SURAJ_H),
+  await strip('suraj-down-right', walkPerson(SURAJ_FRONT), SURAJ_W, SURAJ_H),
+  await strip('suraj-up-right', walkPerson(SURAJ_BACK), SURAJ_W, SURAJ_H),
+  await strip('suraj-idle', typing(SURAJ_FRONT.concat(SURAJ_LEGS[1])), SURAJ_W, SURAJ_H),
 ]
 
 if (process.argv.includes('--sheet')) {
