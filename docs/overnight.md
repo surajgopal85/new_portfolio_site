@@ -531,6 +531,81 @@ a cat currently visits an empty chair. Peanut and Caitlin stay configured and
 inert until someone draws them; `SPRITES` in `Visitors.tsx` is the only
 gate.
 
+---
+
+# Phase five: Peanut
+
+The second visitor. Her beat is already written in `lib/characters.ts`:
+*crosses to the rug, turns around twice, lies down.* She has a spot, a speed
+and a stay range, and is never scheduled only because `SPRITES` in
+`Visitors.tsx` lists who has art.
+
+Reference: `photos/raw/peanut/` — `IMG_0165` is the usable one, daylight,
+pale dog against a dark floor.
+
+## 1. What she looks like at this size
+
+18 px at the shoulder, 0.5 x 0.8 tiles — nearly double Kibou, so there's
+room for markings he couldn't carry. From the photos:
+
+- **Pale cream coat**, lighter than the floor. She'll read as the bright
+  thing in a dark room, which is the opposite of Kibou and good for telling
+  them apart at a glance.
+- **Darker tan ears, folded over**, set wide. The only dark mass on an
+  otherwise pale animal, so they carry the whole read of the head.
+- **A white blaze** from forehead to a black nose.
+- **A long thin whip tail with a white tip** — much thinner than Kibou's
+  plume. Tail shape is the fastest way to tell two animals apart in
+  silhouette.
+- **White chest and speckled front paws.**
+- Lean and leggy, where the cat is low and round.
+
+The ramp is in `docs/characters.md`.
+
+## 2. The frames
+
+Same ten-frame structure as Kibou, with one difference: her settled pose is
+**lying down**, not sitting.
+
+- 4-frame walk `down-right`, 4-frame walk `up-right`
+- 2-frame lie-down for the settled beat (breathing)
+
+Plus the turn, below.
+
+## 3. "Turns around twice" needs somewhere to live
+
+The beat says she circles before lying down, which the state machine can't
+currently express — `settled` goes straight to the idle frames.
+
+The cheapest honest way: add **`elapsed`** to `CharacterState`, reset on
+phase entry and incremented each tick. Then `settled` can run the turn for
+its first ~1200ms — cycling `facing` through all four directions using the
+walk frames — before dropping to the lying frames. `elapsed` is additive, no
+existing test asserts on it, and the walk cycle can use it too instead of
+counting ticks.
+
+Don't add a phase. The four phases are load-bearing in 21 tests and a circle
+before lying down is a detail of being settled, not a new state.
+
+## 4. Generalise the sprite table
+
+`SPRITES` in `Visitors.tsx` hardcodes `sit` and fixed frame counts. Make it
+per character: strip names and frame counts together, so a dog that lies
+down and a cat that sits don't need different code.
+
+## 5. Then it schedules itself
+
+Nothing else to wire. Once Peanut is in `SPRITES` the scheduler picks
+between her and Kibou — still one at a time, still with the quiet gap. That
+is the whole point of the single slot.
+
+## Checking it
+
+`npm run peanut -- --sheet`, then sample a full visit the way phase four did:
+both characters appear across a long enough window, never two at once, she
+lies down rather than standing on the rug, and the shadow tracks her. `npm
+test` and `npm run audit` stay green.
+
 ## Questions for the morning
 
 (Claude appends here rather than guessing.)
