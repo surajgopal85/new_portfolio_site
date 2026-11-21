@@ -781,6 +781,92 @@ time his back is to you, which is what a person at a desk looks like.
 
 ---
 
+# Phase eight: make the art good
+
+Goal, in Suraj's words: a cut above where we are, around SMB3 level, for all
+four characters and the room.
+
+## The diagnosis, because it isn't what it looks like
+
+Measured, 21 Nov: our sprites use **4-9 colours**, people are 22x44, Kibou
+is 20x16.
+
+SMB3's Mario is **16x32 with three colours plus transparent** — the NES
+hardware limit. Smaller than ours, and fewer colours. His face is about six
+pixels.
+
+So the gap is not detail, size, or tooling. It's craft, and it's three
+specific things we aren't doing. Everything below follows from that.
+
+## 1. Shading ramps — the big one
+
+We have the colours and we use them as **flat fills with an outline**. No
+highlight on a shoulder, no shade under a chin, no form at all. SMB3 implies
+volume with three tones placed deliberately.
+
+Every material gets a 3-tone ramp — base, shade, highlight — with **one
+consistent light direction** (the lamp is above and to the camera's right,
+which the room's lighting layer already assumes). Apply to all four
+characters and the furniture sprites.
+
+This is the single largest difference and it costs no new frames.
+
+## 2. Selective outlining
+
+Everything is outlined in the same ink. Good pixel art **drops the outline
+on lit edges** and uses a darker shade of the fill instead, keeping the hard
+outline for the silhouette against the background. It stops figures looking
+like stickers.
+
+## 3. Animation weight
+
+A 1px bob and a leg swap is not a walk. Add, in order of payoff:
+
+- **Arm swing**, opposite the legs.
+- **Two pixels of vertical travel**, not one, with the low point on the
+  footfall.
+- **A head that lags** the body by a frame — the cheapest trick there is for
+  making motion feel weighted.
+- For the animals: **tail movement** across the cycle.
+
+Consider 6 frames rather than 4 if 4 can't carry it.
+
+## 4. Animate the room
+
+Cheap, because the lighting layer is already separate from the paint:
+
+- The curtains stir.
+- The monitor flickers — a subtle brightness change, not a strobe.
+- Light moves in the window.
+- The amp's power LED.
+- Steam off the mug, maybe.
+
+Keep every one of them slow and small. A room where six things twitch reads
+as a screensaver; a room where one thing moves every few seconds reads as
+alive.
+
+## 5. The experiment worth running (optional, do it last)
+
+SpriteCook, sprite-animator and game-cog are real — checked 21 Nov, I had
+wrongly assumed otherwise. The argument against them is fit, not existence:
+they generate *new* art from prompts or images, and every sprite here has
+to land in a fixed palette, on a 2:1 grid, at a known anchor, consistent
+across sixteen others and four walk cycles. Diffusion models are weakest at
+exactly that frame-to-frame consistency.
+
+That's a testable claim, so test it cheaply rather than assuming: run **one**
+character through one tool, put the result beside the hand-drawn version at
+the same size, and look. If it wins, change course. Don't rebuild the
+pipeline on a hunch in either direction.
+
+## Checking it
+
+Contact sheets before and after, at the same zoom, for every character. Then
+in the room: screenshots and a motion sample. `npm test` and `npm run audit`
+stay green.
+
+---
+
 # Backlog
 
 Suraj's list, 20 Nov. Not ordered — pick by appetite.
