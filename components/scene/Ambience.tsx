@@ -1,6 +1,6 @@
 'use client'
 
-import { LAYER, LAYER_Z, SCENE_H, SCENE_W, isoThings, placeThing } from './iso'
+import { LAYER, LAYER_Z, SCENE_H, SCENE_W, isoThings, placeThing, toScreen } from './iso'
 import styles from './iso.module.css'
 
 /**
@@ -35,8 +35,28 @@ export function Ambience() {
   const mug = over('mug')
   const windows = ['window-left', 'window-right'].map((id) => over(id))
 
+  // The ceiling fan is above the camera, so what you see of it is its
+  // shadow turning on the floor. It existed in the top-down room, was
+  // approved, and then disappeared as collateral when that file was
+  // deleted for the isometric rewrite — never a decision, just a loss.
+  const fanCentre = toScreen({ gx: 4.6, gy: 4.6 })
+  const fanW = 104
+  const fanH = 52
+
   return (
     <>
+      <div
+        className={styles.fanShadow}
+        style={{
+          left: `${((fanCentre.x - fanW / 2) / SCENE_W) * 100}%`,
+          top: `${((fanCentre.y - fanH / 2) / SCENE_H) * 100}%`,
+          width: `${(fanW / SCENE_W) * 100}%`,
+          height: `${(fanH / SCENE_H) * 100}%`,
+          zIndex: LAYER_Z[LAYER.floor] + 20,
+        }}
+        aria-hidden="true"
+      />
+
       {/* The monitor breathes. Real screens aren't a constant — but a
           flicker fast enough to notice is a fault, not a detail. */}
       {monitor && (

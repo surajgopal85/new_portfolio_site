@@ -853,7 +853,21 @@ Keep every one of them slow and small. A room where six things twitch reads
 as a screensaver; a room where one thing moves every few seconds reads as
 alive.
 
-## 5. The experiment worth running (optional, do it last)
+## 5. The experiment — BLOCKED, needs Suraj
+
+Checked 21 Nov: none of the three can be run from here.
+
+- **SpriteCook** is a hosted service behind an MCP server and an account.
+- **sprite-animator** calls Google Gemini and needs an API key.
+- **game-cog** is an OpenClaw skill, not installed on this machine.
+
+No image-model credentials exist in the repo or the environment, and
+creating accounts or supplying keys isn't mine to do. So the claim that
+they'd fight our fixed palette and 2:1 grid **remains untested** — it is
+still a prediction, not a finding. If you want it settled, supply access to
+one of them and the comparison takes one tick.
+
+## The original argument (unverified)
 
 SpriteCook, sprite-animator and game-cog are real — checked 21 Nov, I had
 wrongly assumed otherwise. The argument against them is fit, not existence:

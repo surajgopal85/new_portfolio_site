@@ -66,6 +66,24 @@
   border-radius: 50%;
 }
 
+/* The fan's shadow on the floor. Stepped rather than smooth: a strobing
+   blade suits the art, and a smooth rotation on a hard-edged shape reads as
+   a spinning JPEG. Flattened 2:1 so it lies in the floor plane. */
+.fanShadow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(20, 14, 10, 0.17) 0 12deg, transparent 12deg 120deg,
+    rgba(20, 14, 10, 0.17) 120deg 132deg, transparent 132deg 240deg,
+    rgba(20, 14, 10, 0.17) 240deg 252deg, transparent 252deg 360deg
+  );
+  animation: fanTurn 2.9s steps(14, end) infinite;
+}
+@keyframes fanTurn { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .fanShadow { animation: none; } }
+
 /* --- the room's small movements -------------------------------------------
    Slow and small, with periods that don't divide into each other so they
    never fall into step. See Ambience.tsx. */
