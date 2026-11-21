@@ -44,7 +44,121 @@ const PALETTE = {
   V: [107, 74, 122],               // her top
   A: [59, 43, 64],                 // the office chair
   Q: [109, 122, 140],              // its frame and arms
+
+  // --- the lit and shaded halves of each ramp -----------------------------
+  // Added by the shading pass below; never written by hand.
+  r: [139, 152, 170],              // shirt, lit
+  n: [78, 88, 102],                // shirt, shaded
+  h: [58, 46, 56],                 // hair, lit
+  b: [60, 72, 104],                // trousers, lit
+  z: [26, 32, 50],                 // trousers, shaded
+  c: [245, 219, 171],              // Peanut's coat, lit
+  y: [188, 154, 101],              // Peanut's coat, shaded
+  o: [230, 165, 104],              // ginger, lit
+  v: [137, 100, 152],              // her top, lit
+  x: [78, 52, 90],                 // her top, shaded
+  m: [84, 58, 52],                 // her hair, lit
+  a: [84, 64, 90],                 // the chair, lit
 }
+
+/**
+ * Which characters have a lit and a shaded half.
+ *
+ * The flat fills were the single biggest thing separating this from the
+ * SMB3 look — not detail, and not colour count. SMB3's Mario is 16x32 with
+ * three colours; what he has that we didn't is *form*: tones placed to say
+ * where the light is.
+ *
+ * Light comes from above and the camera's right, which is where the room's
+ * lighting layer already puts the lamp.
+ */
+const RAMP = {
+  R: ['r', 'n'],
+  B: ['b', 'z'],
+  H: ['h', null],
+  S: ['L', 'D'],
+  C: ['c', 'y'],
+  O: ['o', 'D'],
+  W: [null, 'S'],
+  V: ['v', 'x'],
+  M: ['m', null],
+  A: ['a', null],
+  T: [null, null],
+}
+
+/** Nothing lights an outline, a gap, or a face detail. */
+const SOLID = new Set(['.', 'K', 'E', 'N', 'P', 'G', 'Y'])
+
+/**
+ * Light one frame.
+ *
+ * A pixel on the top or right edge of its own colour takes the lit tone; one
+ * on the bottom or left takes the shaded tone. That's a rim treatment, which
+ * at this size is all that will fit and all that's needed — the middle of a
+ * shape stays base, so a 10px-wide shirt reads as a cylinder rather than a
+ * rectangle.
+ */
+function light(rows) {
+  const grid = rows.map((r) => [...r])
+  const at = (x, y) => grid[y]?.[x] ?? '.'
+  const out = rows.map((r) => [...r])
+
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      const ch = grid[y][x]
+      const ramp = RAMP[ch]
+      if (!ramp) continue
+      const [lit, dark] = ramp
+      const edge = (nx, ny) => {
+        const n = at(nx, ny)
+        return SOLID.has(n) || n !== ch
+      }
+      const topOrRight = edge(x, y - 1) || edge(x + 1, y)
+      const bottomOrLeft = edge(x, y + 1) || edge(x - 1, y)
+      // A pixel on both edges at once belongs to something one or two
+      // pixels thick — a leg, an ear, a tail. Rimming those just recolours
+      // the whole feature and washes the animal out, which is what the
+      // first pass did to Kibou and Peanut. Leave thin things at base.
+      if (topOrRight && bottomOrLeft) continue
+      if (lit && topOrRight) out[y][x] = lit
+      else if (dark && bottomOrLeft) out[y][x] = dark
+    }
+  }
+  return out.map((r) => r.join(''))
+}
+
+/**
+ * Soften the outlines that aren't the silhouette.
+ *
+ * Everything was drawn with the same ink, inside and out, which is why the
+ * figures read as assembled from parts: an arm separated from a torso by a
+ * black line looks glued on. An outline that touches nothing outside the
+ * figure doesn't need to be black — a dark tone of its neighbour says the
+ * same thing far more quietly.
+ *
+ * The silhouette keeps its hard ink. That's what holds a 22px figure
+ * against a busy room, and softening it would be the usual way this trick
+ * goes wrong.
+ */
+function soften(rows) {
+  const grid = rows.map((r) => [...r])
+  const at = (x, y) => grid[y]?.[x] ?? '.'
+  const out = rows.map((r) => [...r])
+
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      if (grid[y][x] !== 'K') continue
+      const around = [at(x, y - 1), at(x, y + 1), at(x - 1, y), at(x + 1, y)]
+      // Touches the outside: this is silhouette, leave it alone.
+      if (around.includes('.')) continue
+      // Otherwise take the darkest tone among its neighbours.
+      const dark = around.map((n) => RAMP[n]?.[1]).find(Boolean)
+      if (dark) out[y][x] = dark
+    }
+  }
+  return out.map((r) => r.join(''))
+}
+
 
 /**
  * Each character declares its own frame size: Peanut is nearly twice
@@ -156,6 +270,7 @@ function drawRows(data, rows, offsetX, offsetY, stripW) {
 async function strip(name, frames, fw, fh) {
   const w = fw * frames.length
   const data = new Uint8ClampedArray(w * fh * 4)
+  frames = frames.map((rows) => soften(light(rows)))
   frames.forEach((rows, i) => {
     // Stand on the frame's bottom edge, whatever the pose's height — so a
     // sitting cat and a walking one have their feet in the same place.
@@ -515,7 +630,7 @@ const CAIT_FRONT = [
   '....KMMLLLLLLMMK....',
   '....KMLKLLLLKLMK....',
   '....KMLLLLLLLLMK....',
-  '....KMLLLCCLLLMK....',
+  '....KMLLLLLLLLMK....',
   '....KMMLLLLLLMMK....',
   '...KMMMLLLLLLMMMK...',
   '...KMMMMKKKKMMMMK...',
