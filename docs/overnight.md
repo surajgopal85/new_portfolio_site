@@ -798,7 +798,7 @@ pixels.
 So the gap is not detail, size, or tooling. It's craft, and it's three
 specific things we aren't doing. Everything below follows from that.
 
-## 1. Shading ramps — the big one
+## 1. ~~Shading ramps~~ — done
 
 We have the colours and we use them as **flat fills with an outline**. No
 highlight on a shoulder, no shade under a chin, no form at all. SMB3 implies
@@ -811,14 +811,14 @@ characters and the furniture sprites.
 
 This is the single largest difference and it costs no new frames.
 
-## 2. Selective outlining
+## 2. ~~Selective outlining~~ — done
 
 Everything is outlined in the same ink. Good pixel art **drops the outline
 on lit edges** and uses a darker shade of the fill instead, keeping the hard
 outline for the silhouette against the background. It stops figures looking
 like stickers.
 
-## 3. Animation weight
+## 3. ~~Animation weight~~ — done
 
 A 1px bob and a leg swap is not a walk. Add, in order of payoff:
 
