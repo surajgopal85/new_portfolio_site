@@ -779,6 +779,55 @@ every few minutes fixes it occasionally and rightly: walking toward the
 camera shows the glasses, the beard, the whole face, and the rest of the
 time his back is to you, which is what a person at a desk looks like.
 
+---
+
+# Backlog
+
+Suraj's list, 20 Nov. Not ordered — pick by appetite.
+
+## 1. Real images on the art pages
+
+Each piece currently shows its pixel sprite. Show the actual work too, and
+the artist — a reward for anyone who clicks a poster on a wall.
+
+**Check the rights before building it.** Schiele died in 1918, so the
+self-portrait is public domain and can be used outright. Wehinger's
+Artikulation score (1970) and anything from Twin Peaks are both in
+copyright: link out, or use a small thumbnail with attribution, or show
+only the sprite for those two. Worth deciding per piece rather than
+assuming one answer covers all three.
+
+## 2. A blog
+
+For posting about what he's working on. Fits the existing shape: a
+`content/posts` collection, `/writing/<slug>/`, and a nav object in the
+room — though the four hotspots are spoken for, so it may want the cork
+board or a new object.
+
+## 3. Faces
+
+He's going to look at more references and iterate. The current faces are
+glasses-and-a-beard for him, hair mass for Caitlin, both drawn at 16px
+across with no mouths. Worth revisiting once he has inspiration to point
+at — his notes have consistently beaten guesses.
+
+## 4. A day cycle in the window
+
+The room is permanently night. Running a cycle through the windows —
+dawn, day, dusk, dark — would use the lighting layer that already exists:
+the sprites are painted in daylight colours and one overlay carries the
+light, so a cycle is mostly animating that overlay plus the window
+sprites. Decide whether it follows the visitor's real clock or loops on
+its own.
+
+## Still open from earlier
+
+- **Caitlin's realism pass** — asked for, no notes yet.
+- **More changes to Suraj** — wanted, not yet specified.
+- **The `why` paragraphs** in `content/art.ts` — two drafted, not final.
+- **Case-study copy, the real project list, and `site.url`**, which the
+  sitemap and the social card both need before any deploy.
+
 ## Questions for the morning
 
 (Claude appends here rather than guessing.)
