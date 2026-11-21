@@ -130,13 +130,23 @@ function Visitor({ state, visit, zIndex }: { state: CharacterState; visit: Visit
   const frame = Math.min(state.frame, count - 1)
   const mirrored = state.facing.endsWith('left')
 
-  const base = toScreen({ gx: state.gx, gy: state.gy, z: state.z })
+  /**
+   * Snapped to whole art pixels.
+   *
+   * Characters move continuously, and a sprite drawn at a fractional
+   * position with `image-rendering: pixelated` has its internal grid
+   * re-snapped every frame — the figure shimmers even standing still.
+   * Pixel art moves in whole pixels.
+   */
+  const raw = toScreen({ gx: state.gx, gy: state.gy, z: state.z })
+  const base = { x: Math.round(raw.x), y: Math.round(raw.y) }
 
   // The contact shadow sits on the floor under him, above the rug and below
   // the furniture. It's what stops a character reading as a sticker laid
   // over the room — and it shrinks as he climbs, because the floor is
   // further away. `state.z` already knows how high he is.
-  const floor = toScreen({ gx: state.gx, gy: state.gy })
+  const rawFloor = toScreen({ gx: state.gx, gy: state.gy })
+  const floor = { x: Math.round(rawFloor.x), y: Math.round(rawFloor.y) }
   const lift = state.z / 26
   const shadowW = sprite.frameW * 0.55 * (1 - lift * 0.45)
   const shadowH = shadowW / 2
@@ -262,8 +272,10 @@ export function Resident({
   const frame = working ? bob : Math.min(state.frame, count - 1)
   const mirrored = !working && state.facing.endsWith('left')
 
-  const base = toScreen({ gx: state.gx, gy: state.gy })
-  const floor = toScreen({ gx: state.gx, gy: state.gy })
+  // Snapped to whole art pixels — see the note in Visitor.
+  const rawBase = toScreen({ gx: state.gx, gy: state.gy })
+  const base = { x: Math.round(rawBase.x), y: Math.round(rawBase.y) }
+  const floor = base
 
   // The chair is drawn into the seated sprites rather than placed as a
   // prop. Two sprites that have to line up pixel-for-pixel never quite do;
