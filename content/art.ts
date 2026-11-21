@@ -35,7 +35,7 @@ export const artPieces: readonly ArtPiece[] = [
     what:
       'Ligeti built Artikulation out of tape and electronics in 1958, so there was no score — nothing to write notes on. Twelve years later Rainer Wehinger made one anyway: a listening score, a page of coloured marks that follows the sound without telling anyone how to play it.',
     // TODO(suraj): yours. Why does this hang over your desk?
-    why: '',
+    why: 'A celebration of 1 of my favorite composers. Ligeti was an iconoclast, pushing boundaries with a kind of childlike whimsy.',
     links: [{ label: 'Listen with the score', href: 'https://www.youtube.com/watch?v=71hNl_skTZQ' }],
   },
   {
@@ -49,7 +49,7 @@ export const artPieces: readonly ArtPiece[] = [
     what:
       'Schiele painted it at twenty-one, standing in a waistcoat he owned, against nothing at all. He died at twenty-eight. The background is empty because he kept the whole picture in the figure.',
     // TODO(suraj): yours.
-    why: '',
+    why: 'I fell for Schiele\'s art in high school. It has a raw mystical energy; it feels like he captures his subjects\' souls.',
   },
   {
     id: 'twin-peaks',

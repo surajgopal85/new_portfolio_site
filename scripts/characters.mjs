@@ -42,6 +42,8 @@ const PALETTE = {
   B: [39, 48, 74],                 // trousers
   M: [58, 38, 34],                 // Caitlin's dark brown hair
   V: [107, 74, 122],               // her top
+  A: [59, 43, 64],                 // the office chair
+  Q: [109, 122, 140],              // its frame and arms
 }
 
 /**
@@ -359,19 +361,30 @@ const SURAJ_SIT = [
   '......KDDDDSSSLK....',
   '.......KSSSSSLK.....',
   '........KSSSLK......',
-  '........KRRRK.......',
-  '.....KKKRRRRKKK.....',
-  '...KKRRRRRRRRRRKK...',
-  '..KRRRRRRRRRRRRRRK..',
-  '..KSRRRRRRRRRRRRSK..',
-  '..KSKRRRRRRRRRRKSK..',
-  '..KLKRRRRRRRRRRKLK..',
+  '.......KKRRRKK......',
+  '....KKKRRRRRRKKK....',
+  '..KKQQRRRRRRRRQQKK..',
+  '..KQQQRRRRRRRRQQQK..',
+  '..KQAAARRRRRRAAAQK..',
+  '..KQAAAAAAAAAAAAQK..',
+  '..KQAAAAAAAAAAAAQK..',
+  '..KKAAAAAAAAAAAAKK..',
+  '...KAAAAAAAAAAAAK...',
+  '....KKAAAAAAAAKK....',
+  '......KQQQQQQK......',
+  '........KQQK........',
+  '........KQQK........',
+  '.....KKKKQQKKKK.....',
+  '....KQQKKKKKKQQK....',
 ]
 
 /**
- * Facing the camera. This is why he gets up at all: walking toward you is
- * the only angle that shows the glasses, which are the thing that makes him
- * him at this size. Everything above the shoulders is the point.
+ * Facing the camera.
+ *
+ * No mouth. At sixteen pixels across, a mouth is two or three pixels and
+ * reads as a grimace however it's drawn — the glasses carry the identity on
+ * their own, and the beard is a shape rather than a face. Leaving a feature
+ * out is usually the right call at this size.
  */
 const SURAJ_FRONT = [
   '.......KHHHHK.......',
@@ -384,7 +397,7 @@ const SURAJ_FRONT = [
   '....KSEEKSSKEESK....',
   '....KSEKKSSKKESK....',
   '....KSSSSSSSSSSK....',
-  '....KSDSSDDSSDSK....',
+  '....KSDDDDDDDDSK....',
   '.....KDDDDDDDDK.....',
   '......KSSSSSSK......',
   '.......KRRRRK.......',
@@ -461,16 +474,24 @@ const SURAJ_SIT_FRONT = [
   '....KSEEKSSKEESK....',
   '....KSEKKSSKKESK....',
   '....KSSSSSSSSSSK....',
-  '....KSDSSDDSSDSK....',
+  '....KSDDDDDDDDSK....',
   '.....KDDDDDDDDK.....',
   '......KSSSSSSK......',
   '.......KRRRRK.......',
   '....KKKRRRRRRKKK....',
-  '..KKRRRRRRRRRRRRKK..',
-  '..KSRRRRRRRRRRRRSK..',
-  '..KSKRRRRRRRRRRKSK..',
-  '..KLKRRRRRRRRRRKLK..',
-  '...KKRRRRRRRRRRKK...',
+  '..KKQQRRRRRRRRQQKK..',
+  '..KQQSRRRRRRRRSQQK..',
+  '..KQASRRRRRRRRSAQK..',
+  '..KQALRRRRRRRRLAQK..',
+  '..KQAKRRRRRRRRKAQK..',
+  '..KKAABBBBBBBBAAKK..',
+  '...KAABBBBBBBBAAK...',
+  '....KKBBBBBBBBKK....',
+  '......KQQQQQQK......',
+  '........KQQK........',
+  '........KQQK........',
+  '.....KKKKQQKKKK.....',
+  '....KQQKKKKKKQQK....',
 ]
 
 /** A one-pixel bob, which is all it takes to read as typing. */

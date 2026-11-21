@@ -188,10 +188,12 @@ export const isoThings: readonly IsoThing[] = [
   { id: 'laptop', gx: 7.7, gy: 0.5, z: 26, tiles: { w: 0.8, d: 0.45 }, height: 10, src: '/art/iso/laptop.png' },
   { id: 'bottle', gx: 5.3, gy: 0.5, z: 26, tiles: { w: 0.25, d: 0.25 }, height: 11, src: '/art/iso/bottle.png' },
   { id: 'mug', gx: 6.1, gy: 0.75, z: 26, tiles: { w: 0.25, d: 0.25 }, height: 6, src: '/art/iso/mug.png' },
+  { id: 'keyboard', gx: 6.5, gy: 1.0, z: 26, tiles: { w: 1.0, d: 0.3 }, height: 3, src: '/art/iso/keyboard.png' },
   { id: 'shelf', gx: 4.6, gy: 0.5, tiles: { w: 0.9, d: 0.9 }, height: 22, src: '/art/iso/shelf.png' },
 
   { id: 'desk-east', gx: 8.2, gy: 1.35, tiles: { w: 1.1, d: 3.3 }, height: 27, src: '/art/iso/desk-east.png' },
   { id: 'midi', gx: 8.35, gy: 2.1, z: 27, tiles: { w: 0.6, d: 1.7 }, height: 8, src: '/art/iso/midi.png' },
+  { id: 'notebook', gx: 8.35, gy: 4.15, z: 27, tiles: { w: 0.55, d: 0.45 }, height: 3, src: '/art/iso/notebook.png' },
   { id: 'papers', gx: 8.45, gy: 4.1, z: 27, tiles: { w: 0.5, d: 0.5 }, height: 3, src: '/art/iso/papers.png' },
 
   // --- the small things that make it somebody's room ---------------------
