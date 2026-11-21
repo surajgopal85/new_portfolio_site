@@ -16,6 +16,7 @@ import {
   sortKey,
   type IsoThing,
 } from './iso'
+import { Ambience } from './Ambience'
 import { Resident, Visitors, hurryResident } from './Visitors'
 import styles from './iso.module.css'
 
@@ -176,6 +177,10 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
             LAYER_Z[LAYER.objects] + standing.filter((t) => sortKey(t) < gx + gy).length
           }
         />
+
+        {/* The room's small movements — see Ambience.tsx. Above the
+            sprites, below the night wash. */}
+        <Ambience />
 
         <div className={styles.light} />
       </div>

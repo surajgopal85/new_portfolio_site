@@ -66,6 +66,75 @@
   border-radius: 50%;
 }
 
+/* --- the room's small movements -------------------------------------------
+   Slow and small, with periods that don't divide into each other so they
+   never fall into step. See Ambience.tsx. */
+
+.monitorGlow {
+  position: absolute;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(150, 220, 255, 0.5), transparent 75%);
+  animation: breathe 7s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.5; }
+  45% { opacity: 0.82; }
+  60% { opacity: 0.62; }
+}
+
+.windowDrift {
+  position: absolute;
+  pointer-events: none;
+  background: linear-gradient(160deg, rgba(150, 190, 245, 0.3), transparent 65%);
+  animation: drift 23s ease-in-out infinite;
+}
+@keyframes drift {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.85; }
+}
+
+.ampLed {
+  position: absolute;
+  width: 0.55%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  background: var(--brick-light);
+  box-shadow: 0 0 3px 1px rgba(224, 113, 74, 0.8);
+  animation: standby 11s steps(1, end) infinite;
+}
+@keyframes standby {
+  0%, 92% { opacity: 1; }
+  94% { opacity: 0.25; }
+  96%, 100% { opacity: 1; }
+}
+
+/* Two pixels of steam, offset so they don't rise together. */
+.steam {
+  position: absolute;
+  width: 2%;
+  height: 6%;
+  pointer-events: none;
+}
+.steam span {
+  position: absolute;
+  bottom: 0;
+  width: 28%;
+  aspect-ratio: 1;
+  background: var(--cream);
+  opacity: 0;
+  animation: rise 5.5s ease-out infinite;
+}
+.steam span:nth-child(2) { left: 45%; animation-delay: 2.6s; }
+@keyframes rise {
+  0% { opacity: 0; transform: translateY(0); }
+  25% { opacity: 0.45; }
+  100% { opacity: 0; transform: translateY(-180%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .monitorGlow, .windowDrift, .ampLed, .steam span { animation: none; }
+}
+
 /* A wordless speech mark. Deliberately wordless — see Visitors.tsx. */
 .speech {
   position: absolute;

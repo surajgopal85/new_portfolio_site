@@ -230,6 +230,14 @@ belongs to Suraj.
     set, the scene stays hidden, and the plain version renders with all nine
     links and 105 words of copy. It works.
 
+## Gotcha — headless Chrome and motion
+
+**Headless Chrome reports `prefers-reduced-motion: reduce` by default.** Every
+screenshot taken before 21 Nov was therefore shot with CSS animation frozen:
+the desk transition, the fan shadow, the hotspot label fades. `npm run shot`
+and `npm run audit` now say what they mean, and `npm run shot -- --reduced`
+tests the reduced path deliberately.
+
 ## Gotcha
 
 Turbopack's cache went stale once tonight: an edit to `content/projects.ts`
@@ -831,7 +839,7 @@ A 1px bob and a leg swap is not a walk. Add, in order of payoff:
 
 Consider 6 frames rather than 4 if 4 can't carry it.
 
-## 4. Animate the room
+## 4. ~~Animate the room~~ — done
 
 Cheap, because the lighting layer is already separate from the paint:
 

@@ -18,7 +18,11 @@ const note = (s) => problems.push(s)
 async function open(path, { mode = 'scene', width = 1280, reduceMotion = false } = {}) {
   const page = await browser.newPage()
   await page.setViewport({ width, height: 900 })
-  if (reduceMotion) await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }])
+  // Headless Chrome defaults to `reduce`, so every check that isn't
+  // deliberately testing that path has to say so.
+  await page.emulateMediaFeatures([
+    { name: 'prefers-reduced-motion', value: reduceMotion ? 'reduce' : 'no-preference' },
+  ])
   await page.evaluateOnNewDocument((m) => { try { localStorage.setItem('office:mode', m) } catch {} }, mode)
   const errors = []
   page.on('pageerror', (e) => errors.push(e.message))
