@@ -610,6 +610,175 @@ both characters appear across a long enough window, never two at once, she
 lies down rather than standing on the rug, and the shadow tracks her. `npm
 test` and `npm run audit` stay green.
 
+---
+
+# Phase six: Suraj at the desk
+
+The room currently has animals visiting an empty chair, which undercuts the
+whole premise. He's the constant the scene is organised around; everyone
+else is an interruption.
+
+**He is not a visitor.** No scheduler, no phases, no door. He's always
+there, like the furniture, and `SURAJ` in `lib/characters.ts` already holds
+his tile position.
+
+## 1. ~~Which way does he face?~~ — three-quarter back view, in the file
+
+He sits at the north wall desk, so realistically he faces **away from the
+camera** — you'd see the back of his head and shoulders. That's honest and
+it's what a person at a desk looks like, but it loses the one feature that
+identifies him at this size: the clear-framed glasses.
+
+Draw the first pass as a **three-quarter back view** — the back of the head,
+one shoulder forward, and a sliver of cheek carrying the edge of the glasses
+frame. If that doesn't read, the fallback is to seat him at the corner of
+the L turned toward the room, which is less true to the photo and much more
+legible.
+
+Note which one is in the file. Don't silently pick the easier one.
+
+## 2. ~~The standing desk already tells you when he stands~~ — wired
+
+`deskUp` exists in `IsoScene` and the desk animates between two heights. So:
+
+- desk down → seated frames
+- desk up → standing frames
+
+That connects two features that currently ignore each other, and it's the
+room's best small joke: the desk rises and he stands up with it.
+
+Both poses are a **2-frame typing loop** — a one-pixel bob, nothing more.
+Hands on the keyboard either way.
+
+## 3. ~~What identifies him at 46px~~ — drawn
+
+From `photos/raw/wife_and_i/`:
+
+- **Dark curly hair with real volume** — draw it as a mass wider than the
+  skull, not a cap.
+- **Clear-framed glasses**, two light pixels across the eyes. The identifier.
+- Short beard.
+- Skin ramp in `docs/characters.md`: `#4a2f1d` → `#7a4e2e` → `#a67c55` →
+  `#cdb08a`, lit side `#e8c48a`.
+
+## 4. ~~The chair~~ — composed
+
+He should sit *in* the chair, not beside it. The chair is a separate prop at
+`gx 6.9, gy 2.6`; either compose the two or fold the chair into the seated
+sprite. Composing is better — the chair stays when he stands.
+
+## 5. ~~Render him~~ — done
+
+He isn't scheduled, so he doesn't belong in `Visitors`. Give him his own
+small component, sorted into the same painter's order, with the same
+contact shadow. The desk is at `gy 0.35-1.35`; he sits in front of it, so he
+draws after it and in front of the rug.
+
+## ~~Checking it~~ — done
+
+Seated with the desk down, standing with it up, hands at keyboard height
+in both; visitors still sort correctly around him.
+
+~~`npm run characters -- --sheet`, then screenshots with the desk down and
+up — he should be seated in one and standing in the other, hands at the
+keyboard in both. Visitors still pass in front of and behind him correctly.
+
+---
+
+# Phase seven: Suraj gets up, and Caitlin arrives
+
+Two parts. Do them in order — the first changes how characters are
+rendered and the second rides on it.
+
+## ~~Part one: he stretches his legs~~ — done, then reworked
+
+Suraj's idea, and a better one: rather than wandering off, he **switches
+between the two ends of the L** — the computer (back to the room) and the
+writing end (facing it). He never leaves the desk, so the premise gets
+stronger rather than weaker, and you still get his face. One trip in four
+is still a short wander, for life.
+
+Two things the screenshots forced:
+
+- **He stands at the writing end rather than sitting.** Seated his head is
+  33px and the return in front of him is 27px, so the desk ate everything
+  but his hair.
+- **He stands at the END of the return, not along its side.** Beside a long
+  box in isometric you always lose: a box's sort key comes from its far
+  corner, so a desk paints over anything level with it. Past its near end
+  he's unambiguously in front, and fully visible.
+
+**The constraint that makes this work:** he stays at the desk the large
+majority of the time. If he wanders freely he becomes a fourth visitor, the
+chair is empty again, and the asymmetry the whole room depends on — one
+person working, everyone else interrupting — disappears. Target something
+like 85% at the desk.
+
+The beat: every few minutes he stands, walks a short way (the window, the
+piano, the middle of the rug), stands there a moment, and comes back to the
+chair. Then he's seated and typing again.
+
+**The payoff is the front view.** Walking toward the camera is `down-left`
+or `down-right`, which means we see his face — the glasses, the beard. That
+is the fix for "he doesn't read as Suraj" that doesn't require turning the
+desk around, and it's better than the fallback because it's occasional
+rather than permanent.
+
+New frames needed: a 4-frame walk `down-right` (front, face visible) and
+`up-right` (back), plus a 2-frame standing idle facing the camera for the
+pause. Mirrors cover the other two directions, as always.
+
+His machine is his own — he is not in the visitor scheduler, and the "one
+visitor at a time" rule is unaffected. At most one visitor plus Suraj.
+
+Reuse `step` if it fits; write him a smaller one if forcing it distorts
+either. Don't break the 31 tests.
+
+## ~~Part two: Caitlin~~ — done
+
+The fourth character, and the last. She's already configured in
+`lib/characters.ts` with a spot beside the desk and a beat: *comes to the
+side of the desk, says something, goes back out.* She has no sprites, which
+is the only reason she's never scheduled.
+
+- Same ten frames as the others: 4-frame walk in two directions, 2-frame
+  idle. Person-sized, 44-48px, the same as Suraj.
+- From `photos/raw/wife_and_i/`: long dark-brown hair past the shoulders
+  with a soft wave, parted off-centre. The hair mass is the silhouette —
+  let it break the shoulder line on one side, which is what distinguishes
+  her from Suraj at this size, since both are dark-haired. Lighter skin
+  ramp: `#7a4e2e` → `#a67c55` → `#cdb08a` → `#e8c48a`.
+- She arrives facing the camera on the way in, so her face reads too.
+
+**"Says something" has nowhere to go yet.** The scene has a status bar for
+hover hints. Either she gets a small speech mark above her head for a second
+or two, or the beat is just a pause and the line is dropped from the text.
+A speech bubble with no words in it is better than inventing words for
+someone's wife — if a bubble is drawn, leave it wordless.
+
+## ~~Checking it~~ — done
+
+Two minutes of sampling, every 300ms:
+
+- Suraj stationary and working in 99% of samples; walking in about 1%.
+- All three visitors appeared — kibou 126 samples, peanut 55, caitlin 54.
+- **Never more than one visitor at a time**, which is the rule the whole
+  scheduler exists to keep.
+- The speech mark appears while she's settled, and only then.
+
+~~`?who=caitlin` should summon her. Screenshots: Suraj seated, Suraj walking
+with his face visible, Caitlin beside the desk. Confirm he's at the desk the
+large majority of a long sample, and that there's never more than one
+visitor plus him.
+
+## ~~Open after phase six: the glasses don't read~~ — solved by walking
+
+The three-quarter back view hid his face, as the plan predicted. Turning the
+desk around would have fixed it permanently and wrongly. Getting him up
+every few minutes fixes it occasionally and rightly: walking toward the
+camera shows the glasses, the beard, the whole face, and the rest of the
+time his back is to you, which is what a person at a desk looks like.
+
 ## Questions for the morning
 
 (Claude appends here rather than guessing.)

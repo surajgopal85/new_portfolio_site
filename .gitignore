@@ -8,3 +8,6 @@ out/
 photos/raw/
 tsconfig.tsbuildinfo
 shots/
+
+# Claude Code runtime state
+.claude/scheduled_tasks.lock

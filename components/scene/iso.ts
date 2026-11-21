@@ -189,7 +189,6 @@ export const isoThings: readonly IsoThing[] = [
   { id: 'bottle', gx: 5.3, gy: 0.5, z: 26, tiles: { w: 0.25, d: 0.25 }, height: 11, src: '/art/iso/bottle.png' },
   { id: 'mug', gx: 6.1, gy: 0.75, z: 26, tiles: { w: 0.25, d: 0.25 }, height: 6, src: '/art/iso/mug.png' },
   { id: 'shelf', gx: 4.6, gy: 0.5, tiles: { w: 0.9, d: 0.9 }, height: 22, src: '/art/iso/shelf.png' },
-  { id: 'chair', gx: 6.6, gy: 1.6, tiles: { w: 1, d: 1 }, height: 32, src: '/art/iso/chair.png' },
 
   { id: 'desk-east', gx: 8.2, gy: 1.35, tiles: { w: 1.1, d: 3.3 }, height: 27, src: '/art/iso/desk-east.png' },
   { id: 'midi', gx: 8.35, gy: 2.1, z: 27, tiles: { w: 0.6, d: 1.7 }, height: 8, src: '/art/iso/midi.png' },

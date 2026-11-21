@@ -76,8 +76,12 @@ export type Visit = {
 /** The doorway, in tiles: the west wall, nearest the camera. */
 export const DOOR = { gx: 0.5, gy: 7.6 } as const
 
-/** Suraj's chair at the desk. He doesn't move, so he isn't in the queue. */
-export const SURAJ = { gx: 7.5, gy: 2.8 } as const
+/**
+ * Suraj at the desk: between the chair and the desk, which is where a person
+ * sitting at one actually is. He doesn't move and isn't scheduled — he's the
+ * constant, and everyone else is an interruption.
+ */
+export const SURAJ = { gx: 6.9, gy: 2.25 } as const
 
 export const visits: readonly Visit[] = [
   {

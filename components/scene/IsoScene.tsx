@@ -16,7 +16,7 @@ import {
   sortKey,
   type IsoThing,
 } from './iso'
-import { Visitors } from './Visitors'
+import { Resident, Visitors, hurryResident } from './Visitors'
 import styles from './iso.module.css'
 
 const IDLE_HINT = 'Click something in the room.'
@@ -158,6 +158,16 @@ export function IsoScene({ onLeave }: { onLeave: () => void }) {
             </button>
           )
         })()}
+
+        {/* Suraj, who lives here: at the desk most of the time, up and
+            about occasionally. Sorted like everyone else. */}
+        <Resident
+          deskUp={deskUp}
+          hurry={hurryResident()}
+          depthOf={(gx, gy) =>
+            LAYER_Z[LAYER.objects] + standing.filter((t) => sortKey(t) < gx + gy).length
+          }
+        />
 
         {/* Whoever's visiting, sorted into the same painter's order as the
             furniture, so they pass behind the desk and in front of the rug. */}
