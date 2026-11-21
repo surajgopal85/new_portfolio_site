@@ -238,20 +238,20 @@ export function Resident({
 
   const W = 22
   const H = 44
-  const SEAT = 13
   const working = state.phase === 'working'
   const seat = SEATS[state.seat]
   const front = seat.front
-  // The standing desk is the computer end of the L, so only that seat sits
-  // or stands with it. The writing end he stands at regardless.
-  const seated = working && !seat.stands && !deskUp
 
+  // Which pose. The standing desk is the computer end of the L, so only
+  // that end stands up with it; at the writing end he stays seated whatever
+  // the desk is doing. Seated sprites include the chair and stand on the
+  // floor, so nothing here needs a seat height.
   const strip = working
-    ? seat.stands
-      ? '/art/characters/suraj-idle.png'
-      : seated
-        ? '/art/characters/suraj-sit.png'
-        : '/art/characters/suraj-type.png'
+    ? front
+      ? '/art/characters/suraj-sit-front.png'
+      : deskUp
+        ? '/art/characters/suraj-type.png'
+        : '/art/characters/suraj-sit.png'
     : state.phase === 'standing'
       ? '/art/characters/suraj-idle.png'
       : state.facing.startsWith('up')
@@ -262,30 +262,12 @@ export function Resident({
   const frame = working ? bob : Math.min(state.frame, count - 1)
   const mirrored = !working && state.facing.endsWith('left')
 
-  const base = toScreen({ gx: state.gx, gy: state.gy, z: seated ? SEAT : 0 })
+  const base = toScreen({ gx: state.gx, gy: state.gy })
   const floor = toScreen({ gx: state.gx, gy: state.gy })
 
-  const chairW = 29
-  const chairH = 39
-  // The chair lives at the computer end. He stands at the writing end, so
-  // it doesn't follow him there.
-  const chairAt = SEATS.computer
-  const chairLeft = toScreen({ gx: chairAt.gx, gy: chairAt.gy + 0.9 }).x
-  const chairTop = toScreen({ gx: chairAt.gx, gy: chairAt.gy }).y - 25
-  const chair = (
-    <div
-      className={styles.visitor}
-      style={{
-        left: `${(chairLeft / SCENE_W) * 100}%`,
-        top: `${(chairTop / SCENE_H) * 100}%`,
-        width: `${(chairW / SCENE_W) * 100}%`,
-        height: `${(chairH / SCENE_H) * 100}%`,
-        zIndex: depthOf(chairAt.gx, chairAt.gy) + 1,
-        backgroundImage: "url('/art/iso/chair.png')",
-        backgroundSize: '100% 100%',
-      }}
-    />
-  )
+  // The chair is drawn into the seated sprites rather than placed as a
+  // prop. Two sprites that have to line up pixel-for-pixel never quite do;
+  // one sprite always does, and "he's in the chair" is the whole point.
 
   return (
     <>
@@ -315,7 +297,6 @@ export function Resident({
           transform: mirrored ? 'scaleX(-1)' : undefined,
         }}
       />
-      {chair}
     </>
   )
 }

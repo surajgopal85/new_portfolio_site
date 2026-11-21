@@ -67,7 +67,7 @@ export const SEATS = {
    * comes from its far corner, so it paints over anything level with it.
    * Past its near end he's unambiguously in front, and fully visible.
    */
-  writing: { gx: 7.8, gy: 5.1, facing: 'down-right' as const, front: true, stands: true },
+  writing: { gx: 7.75, gy: 4.75, facing: 'down-right' as const, front: true, stands: false },
 }
 
 export type SeatName = keyof typeof SEATS

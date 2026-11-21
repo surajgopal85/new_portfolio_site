@@ -343,14 +343,9 @@ await write('side-table', (st, t) => {
   st.box({ u: 0, v: 0, w, d, z: t.height - 5, h: 5, color: P.bark, k: 0 })
 })
 
-/** The office chair: a seat, a back, a post and a star base. */
-await write('chair', (st, t) => {
-  const { w, d } = t.tiles
-  st.box({ u: w / 2 - 0.18, v: d / 2 - 0.18, w: 0.36, d: 0.36, h: 14, color: P.slate, k: 2 })
-  st.box({ u: 0.1, v: 0.1, w: w - 0.2, d: d - 0.2, z: 14, h: 5, color: P.shadow, k: 0 })
-  // the back, standing at the far edge
-  st.box({ u: 0.1, v: 0.1, w: 0.25, d: d - 0.2, z: 19, h: t.height - 19, color: P.shadow, k: 1 })
-})
+// The office chair is no longer a prop: it's drawn into Suraj's seated
+// sprites, because two sprites that have to line up pixel-for-pixel never
+// quite do, and "he's in the chair" is the whole point of it.
 
 /** The monitor: a panel on a foot, with the screen left for the renderer. */
 await write('monitor', (st, t) => {
@@ -430,6 +425,27 @@ await write('desk-east', (st, t) => {
     st.box({ u: 0.02, v: v0, w: w - 0.04, d: v1 - v0, z: 3, h: t.height - 8, color: P.barkDark, k: 1, outline: null, faces: false })
     st.box({ u: 0.02, v: (v0 + v1) / 2 - 0.06, w: w - 0.04, d: 0.12, z: t.height - 12, h: 2, color: P.slate, k: 0, outline: null, faces: false })
   }
+})
+
+/** The mechanical keyboard he types at, with its red accent keys. */
+await write('keyboard', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ w, d, h: t.height, color: P.paper, k: 0 })
+  for (let u = 0.06; u < w - 0.06; u += 0.09) {
+    st.box({ u, v: d * 0.2, w: 0.06, d: d * 0.6, z: t.height, h: 1, color: P.slate, k: 0, outline: null })
+  }
+  st.box({ u: 0.06, v: d * 0.2, w: 0.06, d: d * 0.6, z: t.height, h: 1, color: P.brick, k: 0, outline: null })
+})
+
+/** An open notebook at the writing end, with a pen across it. */
+await write('notebook', (st, t) => {
+  const { w, d } = t.tiles
+  st.box({ w, d, h: t.height, color: P.paper, k: 0 })
+  st.box({ u: w / 2 - 0.02, v: 0.04, w: 0.04, d: d - 0.08, z: t.height, h: 1, color: P.slate, k: 0, outline: null })
+  for (let v = 0.1; v < d - 0.1; v += 0.12) {
+    st.box({ u: 0.08, v, w: w * 0.34, d: 0.03, z: t.height, h: 1, color: P.sand, k: 0, outline: null })
+  }
+  st.box({ u: 0.1, v: d * 0.4, w: w * 0.7, d: 0.05, z: t.height + 1, h: 1, color: P.brick, k: 0, outline: null })
 })
 
 // --- the small things ------------------------------------------------------
