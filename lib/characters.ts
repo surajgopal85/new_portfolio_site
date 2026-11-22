@@ -138,6 +138,17 @@ export function facingFor(dgx: number, dgy: number): CharacterState['facing'] {
   return dgy >= 0 ? 'down-left' : 'up-right'
 }
 
+/**
+ * Milliseconds per walk frame.
+ *
+ * The frame used to advance once per animation tick, which at 60fps ran a
+ * four-frame cycle fifteen times a second. That was survivable while every
+ * frame was the same height and merely looked like fast legs; the moment
+ * the legs started carrying a bob it became a visible jitter. Frames belong
+ * on a clock, not on the render loop.
+ */
+export const WALK_MS = 140
+
 /** How close to the spot a character has to be before it starts to climb. */
 const HOP = 0.8
 
@@ -221,14 +232,15 @@ export function step(state: CharacterState, visit: Visit, elapsedMs: number): Ch
           frame: 0,
         }
       }
+      const elapsed = state.elapsed + elapsedMs
       return {
         ...state,
         gx: m.gx,
         gy: m.gy,
         z,
         facing: facingFor(m.dgx, m.dgy),
-        frame: (state.frame + 1) % 4,
-        elapsed: state.elapsed + elapsedMs,
+        frame: Math.floor(elapsed / WALK_MS) % 4,
+        elapsed,
       }
     }
 
@@ -260,14 +272,15 @@ export function step(state: CharacterState, visit: Visit, elapsedMs: number): Ch
       if (m.arrived) {
         return { ...state, gx: m.gx, gy: m.gy, z: 0, phase: 'away', timer: 0, elapsed: 0, frame: 0 }
       }
+      const walked = state.elapsed + elapsedMs
       return {
         ...state,
         gx: m.gx,
         gy: m.gy,
         z,
         facing: facingFor(m.dgx, m.dgy),
-        frame: (state.frame + 1) % 4,
-        elapsed: state.elapsed + elapsedMs,
+        frame: Math.floor(walked / WALK_MS) % 4,
+        elapsed: walked,
       }
     }
 

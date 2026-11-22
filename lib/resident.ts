@@ -12,7 +12,7 @@
  * you, which is what a person at a desk looks like.
  */
 
-import { SURAJ, facingFor, type CharacterState } from './characters'
+import { SURAJ, WALK_MS, facingFor, type CharacterState } from './characters'
 
 export type ResidentPhase =
   /** Seated or standing at the desk, typing. The default by a long way. */
@@ -186,7 +186,7 @@ export function stepResident(state: ResidentState, elapsedMs: number): ResidentS
         gx: m.gx,
         gy: m.gy,
         facing: facingFor(m.dgx, m.dgy),
-        frame: (state.frame + 1) % 4,
+        frame: Math.floor(elapsed / WALK_MS) % 4,
         elapsed,
       }
     }
@@ -214,7 +214,7 @@ export function stepResident(state: ResidentState, elapsedMs: number): ResidentS
         gx: m.gx,
         gy: m.gy,
         facing: facingFor(m.dgx, m.dgy),
-        frame: (state.frame + 1) % 4,
+        frame: Math.floor(elapsed / WALK_MS) % 4,
         elapsed,
       }
     }

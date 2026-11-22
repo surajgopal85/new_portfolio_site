@@ -30,6 +30,7 @@ const out = flag('out', 'shots/shot.png')
 const el = flag('el', null)
 const settle = Number(flag('settle', 900))
 const allow = Number(flag('allow', 0)) // a status that isn't an error here
+const reduced = argv.includes('--reduced')
 
 await mkdir(dirname(out), { recursive: true })
 
@@ -37,6 +38,16 @@ const browser = await puppeteer.launch({ headless: true })
 try {
   const page = await browser.newPage()
   await page.setViewport({ width, height, deviceScaleFactor: 1 })
+
+  /**
+   * Headless Chrome reports `prefers-reduced-motion: reduce` by default,
+   * which froze every CSS animation in every screenshot taken before this
+   * was noticed — the desk transition, the fan shadow, the label fades.
+   * Say what we mean instead of inheriting it.
+   */
+  await page.emulateMediaFeatures([
+    { name: 'prefers-reduced-motion', value: reduced ? 'reduce' : 'no-preference' },
+  ])
 
   // The landing page decides which version to show from localStorage before
   // first paint, so set the override before any script runs.
