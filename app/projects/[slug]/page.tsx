@@ -26,6 +26,13 @@ const BEATS = [
   { key: 'nextTime', heading: "What I'd change" },
 ] as const
 
+/**
+ * The fourth beat means something different mid-build: there's nothing to look
+ * back on yet, and the open questions are the interesting part. Same slot in
+ * the same order, honest heading.
+ */
+const OPEN_HEADING = "What's still open"
+
 export default async function CaseStudy({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const index = publicProjects.findIndex((p) => p.slug === slug)
@@ -43,6 +50,11 @@ export default async function CaseStudy({ params }: { params: Promise<{ slug: st
 
       <ul className={styles.meta}>
         <li className={`${styles.chip} ${styles.chipYear}`}>{project.year}</li>
+        {/* Said out loud rather than implied: a project still being built is
+            worth linking, as long as the page doesn't pretend it's finished. */}
+        {project.status === 'building' && (
+          <li className={`${styles.chip} ${styles.chipBuilding}`}>In progress</li>
+        )}
         {project.stack.map((tech) => (
           <li key={tech} className={styles.chip}>
             {tech}
@@ -71,7 +83,11 @@ export default async function CaseStudy({ params }: { params: Promise<{ slug: st
                 {String(i + 1).padStart(2, '0')}
               </span>
               <div>
-                <h2 className={styles.sectionHeading}>{beat.heading}</h2>
+                <h2 className={styles.sectionHeading}>
+                  {beat.key === 'nextTime' && project.status === 'building'
+                    ? OPEN_HEADING
+                    : beat.heading}
+                </h2>
                 <p className={styles.sectionBody}>{project.study![beat.key]}</p>
               </div>
             </section>

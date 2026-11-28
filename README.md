@@ -20,7 +20,7 @@ every pixel here is drawn from scratch. No Nintendo sprites, no Nintendo music.
 | `npm run shot` | screenshot any route, any width, either landing version |
 | `npm run audit` | keyboard path, focus rings, reduced motion, phone width |
 | `npm run og` | regenerate the social card from the live scene |
-| `npm test` | the character state machine's specification |
+| `npm test` | the character state machine and the Markdown renderer |
 | `npm run pixelate -- <photo> [options]` | photo → pixel-art base |
 | `npm run deploy` | build, upload to S3, invalidate CloudFront |
 
@@ -32,6 +32,7 @@ have one — it's a static export. `npm run preview` is the equivalent.
 | Object in the scene | Opens |
 |---|---|
 | Monitor | `/projects/` — the overworld |
+| Laptop | `/writing/` — posts |
 | Piano | `/about/` — fun / about corner |
 | Cork board | `/now/` — what I'm studying |
 | Door | `/contact/` |
@@ -76,6 +77,7 @@ deliberate design, not a fallback that looks broken.
 app/                     routes (static export, trailing slashes)
   page.tsx               landing: scene or static fallback
   projects/              overworld map + [slug] case studies
+  writing/               post index + [slug] posts
   now/                   the cork board — what I'm studying
 components/scene/        the room
   iso.ts                 the projection, and every thing in the room with
@@ -84,6 +86,9 @@ components/scene/        the room
 content/site.ts          all non-project copy + the nav map
 content/projects.ts      the project list and case-study text
 content/studying.ts      what's pinned to the cork board
+content/posts/*.md       the posts — one file each, front matter on top
+lib/posts.ts             reads content/posts at build time
+lib/markdown.ts          the Markdown subset the posts use
 lib/capability.ts        which experience to render
 lib/characters.ts        character state machine — MINE to write
 lib/piano.ts             Web Audio, off by default
@@ -129,6 +134,28 @@ produces something traceable when the subject's outline is already high
 contrast against its background in the photo; otherwise subject and background
 quantize to the same colors and the silhouette dissolves.
 
+## Writing
+
+Posts are Markdown files in `content/posts/`. There is no CMS and no database
+because there is no server: this is a static export, so git is the CMS. Write a
+file, commit it, deploy, it's live.
+
+```bash
+cp content/posts/_example.md content/posts/my-post.md   # the format reference
+npm run dev                                             # read it at /writing/
+```
+
+The filename is the URL. Front matter needs `title`, `date` (YYYY-MM-DD) and
+`summary`; a missing one fails the build rather than shipping a broken card.
+`draft: true` keeps a post off the built site entirely — no page, no listing,
+no sitemap entry — and so does a filename starting with `_`, which is why
+`_example.md` can stay in the directory as the living format reference.
+
+`lib/markdown.ts` is a deliberate subset: headings, paragraphs, lists, links,
+emphasis, code, quotes, rules. Raw HTML in a post is escaped rather than passed
+through. Everything goes through `renderMarkdown`, so swapping in a real parser
+later is one file.
+
 ## Deploy
 
 ```bash
@@ -160,3 +187,27 @@ everything else revalidates and gets invalidated on deploy.
 2. **Scene** — real art, character state machine, piano.
 3. **Projects** — overworld map and case studies.
 4. **Polish** — performance, accessibility, `public/og.png`, launch.
+
+## Hosting it somewhere temporarily
+
+The deploy above is the decided path — real AWS practice is the point, and
+`infra/bootstrap.sh` already exists. Vercel is the shortcut if the site needs
+to be in front of people before the domain and certificate are sorted.
+
+Nothing in the repo has to change for it. Vercel detects Next.js, runs
+`next build`, sees `output: 'export'` in `next.config.ts` and serves `out/`
+statically; `trailingSlash: true` keeps the URLs identical to the CloudFront
+ones, so links written now survive the move.
+
+```bash
+npx vercel            # preview deploy, throwaway URL
+npx vercel --prod     # the project's stable URL
+```
+
+Set `NEXT_PUBLIC_SITE_URL` to the deployed origin in the Vercel project's
+environment variables. Without it, `site.url` falls back to
+`https://example.com` and every canonical URL, the sitemap and the OG image
+point at the wrong host.
+
+Two hosts is a temporary state, not a setup. Pick one before the domain
+is attached, or the deploy you forget about is the one search engines index.

@@ -95,6 +95,8 @@ export type IsoThing = {
     | 'piano'
     | 'door'
     | 'corkboard'
+    /** The laptop beside the monitor is where the writing happens. */
+    | 'laptop'
     /** The three pieces on the walls, each with a page of its own. */
     | 'ligeti'
     | 'schiele'
@@ -160,7 +162,7 @@ export const isoThings: readonly IsoThing[] = [
   // runs along the east side toward the camera and carries the controller.
   { id: 'desk-north', gx: 5.0, gy: 0.35, tiles: { w: 3.6, d: 1.0 }, height: 26, src: '/art/iso/desk-north.png' },
   { id: 'monitor', gx: 6.5, gy: 0.5, z: 26, tiles: { w: 1.0, d: 0.45 }, height: 24, src: '/art/iso/monitor.png', hotspot: 'monitor' },
-  { id: 'laptop', gx: 7.7, gy: 0.5, z: 26, tiles: { w: 0.8, d: 0.45 }, height: 10, src: '/art/iso/laptop.png' },
+  { id: 'laptop', gx: 7.7, gy: 0.5, z: 26, tiles: { w: 0.8, d: 0.45 }, height: 10, src: '/art/iso/laptop.png', hotspot: 'laptop' },
   { id: 'bottle', gx: 5.3, gy: 0.5, z: 26, tiles: { w: 0.25, d: 0.25 }, height: 11, src: '/art/iso/bottle.png' },
   { id: 'mug', gx: 6.1, gy: 0.75, z: 26, tiles: { w: 0.25, d: 0.25 }, height: 6, src: '/art/iso/mug.png' },
   { id: 'shelf', gx: 4.6, gy: 0.5, tiles: { w: 0.9, d: 0.9 }, height: 22, src: '/art/iso/shelf.png' },

@@ -31,13 +31,51 @@ Settled before the build:
   a label. It drifts to a terminal or to Kibou occasionally, because a screen
   that never changes reads as a painting of a screen.
 
+## Shipping the first two projects
+
+- **Two projects, not five** — Talktor and Recon Desk. Three to five was the
+  original target; two real case studies beat five thin ones, and the list is
+  generated from `content/projects.ts`, so adding the third is one object.
+- **Link work in progress, and say so** — Recon Desk is mid-build. It carries a
+  `status: 'building'` flag that shows as "In progress" on the map and on the
+  case study. A visitor who can watch you think is worth more than a visitor
+  who only sees finished things; what isn't allowed is pretending.
+- **Every claim traced to the repo** — both case studies were written against
+  the code, not the résumé. Talktor's "reinforcement learning" is named as what
+  it is: a database of extraction attempts and feedback, with the training loop
+  never closed. The one thing a case study cannot survive is a claim that
+  doesn't check out.
+
+## Writing
+
+- **Markdown in the repo, not a CMS** — the site is a static export with no
+  server, so a CMS would mean standing up a backend to hold six paragraphs. Git
+  is the CMS: a post is a file, review is a diff, publishing is a deploy.
+- **A hand-written Markdown subset** — `lib/markdown.ts`, about 150 lines, with
+  a test file next to it. The alternative was a dependency, and the posts need
+  eight constructs. Every caller goes through `renderMarkdown`, so the day the
+  subset stops being enough it's one file to replace.
+- **The laptop is the hotspot** — the monitor is already Projects, and the
+  laptop beside it is where the writing actually happens. `/writing/`, not
+  `/blog/`: the point is to show thinking about current problems, and "blog"
+  undersells that.
+- **Drafts live in the repo and don't build** — `draft: true` or a leading
+  underscore. A half-written post should be reviewable on a branch without
+  being publishable by accident.
+
 ## Open
 
 - [ ] Launch date — set deliberately, not guessed. Work, freelance and tutoring
       all compete for the same hours.
 - [ ] Domain, and the ACM certificate in us-east-1.
-- [ ] The project list: 3–5, each with a one-line pitch and a visibility call.
-      Anything built for an employer or client needs a clearance check first.
+- [x] The project list — Talktor and Recon Desk, both public, both personal
+      repos, so no clearance needed. The next one to add is the first one built
+      for someone else, and that one does need the check.
+- [ ] Hosting, decided twice. The settled decision above is S3 + CloudFront,
+      because real AWS practice is the point; `infra/bootstrap.sh` already
+      exists. Vercel is on the table as a temporary host to get the site in
+      front of people sooner. Pick one deliberately — two deploy paths is the
+      thing to avoid.
 - [ ] First-5-seconds / first-30-seconds copy, in three sentences.
 - [x] Caitlin's okay on being drawn in — yes, asked and confirmed.
 

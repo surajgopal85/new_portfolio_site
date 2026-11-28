@@ -1,0 +1,96 @@
+/* One post. The body is rendered HTML rather than JSX, so everything in it is
+   styled by element from `.prose` — there are no class names to hang styles
+   on. Measure is capped at 66ch; a long line of prose is the one thing a
+   reader notices immediately. */
+
+.date {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-pixel);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.title { margin: 0 0 0.75rem; font-size: clamp(1.75rem, 5vw, 2.5rem); line-height: 1.15; }
+
+.summary {
+  margin: 0 0 1.25rem;
+  max-width: 54ch;
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  color: var(--muted);
+}
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 2.5rem; padding: 0; list-style: none; }
+.tag {
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  padding: 0.2em 0.5em;
+  color: var(--fg);
+  border: 2px solid var(--rule);
+}
+
+.prose { max-width: 66ch; }
+.prose > :first-child { margin-top: 0; }
+
+.prose p { margin: 0 0 1.15rem; line-height: 1.7; }
+
+.prose h2 { margin: 2.5rem 0 0.75rem; font-size: clamp(1.25rem, 3vw, 1.5rem); }
+.prose h3 { margin: 2rem 0 0.6rem; font-size: 1.125rem; }
+.prose h4, .prose h5, .prose h6 { margin: 1.75rem 0 0.5rem; font-size: 1rem; }
+
+.prose ul, .prose ol { margin: 0 0 1.15rem; padding-left: 1.5rem; }
+.prose li { margin-bottom: 0.5rem; line-height: 1.65; }
+
+.prose strong { color: var(--fg); }
+
+/* Inline code sits in running prose, so it gets a tint rather than a box —
+   a border on every identifier makes a paragraph look perforated. */
+.prose code {
+  font-family: var(--font-pixel);
+  font-size: 0.875em;
+  padding: 0.1em 0.3em;
+  background: var(--rule);
+}
+
+/* Blocks are the opposite: a hard-edged slab, scrollable on its own so a long
+   line of code can never widen the page. */
+.prose pre {
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  color: var(--cream);
+  background: var(--ink);
+  border: 3px solid var(--shadow);
+  box-shadow: 4px 4px 0 var(--rule);
+}
+.prose pre code {
+  padding: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  background: none;
+}
+
+.prose blockquote {
+  margin: 0 0 1.5rem;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 4px solid var(--gold);
+}
+.prose blockquote p { margin: 0; color: var(--muted); }
+
+.prose hr { margin: 2rem 0; border: none; border-top: 3px solid var(--rule); }
+
+/* A heading is an anchor target, so it must not sit under the top of the
+   viewport when you arrive by fragment link. */
+.prose :is(h2, h3, h4, h5, h6) { scroll-margin-top: 1.5rem; }
+
+.next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  padding-top: 1.25rem;
+  border-top: 3px solid var(--rule);
+}

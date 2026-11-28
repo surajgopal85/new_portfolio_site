@@ -19,6 +19,7 @@
   border: 2px solid var(--rule);
 }
 .chipYear { color: var(--ink); background: var(--gold); border-color: var(--ink); }
+.chipBuilding { color: var(--ink); background: var(--leaf); border-color: var(--ink); }
 
 .title { margin: 0 0 0.5rem; font-size: clamp(1.75rem, 5vw, 2.5rem); line-height: 1.1; }
 .pitch { margin: 0 0 1.5rem; max-width: 46ch; font-size: clamp(1rem, 2.2vw, 1.125rem); }

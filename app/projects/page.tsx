@@ -61,6 +61,9 @@ export default function Projects() {
               <Link href={`/projects/${node.slug}/`} className={styles.legendTitle}>
                 {node.title}
               </Link>
+              {/* Visible before the click, so nobody opens a case study
+                  expecting a finished one. */}
+              {node.status === 'building' && <span className={styles.legendFlag}>In progress</span>}
               <p className={styles.legendPitch}>{node.pitch}</p>
             </span>
           </li>
