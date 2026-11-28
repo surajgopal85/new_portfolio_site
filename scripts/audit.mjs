@@ -10,7 +10,7 @@
 import puppeteer from 'puppeteer'
 
 const base = process.argv.includes('--base') ? process.argv[process.argv.indexOf('--base') + 1] : 'http://localhost:3000'
-const routes = ['/', '/projects/', '/now/', '/about/', '/contact/']
+const routes = ['/', '/projects/', '/writing/', '/now/', '/about/', '/contact/']
 const browser = await puppeteer.launch({ headless: true })
 const problems = []
 const note = (s) => problems.push(s)
@@ -82,7 +82,9 @@ console.log('\n=== reduced motion falls back to the plain version ===')
 }
 
 console.log('\n=== phone width (420px) ===')
-for (const [path, mode] of [['/', 'static'], ['/', 'scene'], ['/projects/', 'static'], ['/now/', 'static']]) {
+// A post is the one page with a <pre> on it, which is where a narrow viewport
+// overflows if the block isn't allowed to scroll on its own.
+for (const [path, mode] of [['/', 'static'], ['/', 'scene'], ['/projects/', 'static'], ['/projects/talktor/', 'static'], ['/writing/', 'static'], ['/writing/when-not-to-use-an-llm/', 'static'], ['/now/', 'static']]) {
   const { page } = await open(path, { mode, width: 420 })
   const overflow = await page.evaluate(() => ({
     doc: document.documentElement.scrollWidth,

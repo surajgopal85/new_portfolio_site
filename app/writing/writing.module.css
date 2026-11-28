@@ -1,0 +1,66 @@
+/* The index. Paper, not decoration: the overworld map and the cork board
+   already carry the pixel-art weight, and a list of things to read should
+   look like a list of things to read. */
+
+.list {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(12px, 2vw, 18px);
+}
+
+.card {
+  display: block;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  /* The card keeps its paper in both themes, like the cork board's index
+     cards, so every colour inside it is stated against paper, not inherited
+     from the page. */
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--rule);
+  transition: transform 120ms steps(2, end), box-shadow 120ms steps(2, end);
+}
+.card:hover,
+.card:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--shadow);
+}
+.card:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+  .card:hover, .card:focus-visible, .card:active { transform: none; }
+}
+
+.date {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-pixel);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bark);
+}
+
+/* The card is the link, so the title carries the accent colour rather than an
+   underline — two underlines in one card reads as two separate links. */
+.title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.0625rem, 2.6vw, 1.375rem);
+  color: var(--brick);
+}
+.card:hover .title, .card:focus-visible .title { text-decoration: underline; }
+
+.summary { margin: 0; max-width: 62ch; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0.75rem 0 0; }
+.tag {
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  padding: 0.2em 0.5em;
+  color: var(--ink);
+  background: var(--tan);
+  border: 2px solid var(--ink);
+}
