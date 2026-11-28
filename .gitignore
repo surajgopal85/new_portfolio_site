@@ -8,3 +8,4 @@ out/
 photos/raw/
 tsconfig.tsbuildinfo
 shots/
+.vercel
